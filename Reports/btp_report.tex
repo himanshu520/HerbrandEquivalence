@@ -1,0 +1,96 @@
+\documentclass {CSEThesis}
+% Standard packages
+\usepackage{amsmath}        % Extra math definitions
+\usepackage{graphics}       % PostScript figures
+\usepackage{setspace}       % 1.5 spacing
+%\usepackage{psfig,epsfig}
+\usepackage{multicol}
+\usepackage{subfigure}
+\usepackage{hyperref}
+\usepackage{epsfig,color}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+
+\makeatletter
+\def\BState{\State\hskip-\ALG@thistlm}
+\makeatother
+
+\lstset {
+    language=C++,
+    showstringspaces=false,
+    numbers=left,
+    basicstyle=\footnotesize,
+}
+
+% Custom packages
+%\usepackage[first]{datestamp}   % Datestamp on first page of each chapter
+
+
+\usepackage{color}
+%===== page layout
+% Define the side margins for a right-side page
+%\insidemargin = 1.3in \outsidemargin = 0.9in
+% Above margin is space above the header
+% Below margin is space below footer
+%\abovemargin = 1.5in \belowmargin = 0.05in
+
+
+\btptitle = {Program Analysis - Herbrand Equivalence} % { and } are needed around your name
+\name = {Himanshu Rai}          % and other feilds. don't remove.
+\rollno = {111601032}
+\email = {111601032@smail.iitpkd.ac.in}
+\guide = {Dr Jasine Babu}
+
+
+\begin{document}
+
+\include{title}
+
+\include{certificate}
+
+% \include{acknowledgement}
+
+\tableofcontents 
+
+\addcontentsline{toc}{chapter}{List of Figures} 
+\listoffigures 
+
+% \addcontentsline{toc}{chapter}{List of Tables} 
+% \listoftables
+
+\pagenumbering{arabic}
+\def\headrulehook{\color{black}}      % Color the header rule
+
+%========== Chapters
+\typeout{}
+\include{chapter1}
+\cleardoublepage 
+\typeout{}
+\include{chapter2}
+\cleardoublepage 
+\typeout{}
+\include{chapter3}
+\cleardoublepage 
+\typeout{}
+\include{chapter4}
+\cleardoublepage 
+\typeout{}
+\include{chapter5}
+\cleardoublepage
+\typeout{}
+\include{chapter6}
+\cleardoublepage
+\typeout{}
+\include{chapter7}
+\cleardoublepage
+\typeout{}
+\include{futurework}
+\typeout{}
+
+\bibliographystyle{IEEEtran}
+\bibliography{btp}
+\end{document}
+

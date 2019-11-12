@@ -1,0 +1,52 @@
+\chapter{Review of Prior Works}
+\label{chap:chapter2}
+
+Existing algorithms for calculating Herbrand Equivalence are either
+exponential or are imprecise. The precise algorithms are based on an 
+early algorithm by Kildall \cite{Kildall}, which discovers 
+equivalences by performing an abstract interpretation over the 
+lattice of Herbrand equivalences. Kildall algorithms is precise in 
+the sense it finds all the Herbrand equivalences but is exponential 
+in time. The partition refinement algorithm of Alpern, Wegman and 
+Zadek (AWZ) \cite{AWZ} is efficient but is much imprecise compared to 
+Kildall's. AWZ algorithm represent the values of variables after a 
+join using a fresh selection function $\phi_i$, similar to functions 
+in the static single assignment form and treats $\phi_i$ as 
+uninterpreted functions. It is incomplete in the sense it treats all 
+$\phi_i$ as uninterpreted. In an attempt to remedy this problem, 
+Ruthing, Knoop and Steffen proposed a polynomial-time algorithm (RKS) 
+\cite{RKS} that alternately applies the AWZ algorithm and some 
+rewrite rules for normalization of terms involving $\phi$ functions, 
+until the congruence classes reach a fixed point. Their algorithm 
+discovers more equivalences than the AWZ algorithm, but remains 
+incomplete. 
+
+Gulwani and Necula \cite{Gulwani} gave algorithm to find the Herbrand 
+Equivalence classes restricted to program expressions. There 
+algorithm is linear in parameter $s$, where $s$ is the maximum times 
+$+$ occurs in a program expression. Clearly $s$ can take a maximum 
+value of $n$, which is the program size, so the algorithm in all is 
+polynomial in $n$. Later, Saleena and Paleri \cite{Saleena} showed  
+that Gulwani's algorithm losses some information as it removes a 
+equivalence class if it does not contain a variable or a constant. 
+The global value numbering (GVN) algorithm proposed by them was able 
+to detect more redundencies compared to that by Gulwani and Necula.
+
+One problem is that most of these alogrithms were based on fix point 
+computations but the classical definition of Herbrand equivalence is 
+not a fix point based definition making it difficult to prove their 
+precision or completeness. Babu, Krishnan and Paleri \cite{Babu} 
+developed a lattice theoretic fix-point formulation of Herbrand 
+Equivalence on the lattice defined over the set of all terms 
+constructible from variables, constants and operators of a program. 
+They showed this definition is equivalent to the classical meet over 
+all path characterization over the set of all possible expressions. 
+The algorithm proposed by them is able to detect all the equivalences 
+as by that of Saleena and Paleri.
+
+So, to sum up Kildall's algorithm finds all the equivalent classes 
+but is exponential. The algorithms by Saleena and Paleri; Babu, 
+Krishnan and Paleri are polynomial and efficient among other 
+imprecise algorithms. They are able to find all equivalence classes 
+restricted to program expressions (all expressions with length atmost 
+2), which is precisely what is practically useful.

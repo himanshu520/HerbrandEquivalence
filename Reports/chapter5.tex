@@ -1,0 +1,101 @@
+\chapter{Summary of Babu, Krishnan and Paleri}
+\label{chap:chapter5}
+
+One of the problems with other former approaches to Herbrand 
+equivalence is that most of the alogrithms were based on fix point 
+computations. But the classical definition of Herbrand equivalence is 
+not a fix point based definition making it difficult to prove their 
+precision or completeness. Babu, Krishnan and Paleri \cite{Babu} gave 
+a new lattice theoretic formulation of Herbrand equivalences and 
+proved its equivalence to the classical version.
+
+The paper defines a congruence relation on the set of all possible 
+expressions and shows that the set of all congruences for a complete 
+lattice. Then for a given dataflow framework with $n$ program points, 
+a continuous composite transfer function is defined over the n-fold 
+product of the above lattice such that the maximum fix point of the 
+function yields the set of Herbrand equivalence classes at various 
+program points. Finally, equivalence of this approach to the 
+classical meet over all path definition of Herbrand Equivalence is 
+established.
+
+Below is a brief summary of the developments in the paper, for more 
+detailed approach and proofs and for equivalence to MOP  
+characterization refer to \cite{Babu}.
+
+\section{Program Expressions}
+
+Let $C$ and $X$ be the set of constants and variables occurring in 
+the program respectively. The program expressions (terms) can be 
+described as 
+$$t\; ::=\; c\; |\; x\; |\; t_1 + t_2$$
+where $c \in C$ and $x \in X$.
+
+\section{Congruence Relation}
+Let $T$ be the set of all program terms. A partition $P$ of terms in $T$ is said to be a congruence (of terms) if 
+\begin{itemize}
+    \item For $t$, $t'$, $s$, $s'$ $\in$ $T$, $t' \cong t$ and $s' \cong s$ iff $t' + s' \cong t + s$. 
+    \item For $c \in C$, $t \in T$, if $t \cong c$ then either $t = c$ or $t \in X$.
+\end{itemize}
+Let $G(T)$ be the set of all congruences over $T$. We say $P_1 
+\preceq P_2$ for $P_1, P_2 \in G(T)$, if 
+$\forall A_1 \in P_1, \exists A_2 \in P_2$ such that 
+$A_1 \subseteq A_2$. We define \textit{confluence} operation as 
+$$P_1 \land P_2\; =\; \{A_i \cap B_j\: |\: A_i \in P_1 \text{ and } B_j \in P_2\}$$
+Now, we extend $G(T)$ to $\overline{G(T)}$ by introducing abstract 
+congruence $\top$ satisfying 
+$P \land \top = \top, \forall P \in \overline{G(T)}$.
+Also, we denote the congruence in which every element is in a 
+separate class as $\bot$. 
+
+$(\overline{G(T)}, \preceq, \bot, \top)$ 
+forms a complete lattice, with $\land$ as meet operator.
+
+\section{Transfer function}
+An assignment $y := \beta$ transforms a congruence $P$ to another 
+congruence $P'$. This can be described in the form of transfer 
+function $f_{y = \beta}:G(T) \to G(T)$, given by
+\begin{itemize}
+    \item $B_i = \{t \in T\ |\ t[y \leftarrow \beta] \in A_i\}, \text{ for each } A_i \in P$
+    \item $f_{y = \beta}(P) = \{B_i\ | \ B_i \neq \phi\}$
+\end{itemize}
+We extend this definition to form extended transfer function, 
+$\overline{f}_{y=\beta} : \overline{G(T)} \to \overline{G(T)}$ 
+by defining $\overline{f}_{y=\beta}(\top)\ =\ \top$, otherwise $\overline{f}_{y=\beta}(P) = f_{y=\beta}(P)$.
+The extended transfer function is distributive, monotonic and continuous.
+
+\section{Non deterministic assignment}
+An assignment $y := *$ transforms a congruence $P$ to another 
+congruence $P'$. This can be described in the form of another 
+transfer function $f_{y = *}:G(T) \to G(T)$, given by: 
+for every $t$, $t' \in T$, $t \cong_{f(P)} t'$, (here $f(P) = f_{y = *}(P)$ for simplicity) iff
+\begin{itemize}
+    \item $t \cong_P t'$
+    \item $\forall \beta \in (T \setminus T(y)),\ t[y \leftarrow \beta] \cong_p t'[y \leftarrow \beta]$
+\end{itemize}
+As before we extend this transfer function to 
+$\overline{f}_{y=*} : \overline{G(T)} \to \overline{G(T)}$ by defining
+$\overline{f}_{y=*}(\top)\ =\ \top$, otherwise 
+$\overline{f}_{y=*}(P) = f_{y=*}(P)$. 
+The function $\overline{f}_{y=*}$ is also continuous.
+
+\section{Dataflow analysis Framework}
+A dataflow framework over $T$ is $D = (G, F)$ where $G(V, E)$ is the 
+control flow graph associated with the program and $F$ is a 
+collection of transfer function associated with program points.
+
+\section{Herbrand Equivalence}
+The Herbrand Congruence function $H_D : V(G) \to \overline{G(T)}$ 
+gives the Herbrand Congruence associated with each program point and 
+is defined to be the maximum fix point of the \textit{continuous
+composite transfer function} 
+$f_D : \overline{G(T)}^n \to \overline{G(T)}^n$, where 
+$\overline{G(T)}^n$ is the product lattice, $f_D$ is a function satisfying $\pi_k \circ f_D = f_k$. Here $\pi_k$ is the projection map
+and $f_k : \overline{G(T)}^n \to \overline{G(T)}$ is defined as follows 
+\begin{itemize}
+    \item   If k = 1, the entry point of the program $f_k = \bot$.
+    \item   If k is a function point with $Pred(k) = \{j\}, \text{ then } f_k = h_k \circ \pi_j$ where 
+    $h_k$ is the extended transfer function corresponding to function point k.
+    \item   If k is a confluence point with $Pred(k) = {i, j}, \text{ then } f_k = \pi_{i, j}, \text{ where }
+    \pi_{i, j}:\overline{G(T)}^n \to \overline{G(T)}$ is given by $\pi_{i,j}(P_1,\ \dots,\ P_n) = P_i \land P_j$.
+\end{itemize}.

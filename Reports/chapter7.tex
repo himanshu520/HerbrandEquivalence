@@ -1,0 +1,197 @@
+\chapter{Implementation}
+\label{chap:chapter7}
+
+This chapter presents a pseudocode of the algorithm mentioned in 
+\cite{Babu} for Herbrand Equivalence computation. The pseudocode is 
+written taking C++ into consideration. The actual implementation done 
+for LLVM compiler framework can be found in 
+\href{https://github.com/himanshu520/HerbrandEquivalence}{this github repository}.
+
+\begin{algorithm}
+\caption{Data Structure}\label{DataStructure}
+\begin{algorithmic}[1]
+\State struct \textbf{IDstruct} \{
+    \State\;\;\; string ftype
+    \State\;\;\; int parentCnt
+    \State\;\;\; IDstruct *left
+    \State\;\;\; IDstruct *right;
+    \State
+    \State\;\;\; IDstruct() \{
+        \State\;\;\;\;\;\; ftype $\gets$ ""
+        \State\;\;\;\;\;\; parentCnt $\gets$ 0
+        \State\;\;\;\;\;\; left $\gets$ nullptr
+        \State\;\;\;\;\;\; right $\gets$ nullptr
+    \State\;\;\; \}
+    \State
+    \State\;\;\; IDstruct(string ftype, IDstruct *left, IDstruct *right) \{
+        \State\;\;\;\;\;\; (this$\rightarrow$ftype) $\gets$ ftype
+        \State\;\;\;\;\;\; (this$\rightarrow$parentCnt) $\gets$ 0
+        \State\;\;\;\;\;\; (this$\rightarrow$left) $\gets$ left
+        \State\;\;\;\;\;\; (this$\rightarrow$right) $\gets$ right
+    \State\;\;\; \}
+\State \}
+\State typedef vector$<$IDstruct *$>$ Partition
+\State map$<$Instruction, Partition$>$ partitions
+\end{algorithmic}
+\end{algorithm}
+
+The objects of structure \textit{IDstruct} would be created dynamically using \textit{new} operator. The convention taken is that any variable which is assigned a value of type \textit{IDstruct}, would actually be assigned a pointer to a dynamically created object of \textit{IDstruct}. Also, if any variable points to an object of \textit{IDstruct}, then its \textit{parentCnt} is incremented by $1$. Also, when a variable which was earlier pointing to an object of \textit{IDstruct} stops pointing to it, the \textit{parentCnt} is decremented by $1$. Finally, the dynamically allocated memory is freed whenever the \textit{parentCnt} of an object becomes $0$. These things aren't explicitly mentioned in the pseudocode.
+
+\textit{Partition} type is a vector of pointers to object of type IDstruct. Each index of such vector corresponds to a program expression of length atmost 2, which is fixed arbitrarily in the beginning. Expressions pointing to same IDstruct object are equivalent (belong to same partition) at that program point, which can be determined by checking for pointer equivalence. 
+\textit{partitions} is a map from the instructions in the program to a \textit{Partition}.
+
+\begin{algorithm}
+\caption{Main Procedure}\label{MainProcedure}
+\begin{algorithmic}[1]
+\Procedure{Main}{}
+    \State partitions[$I_0$] = findInitialPartition()
+    \State
+    \For{I $\in$ (Instructions $\setminus \{I_0\}$)}
+        \State partitions[I] = $\top$
+    \EndFor
+    \State
+    \State Bool converged = false
+    \While{not converged}
+        \State converged $\gets$ true
+        \State
+        \For{I $\in$ Instructions}
+            \State oldPartition $\gets$ partitions[I]
+            \State
+            \If{$I$ is function point with Predecessors(I) = \{J\}}
+                \State AssignStatement(partitions[I], partitions[J], I)
+            \Else
+                \State Confluence(partitions[I], I)
+            \EndIf
+            \State
+            \If{oldPartition $\neq$ partitions[I]}
+                \State converged $\gets$ false
+            \EndIf
+        \EndFor
+    \EndWhile
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+Here, $I_0$ is an imaginary instruction such that the predecessor of the first instruction of the program is $I_0$.
+
+\begin{algorithm}
+\caption{Transfer Function}\label{AssignStatement}
+\begin{algorithmic}[1]
+\Procedure{AssignStatement}{Partition \&curPart, Partition \&prevPart, Instruction I}
+    \State curPart = prevPart
+    \State
+    \If{I is (z := x)}
+        \State curPart[z] $\gets$ curPart[x]
+    \ElsIf{I is (z := x op y)}
+        \State ptr $\gets$ exists(\{op, curPart[x], curPart[y]\})
+        \If{ptr $==$ nullptr}
+            \State ptr $\gets$ IDstruct(op, curPart[x], curPart[y])
+        \EndIf
+        \State
+        curPart[z] $\gets$ ptr
+    \EndIf
+    \State
+    \State x $\gets$ LValue(I)
+    \For{op $\in$ Operators}
+        \For{y $\in$ (Constants $\cup$ Variables)}
+            \State ptr $\gets$ exists(\{op, curPart[x], curPart[y]\})
+            \If{ptr $==$ nullptr}
+                \State ptr $\gets$ IDstruct(op, curPart[x], curPart[y])
+            \EndIf
+            \State curPart[x op y] $\gets$ ptr
+            \State
+            \State ptr $\gets$ exists(op, curPart[y], curPart[x])
+            \If{ptr $==$ nullptr}
+                \State ptr $\gets$ IDstruct(op, curPart[y], curPart[x])
+            \EndIf
+            \State curPart[y op x] $\gets$ ptr
+        \EndFor
+    \EndFor
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\textit{Instructions}, \textit{Constants}, \textit{Variables} and 
+\textit{Operators} represent the set of instructions, constants, 
+variables and operators occuring in the program respectively. \textit
+{Terms} represents all expressions of length exactly 2. \textit
+{Predecessor} function gives the list of predecessors of a 
+instruction in the program control flow graph. Finally, \textit
+{exists} is a function that accepts a tuple with fields 
+$\{string, IDstruct *, IDstruct *\}$ and tells whether an IDstruct 
+object exists with \textit{ftype} as the first element of the tuple 
+and \textit{left, right} as second and third element of the tuple 
+respectively. If so, it returns a pointer to the object otherwise 
+returns nullptr.
+
+\begin{algorithm}
+\caption{Confluence Function}\label{Confluence}
+\begin{algorithmic}[1]
+\Procedure{Confluence}{Partition \&curPart, Instruction I}
+    \State Partition tempPartition
+    \State Bool accessFlag
+    \State
+    \For{x $\in$ (Constants $\cup$ Variables)}
+        accessFlag[x] $\gets$ false
+    \EndFor
+    \State
+    \For{x $\in$ (Constants $\cup$ Variables)}
+        \If{not accessFlag[x]}
+            \State accessFlag[x] $\gets$ true
+            \If{$\forall$ I' $\in$ Predecessors(I), partition[I'][x] are same}
+                \State tempPartition[x] $\gets$ partition[I'][x]
+            \Else
+                \State ptr $\gets$ IDstruct()
+                \State tempSet $\gets$ intersection(getClass(x, partition[I']), $\forall$ I' $\in$ Predecessors(I))
+                \For{y $\in$ (tempSet $\cap$ (Constants $\cup$ Variables))}
+                    \State accessFlag[y] = true
+                    \State tempPartition[y] = ptr
+                \EndFor
+            \EndIf
+        \EndIf
+    \EndFor
+
+    \For{(x op y) $\in$ Terms}
+        \State ptr $\gets$ exists(\{op, curPart[x], curPart[y]\})
+        \If{ptr $==$ nullptr}
+            \State ptr $\gets$ IDstruct(op, curPart[x], curPart[y])
+        \EndIf
+        \State tempPartition[x op y] $\gets$ ptr
+    \EndFor
+    \State
+    \State AssignStatement(curPart, tempPartition, I)
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{Finding Initial Partition}\label{InitialPartition}
+\begin{algorithmic}[1]
+\Procedure{initialPartition}{}
+    \State Partition partition
+    \For{x $\in$ (Constants $\cup$ Variables)}
+        \State partition[x] $\gets$ IDstruct()
+    \EndFor
+    \For{(x op y) $\in$ Terms}
+        \State partition[x op y] $\gets$ IDstruct(op, partition[x], partition[y])
+    \EndFor
+
+    \State return partition
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{Finding equivalence class of an expression}\label{GetClass}
+\begin{algorithmic}[1]
+\Procedure{getClass}{Term/Variable/Constant z, Partition curPart}
+    \State set equivalenceClass
+    \For{x $\in$ (Constants $\cup$ Variables $\cup$ Terms)}
+        \If{curPart[z] $==$ curPart[x]}
+            \State equivalenceClass.insert(x)
+        \EndIf
+    \EndFor
+    \State return equivalenceClass
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
