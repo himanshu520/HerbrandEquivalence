@@ -4,23 +4,21 @@ Program
 a <- 1
 b <- 1 + a
 c <- a + a
-if(a < 3) goto then
+if(a < 1) goto then
 c <- 1
 goto exit
 
 then:
     input(c)
 
-exit: 
+exit:
     input(b)
-    d = 1 + 1
+    c = 1 + 1
 
 loop:
     c <- a + 1
-    a <- 2
+    a <- 1
     goto loop
-
-b <- 2
 
 
 =======================================================
