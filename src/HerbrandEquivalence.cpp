@@ -186,7 +186,7 @@ namespace HerbrandPass {
 
     /**
      * @brief 
-     *  Stores Herbrand Equivalence information for each instruction
+     *  Stores Herbrand Equivalence information after each instruction
      *  in the program.
      * 
      * @details
@@ -237,10 +237,6 @@ namespace HerbrandPass {
      *  Initialises Constants, Variables, CuV, indexExp and indexCV
      *  by looking through the instructions in the program.
      * 
-     * @note
-     *  The function also assigns names to temporaries for further 
-     *  reference (T1, T2, T3, ...).
-     * 
      * @param[in]   F     Function block over which we are operating
      * @returns     Void
      * 
@@ -251,34 +247,25 @@ namespace HerbrandPass {
         Variables.clear(), Constants.clear(), CuV.clear();
         indexCV.clear(), indexExp.clear();
 
-        int ctr = 1;
-
         // first find the set of constants and variables
         // by iterating over the instructions
         for(Instruction &I : instructions(&F)) {
             // if the instruction is not of void type then 
-            // it represents a variable. Also we assign 
-            // a name to the variable for further reference
-            if(!I.getType()->isVoidTy()) {
+            // it represents a variable. All the variables
+            // will be covered in this case
+            if(!I.getType()->isVoidTy()) 
                 Variables.insert(&I);
-                I.setName("T" + to_string(ctr++));
-            }
 
-            // now we iterate over its operands, however
-            // we should skip alloca instruction as its
-            // operands doesn't contain any constant/variable
-            // that concerns us
+            // now we iterate over its operands to find the 
+            // constants, this case won't add any extra variables
+            // Also, we should skip alloca instruction as its
+            // operands doesn't contain any constant that
+            // concerns us
             if(isa<AllocaInst>(&I)) continue;
             for(int i = 0; i < (int)I.getNumOperands(); i++) {
                 Value *value = I.getOperand(i);
                 if(dyn_cast<Constant>(value)) {
                     Constants.insert(value);
-                } else {
-                    // ideally the else part should not be required
-                    Variables.insert(value);
-                    if(not value->hasName()) {
-                        value->setName("T" + to_string(ctr++));
-                    }
                 }
             }
         }
@@ -286,7 +273,7 @@ namespace HerbrandPass {
 
         // now assign integer indexes to variables, constants
         // and two operand instructions
-        ctr = 0;
+        int ctr = 0;
         for(auto el : CuV) indexCV[el] = ctr++;
         for(auto op : Ops)
             for(auto left : CuV)
@@ -660,7 +647,7 @@ namespace HerbrandPass {
      *                             instruction
      * @param[in]       I          Current instruction
      * 
-     * @see Partition
+     * @see Partition, partitions
      **/
     void confluenceFunction(Partition &partition, Instruction &I) {
 
@@ -673,40 +660,73 @@ namespace HerbrandPass {
         // iff they are equivalent for all the predecessors
         Partition tempPartition(numExps, nullptr);
 
-        vector<bool> accessFlag(CuV.size(), false);
-        for(auto el : indexCV) {
-            if(not accessFlag[el.second]) {
-                accessFlag[el.second] = true;
-                bool flag = true;
+        if(predecessors.empty()) findInitialPartition(tempPartition);
+        else {
+            // vector to check which constant/variable has already 
+            // been considered while processing
+            vector<bool> accessFlag(CuV.size(), false);
 
-                for(int i = 1; i < (int)predecessors.size() && flag; i++)
-                    if(partitions[predecessors[0]][el.second] != partitions[predecessors[i]][el.second])
-                        flag = false;
-
-                if(flag) tempPartition[el.second] = partitions[predecessors[0]][el.second];
-                else {
-                    set<Value *> vV, intersection(CuV);
-                    set<expTuple> vTup;
-                    for(auto inst : predecessors) {
-                        getClass(el.second, partitions[inst], vV, vTup);
-                        setIntersect<Value *>(intersection, vV);
+            // process each constant/variable that has not
+            // already been considered
+            for(auto el : indexCV) {
+                if(not accessFlag[el.second]) {
+                    accessFlag[el.second] = true;
+                    
+                    // check if the variable/constant is equivalent on all
+                    // the predecessors, if so make it point to the same
+                    // IDstruct object for the temporary partition. Notice 
+                    // is that this case will always be true for a constant.
+                    // Also another thing is if in a partition, the variable/
+                    // constant contains nullptr we have to just ignore it,
+                    // as theoretically it means that the partition at that 
+                    // point is the top element
+                    bool flag = true;
+                    IDstruct *ptr = nullptr;
+                    for(int i = 0; i < (int)predecessors.size() && flag; i++) {
+                        IDstruct *nptr = partitions[predecessors[i]][el.second];
+                        if(nptr == nullptr) continue;
+                        else if(ptr == nullptr) ptr = nptr;
+                        else if(ptr != nptr) flag = false;
                     }
 
-                    IDstruct *ID = new IDstruct();
-                    for(auto nel : intersection) {
-                        accessFlag[indexCV[nel]] = true;
-                        tempPartition[indexCV[nel]] = ID;
+                    if(flag) tempPartition[el.second] = ptr;
+                    else {
+                        // however if the previous case is not
+                        // true, we must create a new IDstruct
+                        // object to represent the class of 
+                        // the varible in the temporary partition.
+                        // Also, every other variable that is 
+                        // equivalent (belong to the same class)
+                        // to the current variable at all the
+                        // predecessors must also point to the same
+                        // IDstruct object
+                        set<Value *> setCV, intersection(CuV);
+                        set<expTuple> setExp;
+                        for(auto inst : predecessors) {
+                            getClass(el.second, partitions[inst], setCV, setExp);
+                            setIntersect<Value *>(intersection, setCV);
+                        }
+
+                        IDstruct *ID = new IDstruct();
+                        for(auto el_ : intersection) {
+                            accessFlag[indexCV[el_]] = true;
+                            tempPartition[indexCV[el_]] = ID;
+                        }
                     }
                 }
             }
+
+            // now consider every two operand expression
+            for(auto el : indexExp) {
+                Value *left = get<1>(el.first);
+                Value *right = get<2>(el.first);
+                string op = getOpSymbol(get<0>(el.first));
+                tempPartition[el.second] = findIDstrct(tempPartition, op, left, right);
+            }
         }
 
-        for(auto el : indexExp) {
-            Value *left = get<1>(el.first), *right = get<2>(el.first);
-            string op = getOpSymbol(get<0>(el.first));
-            tempPartition[el.second] = findIDstrct(tempPartition, op, left, right);
-        }
-
+        // find the partitions at the program point after the
+        // current instruction
         transferFunction(partition, tempPartition, I);
     }
 
@@ -795,6 +815,43 @@ namespace HerbrandPass {
     }
 
     /**
+     * @brief Prints the llvm source code
+     * 
+     * @param[in]   F     Function that has to be printed
+     * @returns     Void
+     **/
+    void printCode(Function &F) {
+        for(auto BB = F.begin(); BB != F.end(); BB++) {
+            errs() << "BasicBlock: " << BB->getName() << "\n";
+            for(auto I = BB->begin(); I != BB->end(); I++)
+                errs() << (*I) << "\n";
+            errs() << "\n";
+        }
+    }
+
+    /**
+     * @brief 
+     *  Assigns name to basic blocks and variables for 
+     *  easy reference
+     * 
+     * @param[in]  F    Function block over which we are operating
+     * @returns    Void
+     **/
+    void assignNames(Function &F) {
+        int BBCtr = 1, varCtr = 1;
+
+        for(auto BB = F.begin(); BB != F.end(); BB++) {
+            // first assign name to the basic block
+            BB->setName("BB" + to_string(BBCtr++));
+
+            // now assign name to all non-void instructions
+            for(auto I = BB->begin(); I != BB->end(); I++)
+                if(!I->getType()->isVoidTy())
+                    I->setName("T" + to_string(varCtr++));
+        }
+    }
+
+    /**
      * @brief Body of the pass
      **/
     struct HerbrandEquivalence : public FunctionPass {
@@ -816,17 +873,22 @@ namespace HerbrandPass {
                        << string(150, '=') << "\n";
             };
 
-            // find and print initial partition
+            // find initial partition
             Partition initialPartition;
             findInitialPartition(initialPartition);
+
+            // print renamed code and the initial partition
+            print("Renamed Code");
+            assignNames(F), printCode(F);
             print("Initial Partition");
             printPartition(initialPartition);
             errs() << "\n\n";
 
             // for each instruction, initialise its partition to be the
-            // in which every element is in a different partition
+            // one in which every element is assigned to nullptr.
+            // This is equivalent to the top element theoretically.
             for(Instruction &I : instructions(F)) 
-                findInitialPartition(partitions[&I]);
+                partitions.emplace(&I, Partition(numExps, nullptr));
 
             // variable to check for convergence
             bool converged = false;
@@ -839,7 +901,6 @@ namespace HerbrandPass {
                 Instruction *prevInst = nullptr;
 
                 for(Instruction &I : instructions(F)) {
-                    // if(partitions.find(&I) == partitions.end()) partitions[&I] = Partition(numExps, nullptr);
 
                     // store old partition to check for changes
                     // in the convergence information
