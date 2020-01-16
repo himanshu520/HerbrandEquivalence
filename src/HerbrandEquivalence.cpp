@@ -243,10 +243,6 @@ namespace HerbrandPass {
      * @see Constants, CuV, indexCV, indexExp, Variables
      **/
     void assignIndex(Function &F) {
-        // delete the contents of global variables
-        Variables.clear(), Constants.clear(), CuV.clear();
-        indexCV.clear(), indexExp.clear();
-
         // first find the set of constants and variables
         // by iterating over the instructions
         for(Instruction &I : instructions(&F)) {
@@ -264,7 +260,7 @@ namespace HerbrandPass {
             if(isa<AllocaInst>(&I)) continue;
             for(int i = 0; i < (int)I.getNumOperands(); i++) {
                 Value *value = I.getOperand(i);
-                if(dyn_cast<Constant>(value)) {
+                if(dyn_cast<ConstantInt>(value)) {
                     Constants.insert(value);
                 }
             }
@@ -296,7 +292,7 @@ namespace HerbrandPass {
      **/
     void findInitialPartition(Partition &partition) {
         // initialise partition
-        partition.clear(), partition.resize(numExps);
+        partition.assign(numExps, nullptr);
 
         // create new IDstruct object for each constant and variable
         for(auto el : CuV) {
@@ -557,7 +553,8 @@ namespace HerbrandPass {
      **/
     void findPredecessors(Instruction &I, vector<Instruction *> &pred) {
         pred.clear();
-        for(auto it = pred_begin(I.getParent()); it != pred_end(I.getParent()); it++)
+        BasicBlock *BB = I.getParent();
+        for(auto it = pred_begin(BB); it != pred_end(BB); it++)
             pred.push_back(&(*it)->back());
     }
 
@@ -619,6 +616,15 @@ namespace HerbrandPass {
             increaseParentCnt(newID);
 
             changed = &I;
+        } else if(isa<CallInst>(I)) {
+            IID = curPart[indexCV[&I]];
+            newID = new IDstruct;
+
+            decreaseParentCnt(IID);
+            curPart[indexCV[&I]] = newID;
+            increaseParentCnt(newID);
+
+            changed = &I;
         }
 
         // if no variable has been changed then return,
@@ -643,28 +649,24 @@ namespace HerbrandPass {
     /**
      * @brief Confluence function
      * 
-     * @param[in, out]  partition  Existing partition at current 
-     *                             instruction
-     * @param[in]       I          Current instruction
+     * @param[in]   I          Current instruction
+     * @param[out]  partition  Partition at the confluence point
      * 
      * @see Partition, partitions
      **/
-    void confluenceFunction(Partition &partition, Instruction &I) {
-
+    void confluenceFunction(Instruction &I, Partition &partition) {
         // first find the predecessors of current instruction
         vector<Instruction *> predecessors;
         findPredecessors(I, predecessors);
 
-        // temporary partition to represent equivalence classes at
-        // the confluence point, two expressions are equivalent
-        // iff they are equivalent for all the predecessors
-        Partition tempPartition(numExps, nullptr);
-
-        if(predecessors.empty()) findInitialPartition(tempPartition);
+        if(predecessors.empty()) findInitialPartition(partition);
         else {
             // vector to check which constant/variable has already 
             // been considered while processing
             vector<bool> accessFlag(CuV.size(), false);
+
+            // initialize partition vector
+            partition.assign(numExps, nullptr);
 
             // process each constant/variable that has not
             // already been considered
@@ -674,12 +676,12 @@ namespace HerbrandPass {
                     
                     // check if the variable/constant is equivalent on all
                     // the predecessors, if so make it point to the same
-                    // IDstruct object for the temporary partition. Notice 
-                    // is that this case will always be true for a constant.
+                    // IDstruct object for the confluence partition. Notice 
+                    // that this case will always be true for a constant.
                     // Also another thing is if in a partition, the variable/
                     // constant contains nullptr we have to just ignore it,
-                    // as theoretically it means that the partition at that 
-                    // point is the top element
+                    // as theoretically it means that the corresponding partition 
+                    // represents the top element
                     bool flag = true;
                     IDstruct *ptr = nullptr;
                     for(int i = 0; i < (int)predecessors.size() && flag; i++) {
@@ -689,8 +691,10 @@ namespace HerbrandPass {
                         else if(ptr != nptr) flag = false;
                     }
 
-                    if(flag) tempPartition[el.second] = ptr;
-                    else {
+                    if(flag) {
+                        partition[el.second] = ptr;
+                        increaseParentCnt(ptr);
+                    } else {
                         // however if the previous case is not
                         // true, we must create a new IDstruct
                         // object to represent the class of 
@@ -710,7 +714,8 @@ namespace HerbrandPass {
                         IDstruct *ID = new IDstruct();
                         for(auto el_ : intersection) {
                             accessFlag[indexCV[el_]] = true;
-                            tempPartition[indexCV[el_]] = ID;
+                            partition[indexCV[el_]] = ID;
+                            increaseParentCnt(ID);
                         }
                     }
                 }
@@ -721,13 +726,13 @@ namespace HerbrandPass {
                 Value *left = get<1>(el.first);
                 Value *right = get<2>(el.first);
                 string op = getOpSymbol(get<0>(el.first));
-                tempPartition[el.second] = findIDstrct(tempPartition, op, left, right);
+
+                // find ID struct object coressponding to the expression
+                IDstruct *ID = findIDstrct(partition, op, left, right);
+                partition[el.second] = ID;
+                increaseParentCnt(ID);
             }
         }
-
-        // find the partitions at the program point after the
-        // current instruction
-        transferFunction(partition, tempPartition, I);
     }
 
     /**
@@ -739,7 +744,7 @@ namespace HerbrandPass {
     void printCV(Value const *value) {
         // if the argument is a constant print its value
         // else it is a variable - print its assigned name
-        if(dyn_cast<Constant>(value))
+        if(dyn_cast<ConstantInt>(value))
             errs() << dyn_cast<ConstantInt>(value)->getValue().toString(10, true);
         else errs() << value->getName();
     }
@@ -822,7 +827,11 @@ namespace HerbrandPass {
      **/
     void printCode(Function &F) {
         for(auto BB = F.begin(); BB != F.end(); BB++) {
-            errs() << "BasicBlock: " << BB->getName() << "\n";
+            errs() << "BasicBlock: " << BB->getName() << "\t\t[Predecessors: ";
+            for (auto it = pred_begin(&*BB); it != pred_end(&*BB); it++)
+                errs() << (*it)->getName() << " ";
+            errs() << "]\n";
+
             for(auto I = BB->begin(); I != BB->end(); I++)
                 errs() << (*I) << "\n";
             errs() << "\n";
@@ -863,14 +872,19 @@ namespace HerbrandPass {
 
         // the function pass
         bool runOnFunction(Function &F) override {
+            // clear the contents of global variables
+            Constants.clear(), CuV.clear(), Variables.clear();
+            indexCV.clear(), indexExp.clear();
+            partitions.clear(), Parent.clear();
+
             // first assign indexes to constants/variables/
             // two operand expressions
             assignIndex(F);
 
             // a lambda function for printing header
             auto print = [](string x) {
-                errs() << string(150, '=') << "\n" << x << "\n"
-                       << string(150, '=') << "\n";
+                errs() << string(100, '=') << "\n" << x << "\n"
+                       << string(100, '=') << "\n";
             };
 
             // find initial partition
@@ -906,13 +920,30 @@ namespace HerbrandPass {
                     // in the convergence information
                     Partition oldPartition = partitions[&I];
 
+                    // parent basic block of current instruction
+                    BasicBlock *BB = I.getParent();
+
                     // for the first instruction use initialPartition
                     // as the partition for its predecessor
                     if(prevInst == nullptr)
                         transferFunction(partitions[&I], initialPartition, I);
                     // if the instruction is at a confluence point
-                    else if(&I.getParent()->front() == &I)
-                        confluenceFunction(partitions[&I], I);
+                    else if(&BB->front() == &I) {
+                        Partition confluencePartition;
+                        confluenceFunction(I, confluencePartition);
+                        
+                        errs() << "Start of basic block " << BB->getName();
+                        errs() << "\t\t[Confluence of ";
+                        for (auto it = pred_begin(BB); it != pred_end(BB); it++)
+                            errs() << (*it)->getName() << " ";
+                        errs() << "]\n";
+                        printPartition(confluencePartition);
+                        errs() << "\n\n";
+                        
+                        transferFunction(partitions[&I], confluencePartition, I);
+                        for(auto el_ : confluencePartition)
+                            decreaseParentCnt(el_);
+                    }
                     // else the instruction is at a transfer point
                     else transferFunction(partitions[&I], partitions[prevInst], I);
 
@@ -926,6 +957,14 @@ namespace HerbrandPass {
                         converged = false;
                 }
             }
+
+            // call decreaseParentCnt to free dynamically allocated memory
+            for(auto pr : partitions)
+                for(auto el : pr.second)
+                    decreaseParentCnt(el);
+            for(auto el : initialPartition)
+                decreaseParentCnt(el);
+
 
             // return false, because the pass doesn't make any changes
             // in the input file but just analyses it
