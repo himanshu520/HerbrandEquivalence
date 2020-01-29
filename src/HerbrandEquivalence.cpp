@@ -71,11 +71,11 @@ namespace HerbrandPass {
          *  Operator of the Herbrand class represented by the object.
          * 
          * @details
-         *  For a constant or variable it is just empty string. 
+         *  For a constant or variable it is just null character. 
          *  For compound expressions, it represents the operator 
          *  which combines the left and right subexpressions.
          **/
-        string opSymbol;
+        char opSymbol;
 
         /**
          * @brief Count of number of pointers to the object.
@@ -107,7 +107,7 @@ namespace HerbrandPass {
         /**
          * @brief Default constructor for the structure.
          **/
-        IDstruct() : opSymbol(""), parentCnt(0), leftID(nullptr), rightID(nullptr) {}
+        IDstruct() : opSymbol('\0'), parentCnt(0), leftID(nullptr), rightID(nullptr) {}
 
         /**
          * @brief Parameterised constructor for the structure.
@@ -116,7 +116,7 @@ namespace HerbrandPass {
          * @param   leftID  Pointer to the class corresponding to left subexpression
          * @param   rightID Pointer to the class corresponding to right subexpression
          **/
-        IDstruct(string op, IDstruct *leftID, IDstruct *rightID) {
+        IDstruct(char op, IDstruct *leftID, IDstruct *rightID) {
             this->opSymbol = op;
             this->parentCnt = 0;
             this->leftID = leftID;
@@ -132,7 +132,7 @@ namespace HerbrandPass {
      *  of the form {op, left, right} represents an expression
      *  "left op right".
      **/
-    typedef tuple<string, Value *, Value *> expTuple;
+    typedef tuple<char, Value *, Value *> expTuple;
 
     /**
      * @brief
@@ -160,7 +160,7 @@ namespace HerbrandPass {
     /**
      * @brief Set of operators used in the program.
      **/
-    set<string> Ops({"+"});
+    set<char> Ops({'+'});
 
     /**
      * @brief 
@@ -211,7 +211,7 @@ namespace HerbrandPass {
      *  map so that when we again need such an object we do not
      *  create it again and use the already existing one.
      **/
-    map<tuple<string, IDstruct *, IDstruct *>, IDstruct *> Parent;
+    map<tuple<char, IDstruct *, IDstruct *>, IDstruct *> Parent;
 
     /**
      * @brief 
@@ -219,17 +219,17 @@ namespace HerbrandPass {
      *  output of llvm::Instruction::getOpcodeName function.
      * 
      * @param[in]   opCodeName  A string returned by getOpcodeName
-     * @returns     The symbol corresponding to the operator name
+     * @returns     The character symbol corresponding to the operator name
      * 
      * @see llvm::Instruction::getOpcodeName
      **/
-    string getOpSymbol(string opCodeName) {
-        if(opCodeName == "add") return "+";
-        if(opCodeName == "sub") return "-";
-        if(opCodeName == "mul") return "*";
-        if(opCodeName == "sdiv") return "/";
-        if(opCodeName == "udiv") return "/";
-        return "";
+    char getOpSymbol(string opCodeName) {
+        if(opCodeName == "add") return '+';
+        if(opCodeName == "sub") return '-';
+        if(opCodeName == "mul") return '*';
+        if(opCodeName == "sdiv") return '/';
+        if(opCodeName == "udiv") return '/';
+        return '\0';
     }
 
     /**
@@ -525,7 +525,7 @@ namespace HerbrandPass {
      * @see IDstruct, Partition, partitions
      **/
     IDstruct* findIDstrct(Partition const &curPart, 
-                          string op, Value *left, Value *right) {
+                          char op, Value *left, Value *right) {
                               
         IDstruct *leftID = curPart[indexCV[left]];
         IDstruct *rightID = curPart[indexCV[right]];
@@ -604,11 +604,11 @@ namespace HerbrandPass {
             increaseParentCnt(leftID);
 
             changed = right;
-        } else if(I.isBinaryOp()) {
+        } else if(isa<BinaryOperator>(&I)) {
             left = I.getOperand(0);
             right = I.getOperand(1);
             IID = curPart[indexCV[&I]];
-            string op = getOpSymbol(I.getOpcodeName());
+            char op = getOpSymbol(I.getOpcodeName());
             newID = findIDstrct(curPart, op, left, right);
 
             decreaseParentCnt(IID);
@@ -725,7 +725,7 @@ namespace HerbrandPass {
             for(auto el : indexExp) {
                 Value *left = get<1>(el.first);
                 Value *right = get<2>(el.first);
-                string op = getOpSymbol(get<0>(el.first));
+                char op = get<0>(el.first);
 
                 // find ID struct object coressponding to the expression
                 IDstruct *ID = findIDstrct(partition, op, left, right);
