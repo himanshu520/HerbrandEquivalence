@@ -78,14 +78,19 @@ BasicBlock: BB5		[Predecessors: BB3 ]
 BasicBlock: BB6		[Predecessors: ]
   ret void
 
+
+
 ====================================================================================================
-Initial Partition
+Herbrand Equivalence Computation
 ====================================================================================================
-{T5}, {1}, {2}, {T1}, {T2}, {T3}, {T4}, {T5 + T5}, {T5 + 1}, {T5 + 2}, {T5 + T1}, {T5 + T2}, {T5 + T3}, {T5 + T4}, {1 + T5}, {1 + 1}, {1 + 2}, {1 + T1}, {1 + T2}, {1 + T3}, {1 + T4}, {2 + T5}, {2 + 1}, {2 + 2}, {2 + T1}, {2 + T2}, {2 + T3}, {2 + T4}, {T1 + T5}, {T1 + 1}, {T1 + 2}, {T1 + T1}, {T1 + T2}, {T1 + T3}, {T1 + T4}, {T2 + T5}, {T2 + 1}, {T2 + 2}, {T2 + T1}, {T2 + T2}, {T2 + T3}, {T2 + T4}, {T3 + T5}, {T3 + 1}, {T3 + 2}, {T3 + T1}, {T3 + T2}, {T3 + T3}, {T3 + T4}, {T4 + T5}, {T4 + 1}, {T4 + 2}, {T4 + T1}, {T4 + T2}, {T4 + T3}, {T4 + T4}, 
+
 
 ====================================================================================================
 Iteration 1
 ====================================================================================================
+Start of basic block BB1		[Confluence of ]
+{T5}, {1}, {2}, {T1}, {T2}, {T3}, {T4}, {T5 + T5}, {T5 + 1}, {T5 + 2}, {T5 + T1}, {T5 + T2}, {T5 + T3}, {T5 + T4}, {1 + T5}, {1 + 1}, {1 + 2}, {1 + T1}, {1 + T2}, {1 + T3}, {1 + T4}, {2 + T5}, {2 + 1}, {2 + 2}, {2 + T1}, {2 + T2}, {2 + T3}, {2 + T4}, {T1 + T5}, {T1 + 1}, {T1 + 2}, {T1 + T1}, {T1 + T2}, {T1 + T3}, {T1 + T4}, {T2 + T5}, {T2 + 1}, {T2 + 2}, {T2 + T1}, {T2 + T2}, {T2 + T3}, {T2 + T4}, {T3 + T5}, {T3 + 1}, {T3 + 2}, {T3 + T1}, {T3 + T2}, {T3 + T3}, {T3 + T4}, {T4 + T5}, {T4 + 1}, {T4 + 2}, {T4 + T1}, {T4 + T2}, {T4 + T3}, {T4 + T4}, 
+
   %T1 = alloca i32, align 4
 {T5}, {1}, {2}, {T1}, {T2}, {T3}, {T4}, {T5 + T5}, {T5 + 1}, {T5 + 2}, {T5 + T1}, {T5 + T2}, {T5 + T3}, {T5 + T4}, {1 + T5}, {1 + 1}, {1 + 2}, {1 + T1}, {1 + T2}, {1 + T3}, {1 + T4}, {2 + T5}, {2 + 1}, {2 + 2}, {2 + T1}, {2 + T2}, {2 + T3}, {2 + T4}, {T1 + T5}, {T1 + 1}, {T1 + 2}, {T1 + T1}, {T1 + T2}, {T1 + T3}, {T1 + T4}, {T2 + T5}, {T2 + 1}, {T2 + 2}, {T2 + T1}, {T2 + T2}, {T2 + T3}, {T2 + T4}, {T3 + T5}, {T3 + 1}, {T3 + 2}, {T3 + T1}, {T3 + T2}, {T3 + T3}, {T3 + T4}, {T4 + T5}, {T4 + 1}, {T4 + 2}, {T4 + T1}, {T4 + T2}, {T4 + T3}, {T4 + T4}, 
 
@@ -149,6 +154,9 @@ Start of basic block BB6		[Confluence of ]
 ====================================================================================================
 Iteration 2
 ====================================================================================================
+Start of basic block BB1		[Confluence of ]
+{T5}, {1}, {2}, {T1}, {T2}, {T3}, {T4}, {T5 + T5}, {T5 + 1}, {T5 + 2}, {T5 + T1}, {T5 + T2}, {T5 + T3}, {T5 + T4}, {1 + T5}, {1 + 1}, {1 + 2}, {1 + T1}, {1 + T2}, {1 + T3}, {1 + T4}, {2 + T5}, {2 + 1}, {2 + 2}, {2 + T1}, {2 + T2}, {2 + T3}, {2 + T4}, {T1 + T5}, {T1 + 1}, {T1 + 2}, {T1 + T1}, {T1 + T2}, {T1 + T3}, {T1 + T4}, {T2 + T5}, {T2 + 1}, {T2 + 2}, {T2 + T1}, {T2 + T2}, {T2 + T3}, {T2 + T4}, {T3 + T5}, {T3 + 1}, {T3 + 2}, {T3 + T1}, {T3 + T2}, {T3 + T3}, {T3 + T4}, {T4 + T5}, {T4 + 1}, {T4 + 2}, {T4 + T1}, {T4 + T2}, {T4 + T3}, {T4 + T4}, 
+
   %T1 = alloca i32, align 4
 {T5}, {1}, {2}, {T1}, {T2}, {T3}, {T4}, {T5 + T5}, {T5 + 1}, {T5 + 2}, {T5 + T1}, {T5 + T2}, {T5 + T3}, {T5 + T4}, {1 + T5}, {1 + 1}, {1 + 2}, {1 + T1}, {1 + T2}, {1 + T3}, {1 + T4}, {2 + T5}, {2 + 1}, {2 + 2}, {2 + T1}, {2 + T2}, {2 + T3}, {2 + T4}, {T1 + T5}, {T1 + 1}, {T1 + 2}, {T1 + T1}, {T1 + T2}, {T1 + T3}, {T1 + T4}, {T2 + T5}, {T2 + 1}, {T2 + 2}, {T2 + T1}, {T2 + T2}, {T2 + T3}, {T2 + T4}, {T3 + T5}, {T3 + 1}, {T3 + 2}, {T3 + T1}, {T3 + T2}, {T3 + T3}, {T3 + T4}, {T4 + T5}, {T4 + 1}, {T4 + 2}, {T4 + T1}, {T4 + T2}, {T4 + T3}, {T4 + T4}, 
 
@@ -212,6 +220,9 @@ Start of basic block BB6		[Confluence of ]
 ====================================================================================================
 Iteration 3
 ====================================================================================================
+Start of basic block BB1		[Confluence of ]
+{T5}, {1}, {2}, {T1}, {T2}, {T3}, {T4}, {T5 + T5}, {T5 + 1}, {T5 + 2}, {T5 + T1}, {T5 + T2}, {T5 + T3}, {T5 + T4}, {1 + T5}, {1 + 1}, {1 + 2}, {1 + T1}, {1 + T2}, {1 + T3}, {1 + T4}, {2 + T5}, {2 + 1}, {2 + 2}, {2 + T1}, {2 + T2}, {2 + T3}, {2 + T4}, {T1 + T5}, {T1 + 1}, {T1 + 2}, {T1 + T1}, {T1 + T2}, {T1 + T3}, {T1 + T4}, {T2 + T5}, {T2 + 1}, {T2 + 2}, {T2 + T1}, {T2 + T2}, {T2 + T3}, {T2 + T4}, {T3 + T5}, {T3 + 1}, {T3 + 2}, {T3 + T1}, {T3 + T2}, {T3 + T3}, {T3 + T4}, {T4 + T5}, {T4 + 1}, {T4 + 2}, {T4 + T1}, {T4 + T2}, {T4 + T3}, {T4 + T4}, 
+
   %T1 = alloca i32, align 4
 {T5}, {1}, {2}, {T1}, {T2}, {T3}, {T4}, {T5 + T5}, {T5 + 1}, {T5 + 2}, {T5 + T1}, {T5 + T2}, {T5 + T3}, {T5 + T4}, {1 + T5}, {1 + 1}, {1 + 2}, {1 + T1}, {1 + T2}, {1 + T3}, {1 + T4}, {2 + T5}, {2 + 1}, {2 + 2}, {2 + T1}, {2 + T2}, {2 + T3}, {2 + T4}, {T1 + T5}, {T1 + 1}, {T1 + 2}, {T1 + T1}, {T1 + T2}, {T1 + T3}, {T1 + T4}, {T2 + T5}, {T2 + 1}, {T2 + 2}, {T2 + T1}, {T2 + T2}, {T2 + T3}, {T2 + T4}, {T3 + T5}, {T3 + 1}, {T3 + 2}, {T3 + T1}, {T3 + T2}, {T3 + T3}, {T3 + T4}, {T4 + T5}, {T4 + 1}, {T4 + 2}, {T4 + T1}, {T4 + T2}, {T4 + T3}, {T4 + T4}, 
 
@@ -271,3 +282,238 @@ Start of basic block BB6		[Confluence of ]
 
   ret void
 {T5}, {1}, {2}, {T1}, {T2}, {T3}, {T4}, {T5 + T5}, {T5 + 1}, {T5 + 2}, {T5 + T1}, {T5 + T2}, {T5 + T3}, {T5 + T4}, {1 + T5}, {1 + 1}, {1 + 2}, {1 + T1}, {1 + T2}, {1 + T3}, {1 + T4}, {2 + T5}, {2 + 1}, {2 + 2}, {2 + T1}, {2 + T2}, {2 + T3}, {2 + T4}, {T1 + T5}, {T1 + 1}, {T1 + 2}, {T1 + T1}, {T1 + T2}, {T1 + T3}, {T1 + T4}, {T2 + T5}, {T2 + 1}, {T2 + 2}, {T2 + T1}, {T2 + T2}, {T2 + T3}, {T2 + T4}, {T3 + T5}, {T3 + 1}, {T3 + 2}, {T3 + T1}, {T3 + T2}, {T3 + T3}, {T3 + T4}, {T4 + T5}, {T4 + 1}, {T4 + 2}, {T4 + T1}, {T4 + T2}, {T4 + T3}, {T4 + T4}, 
+
+
+
+====================================================================================================
+Available Variable Computation
+====================================================================================================
+
+
+====================================================================================================
+Iteration 1
+====================================================================================================
+  %T1 = alloca i32, align 4
+	IN: 
+	OUT: 
+
+  %T2 = alloca i32, align 4
+	IN: 
+	OUT: 
+
+  %T3 = alloca i32, align 4
+	IN: 
+	OUT: 
+
+  br label %BB2
+	IN: 
+	OUT: 
+
+  store i32 1, i32* %T1, align 4
+	IN: 
+	OUT: 
+
+  store i32 1, i32* %T2, align 4
+	IN: 
+	OUT: 
+
+  br label %BB3
+	IN: 
+	OUT: 
+
+  %T4 = load i32, i32* %T1, align 4
+	IN: 
+	OUT: T4, 
+
+  %T5 = icmp eq i32 %T4, 1
+	IN: T4, 
+	OUT: T5, T4, 
+
+  br i1 %T5, label %BB4, label %BB5
+	IN: T5, T4, 
+	OUT: T5, T4, 
+
+  store i32 2, i32* %T3, align 4
+	IN: T5, T4, 
+	OUT: T5, T4, 
+
+  store i32 2, i32* %T2, align 4
+	IN: T5, T4, 
+	OUT: T5, T4, 
+
+  br label %BB3
+	IN: T5, T4, 
+	OUT: T5, T4, 
+
+  br label %BB2
+	IN: T5, T4, 
+	OUT: T5, T4, 
+
+  ret void
+	IN: 
+	OUT: 
+
+
+
+====================================================================================================
+Iteration 2
+====================================================================================================
+  %T1 = alloca i32, align 4
+	IN: 
+	OUT: 
+
+  %T2 = alloca i32, align 4
+	IN: 
+	OUT: 
+
+  %T3 = alloca i32, align 4
+	IN: 
+	OUT: 
+
+  br label %BB2
+	IN: 
+	OUT: 
+
+  store i32 1, i32* %T1, align 4
+	IN: 
+	OUT: 
+
+  store i32 1, i32* %T2, align 4
+	IN: 
+	OUT: 
+
+  br label %BB3
+	IN: 
+	OUT: 
+
+  %T4 = load i32, i32* %T1, align 4
+	IN: 
+	OUT: T4, 
+
+  %T5 = icmp eq i32 %T4, 1
+	IN: T4, 
+	OUT: T5, T4, 
+
+  br i1 %T5, label %BB4, label %BB5
+	IN: T5, T4, 
+	OUT: T5, T4, 
+
+  store i32 2, i32* %T3, align 4
+	IN: T5, T4, 
+	OUT: T5, T4, 
+
+  store i32 2, i32* %T2, align 4
+	IN: T5, T4, 
+	OUT: T5, T4, 
+
+  br label %BB3
+	IN: T5, T4, 
+	OUT: T5, T4, 
+
+  br label %BB2
+	IN: T5, T4, 
+	OUT: T5, T4, 
+
+  ret void
+	IN: 
+	OUT: 
+
+
+
+====================================================================================================
+Removing Redundant Instructions
+====================================================================================================
+
+
+  %T1 = alloca i32, align 4
+  => Instruction skipped
+
+
+  %T2 = alloca i32, align 4
+  => Instruction skipped
+
+
+  %T3 = alloca i32, align 4
+  => Instruction skipped
+
+
+  br label %BB2
+  => Instruction skipped
+
+
+  store i32 1, i32* %T1, align 4
+  => Instruction skipped
+
+
+  store i32 1, i32* %T2, align 4
+  => Instruction skipped
+
+
+  br label %BB3
+  => Instruction skipped
+
+
+  %T4 = load i32, i32* %T1, align 4
+	setCV: 1, T1, T4, 
+	setExp: 
+	Available: T4, 
+	Deleted Variables: 
+  => Instruction deleted: 1
+
+
+  %T5 = icmp eq i32 1, 1
+  => Instruction skipped
+
+
+  br i1 %T5, label %BB4, label %BB5
+  => Instruction skipped
+
+
+  store i32 2, i32* %T3, align 4
+  => Instruction skipped
+
+
+  store i32 2, i32* %T2, align 4
+  => Instruction skipped
+
+
+  br label %BB3
+  => Instruction skipped
+
+
+  br label %BB2
+  => Instruction skipped
+
+
+  ret void
+  => Instruction skipped
+
+
+====================================================================================================
+Optimised Code
+====================================================================================================
+BasicBlock: BB1		[Predecessors: ]
+  %T1 = alloca i32, align 4
+  %T2 = alloca i32, align 4
+  %T3 = alloca i32, align 4
+  br label %BB2
+
+BasicBlock: BB2		[Predecessors: BB1 BB5 ]
+  store i32 1, i32* %T1, align 4
+  store i32 1, i32* %T2, align 4
+  br label %BB3
+
+BasicBlock: BB3		[Predecessors: BB4 BB2 ]
+  %T5 = icmp eq i32 1, 1
+  br i1 %T5, label %BB4, label %BB5
+
+BasicBlock: BB4		[Predecessors: BB3 ]
+  store i32 2, i32* %T3, align 4
+  store i32 2, i32* %T2, align 4
+  br label %BB3
+
+BasicBlock: BB5		[Predecessors: BB3 ]
+  br label %BB2
+
+BasicBlock: BB6		[Predecessors: ]
+  ret void
