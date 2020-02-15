@@ -1143,7 +1143,6 @@ namespace HerbrandPass {
                 if(DEBUG) {
                     errs() << I << "\n\tIN: ";
                     printSetCV(availVariables[&I]);
-                    errs() << "\n";
                 }
                 
                 // now update IN information in availVariables[&I] to
@@ -1156,7 +1155,7 @@ namespace HerbrandPass {
                 if(DEBUG) {
                     errs() << "\tOUT: ";
                     printSetCV(availVariables[&I]);
-                    errs() << "\n\n";
+                    errs() << "\n";
                 }
 
                 // update convergence flag
@@ -1176,6 +1175,11 @@ namespace HerbrandPass {
      * @returns     Void
      **/
     void removeRedundantExpressions(Function &F) {
+        if(DEBUG) {
+            PRINT("Removing Redundant Instructions");
+            errs() << "\n\n";
+        }
+
         // set to store deleted variables and their names
         set<Value *> deletedVars;
         set<string> deletedVarsName;
@@ -1291,6 +1295,8 @@ namespace HerbrandPass {
             findHerbrandEquivalence(F);
             findAvailableVariables(F);
             removeRedundantExpressions(F);
+
+            if(DEBUG) PRINT("Optimised Code"), printCode(F);
 
             // return true, because the pass is making changes
             // in the input file
