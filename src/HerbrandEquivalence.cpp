@@ -16,6 +16,10 @@
 using namespace llvm;
 using namespace std;
 
+#define PRINT(str) errs() << string(100, '=') << "\n" << (str) \
+                          << "\n" << string(100, '=') << "\n"
+#define DEBUG 1
+
 /**
  * @brief Generic function to find the intersection of two std::set.
  * 
@@ -53,7 +57,7 @@ void setUnion(set<T> &xset, set<T> &yset) {
 
 /** 
  * @namespace
- * Anonymous namespace containing the LLVM pass 
+ * Namespace containing the LLVM pass 
  **/
 namespace HerbrandPass {
 
@@ -64,6 +68,11 @@ namespace HerbrandPass {
      * @details 
      *  At a given program point, expressions pointing to the same 
      *  IDstruct object are Herbrand Equivalent at that point.
+     * 
+     * @note
+     *  Expressions across different program points, pointing to
+     *  the same IDstruct object also have equivalent value and this
+     *  information can be used for global value numbering.
     **/
     struct IDstruct {
         /**
@@ -138,7 +147,7 @@ namespace HerbrandPass {
      * @brief
      *  Vector to hold equivalence information for each
      *  constant/variable/two operand expression at a
-     *  program point
+     *  program point.
      **/
     typedef vector<IDstruct *> Partition;
 
@@ -183,6 +192,49 @@ namespace HerbrandPass {
      *  can be formed using constants and variables in the program.
      **/
     int numExps;
+
+    /**
+     * @brief 
+     *  Stores predecessors for each instruction - an instruction
+     *  can have zero, one or more than one predecessors.
+     **/
+    map<Instruction *, vector<Instruction *>> Predecessors;
+
+    /**
+     * @brief 
+     *  Stores the instructions which represents confluence points - an
+     * instruction having more than one predecessors.
+     **/
+    set<Instruction *> confluencePoints; 
+
+    /**
+     * @brief
+     *  Stores the variables available at each point in the program.
+     * 
+     * @details
+     *  Calculation of \c availVariables is a forward dataflow problem, 
+     *  calculated via fixed point computation. A variable is available 
+     *  at a point if all paths from the start of the program to that 
+     *  point contains a definition of the variable. Our universe is
+     *  <b> U - the set of program variables </b> and for each program 
+     *  point <b> P </b>, we initialise <b> OUT[P] </b> to 
+     *  <b> U </b>. Also, let <b> GEN[P] </b> to be the variable 
+     *  defined at <b> P </b> if any, otherwise empty set. We will perform 
+     *  updates as \n \n
+     *  <tt> IN[P] = intersect(availVariables[P']) </tt>
+     *  <tt> OUT[P] = union(IN[P], GEN[P]) </tt>
+     *  \n \n where \c union is normal set union and \c intersect is 
+     *  performed over all <b> P' </b> belonging to the predecessor of <b> P </b>.
+     *  Finally, <tt> availVariables[P] = OUT[P] </tt>.
+     * 
+     * @note
+     *  This is different from both available expressions and reaching
+     *  definition.
+     * 
+     * @see Reaching definition, available expression
+     *  
+     **/
+    map<Instruction *, set<Value *>> availVariables;
 
     /**
      * @brief 
@@ -393,7 +445,7 @@ namespace HerbrandPass {
 
             getClass(el.second, first, setCVfirst, setExpfirst);
             getClass(el.second, second, setCVsecond, setExpsecond);
-            if(setCVfirst != setCVsecond || setExpfirst != setExpsecond)
+            if(setCVfirst != setCVsecond or setExpfirst != setExpsecond)
                 return false;
 
             // mark other constants/variables/expressions in the equivalence
@@ -407,7 +459,7 @@ namespace HerbrandPass {
 
             getClass(el.second, first, setCVfirst, setExpfirst);
             getClass(el.second, second, setCVsecond, setExpsecond);
-            if(setCVfirst != setCVsecond || setExpfirst != setExpsecond)
+            if(setCVfirst != setCVsecond or setExpfirst != setExpsecond)
                 return false;
 
             // mark other constants/variables/expressions in the equivalence
@@ -446,7 +498,7 @@ namespace HerbrandPass {
         // first call decreaseParentCnt for them recursively
         // (here we can also use `ptr->opSymbol != ""` 
         // or `ptr->left != nullptr` or `ptr->right != nullptr`)
-        if(ptr->leftID != nullptr && ptr->rightID != nullptr) {
+        if(ptr->leftID != nullptr and ptr->rightID != nullptr) {
             auto it = Parent.find({ptr->opSymbol, ptr->leftID, ptr->rightID});
             Parent.erase(it);
             decreaseParentCnt(ptr->leftID);
@@ -545,21 +597,48 @@ namespace HerbrandPass {
     }
 
     /**
-     * @brief Finds predecessors of an instruction
+     * @brief 
+     *  Updates Predecessors map and confluencePoints set
+     *  for instructions in a function.
      * 
-     * @param[in]   I     Instruction under consideration
-     * @param[out]  pred  List of predecessor instructions
+     * @param[in]   F     Function under consideration
      * @returns     Void 
+     * 
+     * @see Predecessors, confluencePoints
      **/
-    void findPredecessors(Instruction &I, vector<Instruction *> &pred) {
-        pred.clear();
-        BasicBlock *BB = I.getParent();
-        for(auto it = pred_begin(BB); it != pred_end(BB); it++)
-            pred.push_back(&(*it)->back());
+    void findPredecessors(Function &F) {
+        // first clear the variables, to remove any previous contents
+        Predecessors.clear();
+        confluencePoints.clear();
+
+        // prevInst will store the previous instruction
+        // processed, so when we are not at the beginning
+        // of a basic block, prevInst will be the predecessor
+        // of current instruction.
+        Instruction *prevInst = nullptr;
+
+        for(Instruction &I : instructions(F)) {
+            BasicBlock *BB = I.getParent();
+            
+            if(&BB->front() == &I) {
+                // if we are at the beginnning of a basic block
+                // traverse through the predecessor basic blocks -
+                // their last instructions would be predecessors
+                // of current instruction
+                vector<Instruction *> pred = {};
+                for(auto it = pred_begin(BB); it != pred_end(BB); it++)
+                    pred.push_back(&(*it)->back());
+
+                Predecessors.emplace(&I, pred);
+                confluencePoints.insert(&I);
+            } else Predecessors.emplace(&I, vector<Instruction *>({prevInst}));
+
+            prevInst = &I;
+        }
     }
 
     /**
-     * @brief Transfer function
+     * @brief Transfer function.
      * 
      * @param[in, out]  curPart   Partition at current program point
      * @param[in]       prevPart  Partition at predecessor program
@@ -647,7 +726,7 @@ namespace HerbrandPass {
     }
 
     /**
-     * @brief Confluence function
+     * @brief Confluence function.
      * 
      * @param[in]   I          Current instruction
      * @param[out]  partition  Partition at the confluence point
@@ -655,9 +734,7 @@ namespace HerbrandPass {
      * @see Partition, partitions
      **/
     void confluenceFunction(Instruction &I, Partition &partition) {
-        // first find the predecessors of current instruction
-        vector<Instruction *> predecessors;
-        findPredecessors(I, predecessors);
+        vector<Instruction *> &predecessors = Predecessors[&I];
 
         if(predecessors.empty()) findInitialPartition(partition);
         else {
@@ -684,7 +761,7 @@ namespace HerbrandPass {
                     // represents the top element
                     bool flag = true;
                     IDstruct *ptr = nullptr;
-                    for(int i = 0; i < (int)predecessors.size() && flag; i++) {
+                    for(int i = 0; i < (int)predecessors.size() and flag; i++) {
                         IDstruct *nptr = partitions[predecessors[i]][el.second];
                         if(nptr == nullptr) continue;
                         else if(ptr == nullptr) ptr = nptr;
@@ -736,7 +813,7 @@ namespace HerbrandPass {
     }
 
     /**
-     * @brief Prints a constant/variable in readable form
+     * @brief Prints a constant/variable in readable form.
      * 
      * @param[in]   value   LLVM representation of constant/variable
      * @returns     Void
@@ -750,7 +827,19 @@ namespace HerbrandPass {
     }
 
     /**
-     * @brief Prints a two operand expression in readable form
+     * @brief Prints a set of constant/variable in readable form.
+     * 
+     * @param[in]   setCV   Set of constants/variables
+     * @returns     Void
+     **/
+    void printSetCV(set<Value *> const &setCV) {
+        for(auto el : setCV)
+            printCV(el), errs() << ", ";
+        errs() << "\n";
+    }
+
+    /**
+     * @brief Prints a two operand expression in readable form.
      * 
      * @param[in]   exp  Expression to be printed
      * @returns     Void
@@ -766,7 +855,19 @@ namespace HerbrandPass {
     }
 
     /**
-     * @brief Prints a partition in readable format
+     * @brief Prints a set of two operand expressions in readable form.
+     * 
+     * @param[in]   value   Set of expressions to be printed
+     * @returns     Void
+     **/
+    void printSetExp(set<expTuple> const &setExp) {
+        for(auto el : setExp)
+            printExp(el), errs() << ", ";
+        errs() << "\n";
+    }
+
+    /**
+     * @brief Prints a partition in readable format.
      * 
      * @param[in]   partition   Partition to be printed
      * @returns     Void
@@ -793,7 +894,7 @@ namespace HerbrandPass {
                 if(++it != setCV.end()) errs() << ", ";
             }
 
-            if(!setCV.empty() && !setExp.empty()) errs() << ", ";
+            if(!setCV.empty() and !setExp.empty()) errs() << ", ";
 
             for(auto it = setExp.begin(); it != setExp.end();) {
                 printExp(*it);    
@@ -820,7 +921,7 @@ namespace HerbrandPass {
     }
 
     /**
-     * @brief Prints the llvm source code
+     * @brief Prints the llvm source code.
      * 
      * @param[in]   F     Function that has to be printed
      * @returns     Void
@@ -841,7 +942,7 @@ namespace HerbrandPass {
     /**
      * @brief 
      *  Assigns name to basic blocks and variables for 
-     *  easy reference
+     *  easy reference.
      * 
      * @param[in]  F    Function block over which we are operating
      * @returns    Void
@@ -861,6 +962,304 @@ namespace HerbrandPass {
     }
 
     /**
+     * @brief 
+     *  Finds herbrand equivalence information by updating
+     *  partitions map, for a given function.
+     * 
+     * @param[in]  F    Function under consideration
+     * @returns    Void
+     * 
+     * @see partitions
+     **/
+    void findHerbrandEquivalence(Function &F) {
+        if(DEBUG) {
+            PRINT("Herbrand Equivalence Computation");
+            errs() << "\n\n";
+        }
+
+        // first clear the map, to remove any previous contents
+        partitions.clear();
+
+        // for each instruction, initialise its partition to be the
+        // one in which every element is assigned to nullptr.
+        // This is equivalent to the top element theoretically.
+        for(Instruction &I : instructions(F)) 
+            partitions.emplace(&I, Partition(numExps, nullptr));
+
+        // variable to check for convergence
+        bool converged = false;
+        // iteration counter
+        int iterationCtr = 1;
+
+        while(not converged) {
+            if(DEBUG) PRINT("Iteration " + to_string(iterationCtr++));
+
+            converged = true;
+
+            for(Instruction &I : instructions(F)) {
+                // store old partition to check for changes
+                // in the convergence information
+                Partition oldPartition = partitions[&I];
+
+                if(confluencePoints.find(&I) != confluencePoints.end()) {
+                    // if the instruction is at a confluence point
+
+                    // first find the partition at the confluence,
+                    // this would be a intermediate information needed
+                    Partition confluencePartition;
+                    confluenceFunction(I, confluencePartition);
+
+                    if(DEBUG) {
+                        // parent basic block of current instruction
+                        BasicBlock *BB = I.getParent();
+                        
+                        errs() << "Start of basic block " << BB->getName();
+                        errs() << "\t\t[Confluence of ";
+                        for (auto it = pred_begin(BB); it != pred_end(BB); it++)
+                            errs() << (*it)->getName() << " ";
+                        errs() << "]\n";
+                        printPartition(confluencePartition);
+                        errs() << "\n\n";
+                    }
+                    
+                    // now apply transfer function with confluencePartition
+                    // as predecessor partition
+                    transferFunction(partitions[&I], confluencePartition, I);
+
+                    // remove any reference information from confluencePartition
+                    for(auto el : confluencePartition)
+                        decreaseParentCnt(el);
+                } else { 
+                    // else the instruction is at a transfer point
+                    Instruction *prevInst = Predecessors[&I][0];
+                    transferFunction(partitions[&I], partitions[prevInst], I);
+                }
+
+                if(DEBUG) {
+                    errs() << I << "\n";
+                    printPartition(partitions[&I]);
+                    errs() << "\n\n";
+                }
+
+                // update convergence flag
+                if(not samePartition(oldPartition, partitions[&I])) 
+                    converged = false;
+            }
+        }
+
+        // call decreaseParentCnt to free dynamically allocated memory
+        for(auto partition : partitions)
+            for(auto el : partition.second)
+                decreaseParentCnt(el);
+
+        if(DEBUG) errs() << "\n\n";
+    }
+
+    /**
+     * @brief 
+     *  Finds available variables at each instruction
+     *  of a function.
+     * 
+     * @details
+     *  Calculation of \c availVariables is a forward dataflow problem, 
+     *  calculated via fixed point computation. A variable is available 
+     *  at a point if all paths from the start of the program to that 
+     *  point contains a definition of the variable. Our universe is
+     *  <b> U - the set of program variables </b> and for each program 
+     *  point <b> P </b>, we initialise <b> OUT[P] </b> to 
+     *  <b> U </b>. Also, let <b> GEN[P] </b> to be the variable 
+     *  defined at <b> P </b> if any, otherwise empty set. We will perform 
+     *  updates as \n \n
+     *  <tt> IN[P] = intersect(availVariables[P']) </tt>
+     *  <tt> OUT[P] = union(IN[P], GEN[P]) </tt>
+     *  \n \n where \c union is normal set union and \c intersect is 
+     *  performed over all <b> P' </b> belonging to the predecessor of 
+     *  <b> P </b>. Finally, <tt> availVariables[P] = OUT[P] </tt>. \n
+     *  For the purpose of implementation, IN and OUT will not be maintained
+     *  explicitly, but the same information will be kept in availVariables 
+     *  itself.
+     * 
+     * @param[in]  F    Function under consideration
+     * @returns    Void
+     * 
+     * @note
+     *  Available Variables is different from both available expressions 
+     *  and reaching definition.
+     * 
+     * @see availVariables
+     **/
+    void findAvailableVariables(Function &F) {
+        if(DEBUG) {
+            PRINT("Available Variable Computation");
+            errs() << "\n\n";
+        }
+
+        // initialise availVariables for each instruction
+        for(Instruction &I : instructions(F)) 
+            availVariables.emplace(&I, Variables);
+
+        // variable to check for convergence
+        bool converged = false;
+        // iteration counter
+        int iterationCtr = 1;
+
+        while(not converged) {
+            if(DEBUG) PRINT("Iteration " + to_string(iterationCtr++));
+
+            converged = true;
+
+            for(Instruction &I : instructions(F)) {
+                // store old availVariable information to check
+                // for convergence
+                set<Value *> oldAvail = availVariables[&I];
+
+                // first find IN of current instruction and store it
+                // in availVariables[&I]
+                if(confluencePoints.find(&I) != confluencePoints.end()) {
+                    // if the instruction is not a transfer point
+
+                    vector<Instruction *> &predecessors = Predecessors[&I];
+
+                    if(predecessors.empty()) {
+                        // if current instruction has no predecessors -
+                        // it means either the instruction is the first
+                        // instruction in the program or is the first
+                        // instruction in an unreachable basic block
+                        availVariables[&I].clear();
+                    } else {
+                        // if the current instruction is a confluence point
+                        // find the intersection of availVariables at all the
+                        // predecessors
+                        availVariables[&I] = Variables;
+                        for(auto el : predecessors)
+                            setIntersect<Value *>(availVariables[&I], availVariables[el]);
+                    }
+                } else {
+                    // if the current instruction is a transfer point
+                    Instruction *prevInst = Predecessors[&I][0];
+                    availVariables[&I] = availVariables[prevInst];
+                }
+
+                if(DEBUG) {
+                    errs() << I << "\n\tIN: ";
+                    printSetCV(availVariables[&I]);
+                    errs() << "\n";
+                }
+                
+                // now update IN information in availVariables[&I] to
+                // contain OUT. For the purpose of LLVM implementation
+                // variables defined by alloca instruction should not
+                // be considered for available Variables computation
+                if(not I.getType()->isVoidTy() and not isa<AllocaInst>(&I))
+                    availVariables[&I].insert(&I);
+
+                if(DEBUG) {
+                    errs() << "\tOUT: ";
+                    printSetCV(availVariables[&I]);
+                    errs() << "\n\n";
+                }
+
+                // update convergence flag
+                if(oldAvail != availVariables[&I]) converged = false;
+            }
+
+            if(DEBUG) errs() << "\n\n";
+        }
+    }
+
+    /**
+     * @brief 
+     *  Function to remove redundant instructions by using
+     *  herbrand equivalence and available expression information.
+     * 
+     * @param[in]   F     Function that has to be printed
+     * @returns     Void
+     **/
+    void removeRedundantExpressions(Function &F) {
+        // set to store deleted variables and their names
+        set<Value *> deletedVars;
+        set<string> deletedVarsName;
+
+        // iterate over instructions removing redundant ones
+        auto insts = instructions(F);
+        for(auto itr = insts.begin(); itr != insts.end();) {
+            Instruction *I = &(*itr++);
+            
+            if(DEBUG) errs() << (*I) << "\n";
+
+            // index corresponding to RValue of current instruction
+            int index;
+            if(isa<LoadInst>(I)) index = indexCV[I->getOperand(0)];
+            else if(isa<BinaryOperator>(I)) {
+                Value *left = I->getOperand(0);
+                Value *right = I->getOperand(1);
+                char op = getOpSymbol(I->getOpcodeName());
+                index = indexExp[{op, left, right}];
+            } else {
+                // if there is no RValue skip current instruction
+                if(DEBUG) errs() << "  => Instruction skipped\n\n\n";
+                continue;
+            }
+
+            // get herbrand class of RValue at current program point
+            set<Value *> setCV;
+            set<expTuple> setExp;
+            getClass(index, partitions[I], setCV, setExp);
+
+            if(DEBUG) {
+                errs() << "\tsetCV: ", printSetCV(setCV);
+                errs() << "\tsetExp: ", printSetExp(setExp);
+                errs() << "\tAvailable: ", printSetCV(availVariables[I]);
+
+                errs() << "\tDeleted Variables: ";
+                for(auto el : deletedVarsName) 
+                    errs() << el << ", ";
+                errs() << "\n";
+            }
+
+            // value with which to replace current instruction
+            Value *replacement = nullptr;
+
+            // first check if there is some constant in the Herbrand
+            // class of RValue at current program point, if not then
+            // check for some available variable. If one of the two 
+            // is found replace current instruction with it.
+            for(auto el : Constants)
+                if(setCV.find(el) != setCV.end()) {
+                    replacement = el;
+                    break;
+                }
+            if(replacement == nullptr) {
+                for(auto el : availVariables[I])
+                    if(el != I and setCV.find(el) != setCV.end() 
+                               and deletedVars.find(el) == deletedVars.end()) {
+                        replacement = el;
+                        break;
+                    }
+            }
+
+            // if a replacement is found delete current instruction
+            // and replace all its uses
+            if(replacement != nullptr) {
+                deletedVars.insert(I);
+                deletedVarsName.insert(I->getName());
+                I->replaceAllUsesWith(replacement);
+                I->eraseFromParent();
+
+                if(DEBUG) {
+                    errs() << "  => Instruction deleted: ";
+                    printCV(replacement);
+                    errs() << "\n";
+                }
+            } else {
+                if(DEBUG) errs() << "  => Instruction not deleted\n";
+            }
+            
+            if(DEBUG) errs() << "\n\n";
+        }
+    }
+
+    /**
      * @brief Body of the pass
      **/
     struct HerbrandEquivalence : public FunctionPass {
@@ -876,99 +1275,26 @@ namespace HerbrandPass {
             Constants.clear(), CuV.clear(), Variables.clear();
             indexCV.clear(), indexExp.clear();
             partitions.clear(), Parent.clear();
+            Predecessors.clear(), confluencePoints.clear();
+            availVariables.clear();
 
-            // first assign indexes to constants/variables/
-            // two operand expressions
-            assignIndex(F);
-
-            // a lambda function for printing header
-            auto print = [](string x) {
-                errs() << string(100, '=') << "\n" << x << "\n"
-                       << string(100, '=') << "\n";
-            };
-
-            // find initial partition
-            Partition initialPartition;
-            findInitialPartition(initialPartition);
-
-            // print renamed code and the initial partition
-            print("Renamed Code");
-            assignNames(F), printCode(F);
-            print("Initial Partition");
-            printPartition(initialPartition);
-            errs() << "\n\n";
-
-            // for each instruction, initialise its partition to be the
-            // one in which every element is assigned to nullptr.
-            // This is equivalent to the top element theoretically.
-            for(Instruction &I : instructions(F)) 
-                partitions.emplace(&I, Partition(numExps, nullptr));
-
-            // variable to check for convergence
-            bool converged = false;
-            // iteration counter
-            int iterationCtr = 1;
-            while(not converged) {
-                print("Iteration " + to_string(iterationCtr++));
-
-                converged = true;
-                Instruction *prevInst = nullptr;
-
-                for(Instruction &I : instructions(F)) {
-
-                    // store old partition to check for changes
-                    // in the convergence information
-                    Partition oldPartition = partitions[&I];
-
-                    // parent basic block of current instruction
-                    BasicBlock *BB = I.getParent();
-
-                    // for the first instruction use initialPartition
-                    // as the partition for its predecessor
-                    if(prevInst == nullptr)
-                        transferFunction(partitions[&I], initialPartition, I);
-                    // if the instruction is at a confluence point
-                    else if(&BB->front() == &I) {
-                        Partition confluencePartition;
-                        confluenceFunction(I, confluencePartition);
-                        
-                        errs() << "Start of basic block " << BB->getName();
-                        errs() << "\t\t[Confluence of ";
-                        for (auto it = pred_begin(BB); it != pred_end(BB); it++)
-                            errs() << (*it)->getName() << " ";
-                        errs() << "]\n";
-                        printPartition(confluencePartition);
-                        errs() << "\n\n";
-                        
-                        transferFunction(partitions[&I], confluencePartition, I);
-                        for(auto el_ : confluencePartition)
-                            decreaseParentCnt(el_);
-                    }
-                    // else the instruction is at a transfer point
-                    else transferFunction(partitions[&I], partitions[prevInst], I);
-
-                    errs() << I << "\n";
-                    printPartition(partitions[&I]);
-                    errs() << "\n\n";
-
-                    // update prevInst and convergence flag
-                    prevInst = &I;
-                    if(not samePartition(oldPartition, partitions[&I])) 
-                        converged = false;
-                }
+            // assign indexes to constants, variables and two operand 
+            // expressions; assign names to variables; fill Predecessors
+            // map; print renamed code
+            assignIndex(F), assignNames(F);
+            findPredecessors(F);
+            if(DEBUG) {
+                PRINT("Renamed Code"), printCode(F);
+                errs() << "\n\n";
             }
 
-            // call decreaseParentCnt to free dynamically allocated memory
-            for(auto pr : partitions)
-                for(auto el : pr.second)
-                    decreaseParentCnt(el);
-            for(auto el : initialPartition)
-                decreaseParentCnt(el);
+            findHerbrandEquivalence(F);
+            findAvailableVariables(F);
+            removeRedundantExpressions(F);
 
-
-            // return false, because the pass doesn't make any changes
-            // in the input file but just analyses it
-            return false;
+            // return true, because the pass is making changes
+            // in the input file
+            return true;
         }
     };
 }
