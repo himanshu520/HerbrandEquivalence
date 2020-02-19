@@ -16,9 +16,13 @@
 using namespace llvm;
 using namespace std;
 
+// Macro to print a header 
 #define PRINT(str) errs() << string(100, '=') << "\n" << (str) \
                           << "\n" << string(100, '=') << "\n"
-#define DEBUG 1
+
+// If DEBUG flag is 0, the pass won't print any debug information
+// else it will
+#define DEBUG 0
 
 /**
  * @brief Generic function to find the intersection of two std::set.
@@ -53,6 +57,45 @@ template <typename T>
 void setUnion(set<T> &xset, set<T> &yset) {
     for(auto el : yset)
         xset.insert(el);
+}
+
+/**
+ * @brief Returns result of evaluation of two length expression
+ * 
+ * @param[in]   op    Character corresponding to operator
+ * @param[in]   left  First operand
+ * @param[in]   right Second operand
+ * @return      result of "left op right"
+ * 
+ * @note        The switch case is supposed to be exhaustive
+ **/ 
+int findVal(char op, int left, int right) {
+    switch(op) {
+        case '+' : return left + right;
+        case '-' : return left - right;
+        case '*' : return left * right;
+        case '/' : return left / right;
+    }
+    return 0;
+}
+
+/**
+ * @brief 
+ *  Returns operator symbol corresponding to the 
+ *  output of llvm::Instruction::getOpcodeName function.
+ * 
+ * @param[in]   opCodeName  A string returned by getOpcodeName
+ * @returns     The character symbol corresponding to the operator name
+ * 
+ * @see llvm::Instruction::getOpcodeName
+ **/
+char getOpSymbol(string opCodeName) {
+    if(opCodeName == "add") return '+';
+    if(opCodeName == "sub") return '-';
+    if(opCodeName == "mul") return '*';
+    if(opCodeName == "sdiv") return '/';
+    if(opCodeName == "udiv") return '/';
+    return '\0';
 }
 
 /** 
@@ -114,22 +157,71 @@ namespace HerbrandPass {
         IDstruct *rightID;
 
         /**
-         * @brief Default constructor for the structure.
+         * @brief
+         * Boolean to represent if the IDstruct object represents a 
+         * constant expression.
          **/
-        IDstruct() : opSymbol('\0'), parentCnt(0), leftID(nullptr), rightID(nullptr) {}
+        bool isConst;
 
         /**
-         * @brief Parameterised constructor for the structure.
+         * @brief
+         * Stores the constant value represented by expressions corresponding
+         * to the IDstruct object. This field stores valid information only
+         * if isConst is true.
+         **/
+        int constVal;
+
+        /**
+         * @brief Default constructor for the structure.
+         * 
+         * @details
+         *  It can be used to create an IDstruct object to represent a
+         *  non-constant variable, or a variable whose value is unknown.
+         **/
+        IDstruct() : opSymbol('\0'), parentCnt(0), leftID(nullptr), rightID(nullptr),
+                     isConst(false), constVal(0) {}
+
+        /**
+         * @brief A parameterised constructor for the structure.
+         * 
+         * @param   constVal The value to be represented by the IDstruct object
+         * 
+         * @details
+         *  It can be used to create an IDstruct object to represent a constant.
+         **/
+        IDstruct(int constVal) : opSymbol('\0'), parentCnt(0), leftID(nullptr),
+                                 rightID(nullptr), isConst(true), constVal(constVal) {}
+
+        /**
+         * @brief A parameterised constructor for the structure.
          * 
          * @param   op      Operator for the current Herbrand Equivalence class
          * @param   leftID  Pointer to the class corresponding to left subexpression
          * @param   rightID Pointer to the class corresponding to right subexpression
+         * 
+         * @details
+         *  It can be used to create an IDstruct object to represent a two length
+         *  expression. It automatically checks the child objects to determine 
+         *  whether the new object will represent a constant expression or not.
          **/
         IDstruct(char op, IDstruct *leftID, IDstruct *rightID) {
+            // first set the fields corresponding to the passed arguments
             this->opSymbol = op;
-            this->parentCnt = 0;
             this->leftID = leftID;
             this->rightID = rightID;
+
+            // intialise parentCnt to be 0
+            this->parentCnt = 0;
+
+            // determine if the childrens are constant and if find the 
+            // corresponding value and set the fields isConst and constVal
+            if(leftID->isConst and rightID->isConst) {
+                this->isConst = true;
+                this->constVal = findVal(op, leftID->constVal, rightID->constVal);
+            } else {
+                this->isConst = false;
+                this->constVal = 0;
+            }
         }
     };
 
@@ -244,7 +336,8 @@ namespace HerbrandPass {
      * @details
      *  Each index of Partition, corresponds to either a 
      *  constant or a variable or a two operand expression as determined
-     *  by indexCV and indexExp. Those variables/constants/expressions that
+     *  by indexCV and indexExp. There will be an IDstruct object for each
+     *  program point and those variables/constants/expressions that
      *  point to the same IDstruct object (has same pointer value) at a
      *  given program point are Herbrand Equivalent at that program point.
      * 
@@ -266,70 +359,118 @@ namespace HerbrandPass {
     map<tuple<char, IDstruct *, IDstruct *>, IDstruct *> Parent;
 
     /**
-     * @brief 
-     *  Returns operator symbol corresponding to the 
-     *  output of llvm::Instruction::getOpcodeName function.
+     * @brief
+     *  Stores the pointer to IDstruct object corresponding to
+     *  a constant, so that we never create a duplicate IDstruct 
+     *  object for the same.
      * 
-     * @param[in]   opCodeName  A string returned by getOpcodeName
-     * @returns     The character symbol corresponding to the operator name
-     * 
-     * @see llvm::Instruction::getOpcodeName
+     * @details
+     *  This is required just for logical consistency. A basic
+     *  block other than the starting block can have no predecessor
+     *  (in case a block of code is unreachable). In that case, 
+     *  to make the code also useful for GVN along with herbrand 
+     *  equivalence, this information is required. Otherwise 
+     *  at the start of all such unreachable basic blocks we would
+     *  be creating a new IDstruct object for the same constant - 
+     *  which means according to our program, they are not equivalent
+     *  (as they do not point to the same IDstruct object), which
+     *  is not correct. However, for herbrand equivalence we can
+     *  even do without this.
      **/
-    char getOpSymbol(string opCodeName) {
-        if(opCodeName == "add") return '+';
-        if(opCodeName == "sub") return '-';
-        if(opCodeName == "mul") return '*';
-        if(opCodeName == "sdiv") return '/';
-        if(opCodeName == "udiv") return '/';
-        return '\0';
+    map<int, IDstruct *> constIDStruct;
+
+    /**
+     * @brief Function to decrement parentCnt of an IDstruct object.
+     * 
+     * @details
+     *  If parentCnt of an IDstruct object becomes zero then it 
+     *  means that the object is no longer of any use and its memory
+     *  can be freed. In the second case, we need to recursively call
+     *  decreaseParentCnt for its left and right.
+     * 
+     * @param[in, out]  ptr  Pointer to the IDstruct object
+     * @returns         Void
+     * 
+     * @see IDstruct
+     **/
+    void decreaseParentCnt(IDstruct *&ptr) {
+        if(ptr == nullptr) return;
+        assert(ptr->parentCnt > 0);
+
+        ptr->parentCnt -= 1;
+        if(ptr->parentCnt > 0) return;
+
+        // object pointed by ptr has no pointers to it,
+        // so it can now be destroyed
+
+        // first check whether the object has some children
+        // (in the form of leftID and rightID), and if so
+        // first call decreaseParentCnt for them recursively
+        // (here we can also use `ptr->opSymbol != ""` 
+        // or `ptr->left != nullptr` or `ptr->right != nullptr`)
+        if(ptr->leftID != nullptr and ptr->rightID != nullptr) {
+            auto it = Parent.find({ptr->opSymbol, ptr->leftID, ptr->rightID});
+            Parent.erase(it);
+            decreaseParentCnt(ptr->leftID);
+            decreaseParentCnt(ptr->rightID);
+        }
+
+        // free the memory allocated to object pointed by ptr
+        // and set it to nullptr
+        delete(ptr);
+        ptr = nullptr;
+    }
+
+    /**
+     * @brief Function to increment parentCnt of an IDstruct object.
+     * 
+     * @param[in]  ptr  Pointer to the IDstruct object
+     * @returns    Void
+     * 
+     * @see IDstruct
+     **/
+    void increaseParentCnt(IDstruct *&ptr) {
+        if(ptr == nullptr) return;
+        ptr->parentCnt += 1;
     }
 
     /**
      * @brief 
-     *  Initialises Constants, Variables, CuV, indexExp and indexCV
-     *  by looking through the instructions in the program.
+     *  Returns pointer to IDstruct object that represents
+     *  equivalence class corresponding to expression
+     *  "left op right" in a given partition.
      * 
-     * @param[in]   F     Function block over which we are operating
-     * @returns     Void
+     * @details
+     *  If such an object doesn't exists it creates one
+     *  such and updates other required things.
      * 
-     * @see Constants, CuV, indexCV, indexExp, Variables
+     * @param[in]   curPart Partition under consideration
+     * @param[in]   op      Operator
+     * @param[in]   left    Left operand
+     * @param[out]  right   Right operand
+     * @returns     Pointer to IDstruct object representing
+     *              "left op right" in curPart
+     * 
+     * @see IDstruct, Partition, partitions
      **/
-    void assignIndex(Function &F) {
-        // first find the set of constants and variables
-        // by iterating over the instructions
-        for(Instruction &I : instructions(&F)) {
-            // if the instruction is not of void type then 
-            // it represents a variable. All the variables
-            // will be covered in this case
-            if(!I.getType()->isVoidTy()) 
-                Variables.insert(&I);
+    IDstruct* findIDstrct(Partition const &curPart, 
+                          char op, Value *left, Value *right) {
+                              
+        IDstruct *leftID = curPart[indexCV[left]];
+        IDstruct *rightID = curPart[indexCV[right]];
 
-            // now we iterate over its operands to find the 
-            // constants, this case won't add any extra variables
-            // Also, we should skip alloca instruction as its
-            // operands doesn't contain any constant that
-            // concerns us
-            if(isa<AllocaInst>(&I)) continue;
-            for(int i = 0; i < (int)I.getNumOperands(); i++) {
-                Value *value = I.getOperand(i);
-                if(dyn_cast<ConstantInt>(value)) {
-                    Constants.insert(value);
-                }
-            }
-        }
-        CuV = Constants, CuV.insert(Variables.begin(), Variables.end());
+        // the required IDstruct object exists, return
+        // a pointer to it
+        auto it = Parent.find({op, leftID, rightID});
+        if(it != Parent.end()) return (it->second);
 
-        // now assign integer indexes to variables, constants
-        // and two operand instructions
-        int ctr = 0;
-        for(auto el : CuV) indexCV[el] = ctr++;
-        for(auto op : Ops)
-            for(auto left : CuV)
-                for(auto right : CuV)
-                    indexExp[{op, left, right}] = ctr++;
-
-        // update the value of numExps
-        numExps = ctr;
+        // the required IDstruct object doesn't exists,
+        // create a new one and return a pointer to it
+        IDstruct *ptr = new IDstruct(op, leftID, rightID);
+        Parent[{op, leftID, rightID}] = ptr;
+        increaseParentCnt(leftID), increaseParentCnt(rightID);
+        
+        return ptr;
     }
 
     /**
@@ -346,8 +487,26 @@ namespace HerbrandPass {
         // initialise partition
         partition.assign(numExps, nullptr);
 
-        // create new IDstruct object for each constant and variable
-        for(auto el : CuV) {
+        // create new IDstruct object for a constant, if it doesn't 
+        // already exists, otherwise use the previous one
+        for(auto el : Constants) {
+            int constVal = dyn_cast<ConstantInt>(el)->getSExtValue();
+
+            auto it = constIDStruct.find(constVal);
+            if(it != constIDStruct.end()) {
+                partition[indexCV[el]] = it->second;
+                it->second->parentCnt += 1;
+            } else {
+                IDstruct *ptr = new IDstruct(constVal);
+                partition[indexCV[el]] = ptr;
+                ptr->parentCnt += 1;
+
+                constIDStruct[constVal] = ptr;
+            }
+        }
+
+        // create a new IDstruct object for each variable
+        for(auto el : Variables) {
             IDstruct *ptr = new IDstruct;
             partition[indexCV[el]] = ptr;
             ptr->parentCnt += 1;
@@ -358,18 +517,12 @@ namespace HerbrandPass {
         for(auto op : Ops)
             for(auto left : CuV)
                 for(auto right : CuV) {
-                    IDstruct *leftID = partition[indexCV[left]];
-                    IDstruct *rightID = partition[indexCV[right]];
-
-                    IDstruct *ptr = new IDstruct(op, leftID, rightID);
-                    Parent[{op, leftID, rightID}] = ptr;
-                    // increment parentCnt of leftID and rightID, because
-                    // the new object starts pointing at them
-                    leftID->parentCnt += 1;
-                    rightID->parentCnt += 1;
-
+                    // first find IDstruct object to represent current
+                    // expression and then store it in partition map
+                    IDstruct *ptr = findIDstrct(partition, op, left, right);
                     partition[indexExp[{op, left, right}]] = ptr;
-                    // increment parentCnt of the new object because the
+
+                    // increment parentCnt of the object because the
                     // current expression in the partition points to it
                     ptr->parentCnt += 1;
                 }
@@ -431,7 +584,6 @@ namespace HerbrandPass {
      * @see Partition, partitions
      **/
     bool samePartition(Partition const &first, Partition const &second) {
-
         // variables to store the equivalence class for
         // first and second partitions
         set<Value *> setCVfirst, setCVsecond;
@@ -471,60 +623,6 @@ namespace HerbrandPass {
     }
 
     /**
-     * @brief Function to decrement parentCnt of an IDstruct object.
-     * 
-     * @details
-     *  If parentCnt of an IDstruct object becomes zero then it 
-     *  means that the object is no longer of any use and its memory
-     *  can be freed. In the second case, we need to recursively call
-     *  decreaseParentCnt for its left and right.
-     * 
-     * @param[in, out]  ptr  Pointer to the IDstruct object
-     * @returns         Void
-     * 
-     * @see IDstruct
-     **/
-    void decreaseParentCnt(IDstruct *&ptr) {
-        if(ptr == nullptr) return;
-
-        ptr->parentCnt -= 1;
-        if(ptr->parentCnt > 0) return;
-
-        // object pointed by ptr has no pointers to it,
-        // so it can now be destroyed
-
-        // first check whether the object has some children
-        // (in the form of leftID and rightID), and if so
-        // first call decreaseParentCnt for them recursively
-        // (here we can also use `ptr->opSymbol != ""` 
-        // or `ptr->left != nullptr` or `ptr->right != nullptr`)
-        if(ptr->leftID != nullptr and ptr->rightID != nullptr) {
-            auto it = Parent.find({ptr->opSymbol, ptr->leftID, ptr->rightID});
-            Parent.erase(it);
-            decreaseParentCnt(ptr->leftID);
-            decreaseParentCnt(ptr->rightID);
-        }
-
-        // free the memory allocated to object pointed by ptr
-        // and set it to nullptr
-        delete(ptr);
-        ptr = nullptr;
-    }
-
-    /**
-     * @brief Function to increment parentCnt of an IDstruct object.
-     * 
-     * @param[in]  ptr  Pointer to the IDstruct object
-     * @returns    Void
-     * 
-     * @see IDstruct
-     **/
-    void increaseParentCnt(IDstruct *&ptr) {
-        if(ptr == nullptr) return;
-        ptr->parentCnt += 1;
-    }
-
-    /**
      * @brief Creates a copy of a partition.
      * 
      * @details
@@ -555,45 +653,6 @@ namespace HerbrandPass {
         // created a new pointer reference to them
         for(auto &el : oldPart)
             increaseParentCnt(el);
-    }
-
-    /**
-     * @brief 
-     *  Returns pointer to IDstruct object that represents
-     *  equivalence class corresponding to expression
-     *  "left op right" in a given partition.
-     * 
-     * @details
-     *  If such an object doesn't exists it creates one
-     *  such and updates other required things.
-     * 
-     * @param[in]   curPart Partition under consideration
-     * @param[in]   op      Operator
-     * @param[in]   left    Left operand
-     * @param[out]  right   Right operand
-     * @returns     Pointer to IDstruct object representing
-     *              "left op right" in curPart
-     * 
-     * @see IDstruct, Partition, partitions
-     **/
-    IDstruct* findIDstrct(Partition const &curPart, 
-                          char op, Value *left, Value *right) {
-                              
-        IDstruct *leftID = curPart[indexCV[left]];
-        IDstruct *rightID = curPart[indexCV[right]];
-
-        // the required IDstruct object exists, return
-        // a pointer to it
-        auto it = Parent.find({op, leftID, rightID});
-        if(it != Parent.end()) return (it->second);
-
-        // the required IDstruct object doesn't exists,
-        // create a new one and return a pointer to it
-        IDstruct *ptr = new IDstruct(op, leftID, rightID);
-        Parent[{op, leftID, rightID}] = ptr;
-        increaseParentCnt(leftID), increaseParentCnt(rightID);
-        
-        return ptr;
     }
 
     /**
@@ -883,9 +942,16 @@ namespace HerbrandPass {
         // considered
         vector<bool> done(numExps, false);
 
+        bool isConst;
+        int constVal;
+
         // lambda function to print an equivalence class
         // (setCV and setExp)
         auto lambda = [&]() {
+            errs() << "[";
+            if(isConst) errs() << constVal;
+            errs() << "]";
+
             errs() << "{";
             
             for(auto it = setCV.begin(); it != setCV.end();) {
@@ -894,10 +960,10 @@ namespace HerbrandPass {
                 if(++it != setCV.end()) errs() << ", ";
             }
 
-            if(!setCV.empty() and !setExp.empty()) errs() << ", ";
+            if(not setCV.empty() and not setExp.empty()) errs() << ", ";
 
             for(auto it = setExp.begin(); it != setExp.end();) {
-                printExp(*it);    
+                printExp(*it);
                 done[indexExp[*it]] = true;
                 if(++it != setExp.end()) errs() << ", ";
             }
@@ -908,6 +974,12 @@ namespace HerbrandPass {
         // print equivalence class of each constant/variable
         for(auto el : indexCV) {
             if(done[el.second]) continue;
+
+            if(partition[el.second]->isConst) {
+                isConst = true;
+                constVal = partition[el.second]->constVal;
+            } else isConst = false;
+            
             getClass(el.second, partition, setCV, setExp);
             lambda();
         }
@@ -915,6 +987,12 @@ namespace HerbrandPass {
         // print equivalence class of each two operand expression
         for(auto el : indexExp) {
             if(done[el.second]) continue;
+
+            if(partition[el.second]->isConst) {
+                isConst = true;
+                constVal = partition[el.second]->constVal;
+            } else isConst = false;
+
             getClass(el.second, partition, setCV, setExp);
             lambda();
         }
@@ -956,9 +1034,57 @@ namespace HerbrandPass {
 
             // now assign name to all non-void instructions
             for(auto I = BB->begin(); I != BB->end(); I++)
-                if(!I->getType()->isVoidTy())
+                if(not I->getType()->isVoidTy())
                     I->setName("T" + to_string(varCtr++));
         }
+    }
+
+    /**
+     * @brief 
+     *  Initialises Constants, Variables, CuV, indexExp and indexCV
+     *  by looking through the instructions in the program.
+     * 
+     * @param[in]   F     Function block over which we are operating
+     * @returns     Void
+     * 
+     * @see Constants, CuV, indexCV, indexExp, Variables
+     **/
+    void assignIndex(Function &F) {
+        // first find the set of constants and variables
+        // by iterating over the instructions
+        for(Instruction &I : instructions(&F)) {
+            // if the instruction is not of void type then 
+            // it represents a variable. All the variables
+            // will be covered in this case
+            if(not I.getType()->isVoidTy()) 
+                Variables.insert(&I);
+
+            // now we iterate over its operands to find the 
+            // constants, this case won't add any extra variables
+            // Also, we should skip alloca instruction as its
+            // operands doesn't contain any constant that
+            // concerns us
+            if(isa<AllocaInst>(&I)) continue;
+            for(int i = 0; i < (int)I.getNumOperands(); i++) {
+                Value *value = I.getOperand(i);
+                if(dyn_cast<ConstantInt>(value)) {
+                    Constants.insert(value);
+                }
+            }
+        }
+        CuV = Constants, CuV.insert(Variables.begin(), Variables.end());
+
+        // now assign integer indexes to variables, constants
+        // and two operand instructions
+        int ctr = 0;
+        for(auto el : CuV) indexCV[el] = ctr++;
+        for(auto op : Ops)
+            for(auto left : CuV)
+                for(auto right : CuV)
+                    indexExp[{op, left, right}] = ctr++;
+
+        // update the value of numExps
+        numExps = ctr;
     }
 
     /**
@@ -1089,10 +1215,13 @@ namespace HerbrandPass {
             errs() << "\n\n";
         }
 
+        // first clear the map to remove any previous contents
+        availVariables.clear();
+
         // initialise availVariables for each instruction
         for(Instruction &I : instructions(F)) 
             availVariables.emplace(&I, Variables);
-
+        
         // variable to check for convergence
         bool converged = false;
         // iteration counter
@@ -1108,12 +1237,13 @@ namespace HerbrandPass {
                 // for convergence
                 set<Value *> oldAvail = availVariables[&I];
 
+                // vector of predecessors of current instruction
+                vector<Instruction *> &predecessors = Predecessors[&I];
+                
                 // first find IN of current instruction and store it
                 // in availVariables[&I]
                 if(confluencePoints.find(&I) != confluencePoints.end()) {
                     // if the instruction is not a transfer point
-
-                    vector<Instruction *> &predecessors = Predecessors[&I];
 
                     if(predecessors.empty()) {
                         // if current instruction has no predecessors -
@@ -1131,7 +1261,7 @@ namespace HerbrandPass {
                     }
                 } else {
                     // if the current instruction is a transfer point
-                    Instruction *prevInst = Predecessors[&I][0];
+                    Instruction *prevInst = predecessors[0];
                     availVariables[&I] = availVariables[prevInst];
                 }
 
@@ -1152,7 +1282,7 @@ namespace HerbrandPass {
                     printSetCV(availVariables[&I]);
                     errs() << "\n";
                 }
-
+                
                 // update convergence flag
                 if(oldAvail != availVariables[&I]) converged = false;
             }
@@ -1186,53 +1316,43 @@ namespace HerbrandPass {
             
             if(DEBUG) errs() << (*I) << "\n";
 
-            // index corresponding to RValue of current instruction
-            int index;
-            if(isa<LoadInst>(I)) index = indexCV[I->getOperand(0)];
-            else if(isa<BinaryOperator>(I)) {
-                Value *left = I->getOperand(0);
-                Value *right = I->getOperand(1);
-                char op = getOpSymbol(I->getOpcodeName());
-                index = indexExp[{op, left, right}];
-            } else {
+            if(not isa<LoadInst>(I) and not isa<BinaryOperator>(I)) {
                 // if there is no RValue skip current instruction
                 if(DEBUG) errs() << "  => Instruction skipped\n\n\n";
                 continue;
             }
 
-            // get herbrand class of RValue at current program point
-            set<Value *> setCV;
-            set<expTuple> setExp;
-            getClass(index, partitions[I], setCV, setExp);
-
-            if(DEBUG) {
-                errs() << "\tsetCV: ", printSetCV(setCV);
-                errs() << "\tsetExp: ", printSetExp(setExp);
-                errs() << "\tAvailable: ", printSetCV(availVariables[I]);
-
-                errs() << "\tDeleted Variables: ";
-                for(auto el : deletedVarsName) 
-                    errs() << el << ", ";
-                errs() << "\n";
-            }
-
-            // value with which to replace current instruction
+           // value with which to replace current instruction
+            int index = indexCV[I];
             Value *replacement = nullptr;
 
-            // first check if there is some constant in the Herbrand
-            // class of RValue at current program point, if not then
-            // check for some available variable. If one of the two 
-            // is found replace current instruction with it.
-            for(auto el : Constants)
-                if(setCV.find(el) != setCV.end()) {
-                    replacement = el;
-                    break;
+            if(partitions[I][index]->isConst) {
+                // if the current expression is a constant expression
+                // find Value* to represent the constant expression
+
+                // check if Constants is not empty to get a type for
+                // creating the Value*, otherwise skip
+                if(not Constants.empty()) {
+                    int constVal = partitions[I][index]->constVal;
+                    Type *ty = (*Constants.begin())->getType();
+                    replacement = ConstantInt::get(ty, constVal);
+
+                    if(DEBUG) errs() << "  => A constant expression\n";
                 }
-            if(replacement == nullptr) {
+            } else {
+                // get herbrand class of RValue at current program point
+                // and check if some available variable is in the same 
+                // equivalence class as the RValue and is still not deleted
+                set<Value *> setCV;
+                set<expTuple> setExp;
+                getClass(index, partitions[I], setCV, setExp);
+                
                 for(auto el : availVariables[I])
                     if(el != I and setCV.find(el) != setCV.end() 
                                and deletedVars.find(el) == deletedVars.end()) {
                         replacement = el;
+
+                        if(DEBUG) errs() << "  => Value already available in variable\n";
                         break;
                     }
             }
@@ -1246,7 +1366,7 @@ namespace HerbrandPass {
                 I->eraseFromParent();
 
                 if(DEBUG) {
-                    errs() << "  => Instruction deleted: ";
+                    errs() << "  => Instruction deleted and replaced with : ";
                     printCV(replacement);
                     errs() << "\n";
                 }
@@ -1273,9 +1393,9 @@ namespace HerbrandPass {
             // clear the contents of global variables
             Constants.clear(), CuV.clear(), Variables.clear();
             indexCV.clear(), indexExp.clear();
-            partitions.clear(), Parent.clear();
+            partitions.clear(), availVariables.clear();
             Predecessors.clear(), confluencePoints.clear();
-            availVariables.clear();
+            Parent.clear(), constIDStruct.clear();
 
             // assign indexes to constants, variables and two operand 
             // expressions; assign names to variables; fill Predecessors
