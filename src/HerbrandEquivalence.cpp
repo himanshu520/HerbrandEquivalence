@@ -1047,11 +1047,6 @@ namespace HerbrandPass {
             }
         }
 
-        // call decreaseParentCnt to free dynamically allocated memory
-        for(auto partition : partitions)
-            for(auto el : partition.second)
-                decreaseParentCnt(el);
-
         if(DEBUG) errs() << "\n\n";
     }
 
@@ -1297,6 +1292,11 @@ namespace HerbrandPass {
             removeRedundantExpressions(F);
 
             if(DEBUG) PRINT("Optimised Code"), printCode(F);
+
+            // call decreaseParentCnt to free dynamically allocated memory
+            for(auto partition : partitions)
+                for(auto el : partition.second)
+                    decreaseParentCnt(el);
 
             // return true, because the pass is making changes
             // in the input file
