@@ -1,0 +1,215 @@
+\chapter{Algorithm for Herbrand Equivalence}
+\label{chap:chapter7}
+
+This chapter presents a pseudocode of the algorithm mentioned in 
+\cite{Babu} for Herbrand Equivalence analysis. The pseudocode is 
+written taking C++ into consideration. The actual implementation done 
+for LLVM compiler framework can be found in 
+\href{https://github.com/himanshu520/HerbrandEquivalence}{this github repository}.
+
+\begin{algorithm}
+\caption{Data Structure}\label{DataStructure}
+\begin{algorithmic}[1]
+\State \textbf{struct IDstruct} \{
+    \State \tabf \textbf{char} $opSymbol$
+    \State \tabf \textbf{IDstruct*} $leftID$
+    \State \tabf \textbf{IDstruct*} $rightID$
+    \State \tabf \textbf{bool} $isConst$
+    \State \tabf \textbf{int} $constVal$
+    \State
+    \State \tabf \textbf{IDstruct}() \{\Comment{To create IDstruct object for a variable}
+        \State \tabs $this.opSymbol \gets ''$ 
+        \State \tabs $this.leftID \gets nullptr$
+        \State \tabs $this.rightID \gets nullptr$
+        \State \tabs $this.isConst \gets false$
+        \State \tabs $this.constVal \gets 0$ 
+    \State \tabf \}
+    \State
+    \State \tabf \textbf{IDstruct}(\textbf{int} constVal) \{\Comment{To create IDstruct object for a constant}
+        \State \tabs $this.opSymbol \gets ''$ 
+        \State \tabs $this.leftID \gets nullptr$
+        \State \tabs $this.rightID \gets nullptr$
+        \State \tabs $this.isConst \gets true$
+        \State \tabs $this.constVal \gets constVal$ 
+    \State \tabf \}
+    \State
+    \State \tabf \textbf{IDstruct}(\textbf{string} $op$, \textbf{IDstruct*} $leftID$, \textbf{IDstruct*} $rightID$) \{
+        \State \Comment{To create IDstruct object for a length two expression}
+        \State \tabs $this.opSymbol \gets op$ 
+        \State \tabs $this.leftID \gets leftID$
+        \State \tabs $this.rightID \gets rightID$
+        \State
+        \State \tabs \textbf{if} $(leftID.isConst \ \&\& \ rightID.isConst)$ \{
+            \State \tabt $this.isConst \gets true$
+            \State \tabt $this.constVal \gets$ \textbf{Evaluate}$(op,\  leftID.constVal,\ rightID.constVal)$
+        \State \tabs \} \textbf{else} \{
+            \State \tabt $this.isConst \gets false$
+            \State \tabt $this.constVal \gets 0$
+        \State \tabs \}
+    \State \tabf \}
+\State \}
+\State
+\State \textbf{typedef vector}$<$IDstruct *$>$ Partition
+\State \textbf{map}$<$Instruction, Partition$>$ partitions
+\end{algorithmic}
+\end{algorithm}
+
+Objects of structure \textbf{IDstruct}, will be used to hold information about the equivalence of program expressions. $Partition$ is vector type, whose each index corresponds to either a constant, a variable or length two expression (from now on expression would mean only these three). It is assumed that $Partition$ can be indexed directly with expressions, instead of indexing with integers. This can be easily taken care of in an actual program by fixing indexes for the expressions at the beginning, for the whole duration of the program. There will be a $Partition$ for each program point ($partitions$ map) and at a given program point, expressions which holds pointer to same $IDstruct$ object would be Herbrand equivalent at that program point. So, $Partition$ actually represents a partition which justifies its name.
+
+The first three fields of $IDstruct$ object are relavant only for two length expressions. For expression $(x\ op\ y)$ at instruction $I$, these fields would be $op$, $partitions[I][x]$, $partitions[I][y]$ respectively. For a constant or a variable these would be set as $''$, $nullptr$, $nullptr$ respectively. The field $isConst$ is true only if the $IDstruct$ object represents a constant expression and in that case $constVal$ will hold the corresponding value of the expression. These two fields are not required for Herbrand Equivalence analysis, but would be useful later during optimzations (specifically for constant propagation and constant folding).
+
+\textbf{Instructions}, \textbf{Constants}, \textbf{Variables} and 
+\textbf{Operators} represent the set of instructions, constants, 
+variables and operators occuring in the program respectively. 
+$I_0$ is an imaginary instruction which is predecessor of the first 
+instruction. \textbf{Expressions} is the set of relavant program 
+expressions (of length atmost two).
+
+Also note the following functions whose details have not been provided. \\
+\textbf{Evaluate}$(op,\ x,\ y)$ :- Returns result of $(x\ op\ y)$. \\
+\textbf{Instersection} :- Simple set intersection. \\
+\textbf{FindIDstruct}$(op,\ leftID,\ rightID)$ :- If there exists an $IDstruct$ object whose first three fields are $op$, $leftID$, $rightID$ respectively then it returns pointer to it, otherwise calls its third constructor to first create a new object and then returns a pointer to it.
+
+\begin{algorithm}
+\caption{Herbrand Equivalence Analysis}\label{HerbrandEquivalenceAnalysis}
+\begin{algorithmic}[1]
+\Procedure{HerbrandAnalysis}{}
+    \State $partitions[I_0] \gets$ \textbf{findInitialPartition}$()$
+    \State
+    \For{$I \in Instructions$}
+        \State $partitions[I] \gets \top$
+    \EndFor
+    \State
+    \State \textbf{Bool} $converged \gets false$
+    \While{not $converged$}
+        \State $converged \gets true$
+        \State
+        \For{$I \in Instructions$}
+            \State \textbf{Partition} $oldPartition \gets partitions[I]$
+            \State
+            \If{$I$ is function point with \textbf{Predecessors}(I) = \{J\}}
+                \State \textbf{TransferFunction}$(partitions[I],\ partitions[J],\ I)$
+            \Else
+                \State \textbf{Partition} $confPartition \gets$ \textbf{ConfluenceFunction}(I)
+                \State \textbf{TransferFunction}$(paritions[I], confPartition, I)$
+            \EndIf
+            \State
+            \If{not \textbf{SamePartition}$(oldPartition,\ partitions[I]$)}
+                \State $converged \gets false$
+            \EndIf
+        \EndFor
+    \EndWhile
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{Finding Initial Partition}\label{FindInitialPartition}
+\begin{algorithmic}[1]
+\Procedure{FindInitialPartition}{}
+    \State \textbf{Partition} $partition$
+    \State
+    \For{$x \in Constants$}
+        \State $partition[x] \gets IDstruct(x)$
+    \EndFor
+    \For{$x \in Variables$}
+        \State $partition[x] \gets IDstruct()$
+    \EndFor
+    \For{$(x\ op\ y) \in Expressions$}
+        \State $partition[x\ op\ y] \gets$ \textbf{FindIDstruct}$(op,\ partition[x],\ partition[y])$
+    \EndFor
+    \State
+    \State \textbf{return} $partition$
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+    
+\begin{algorithm}
+\caption{Transfer Function}\label{TransferFunction}
+\begin{algorithmic}[1]
+\Procedure{TransferFunction}{\textbf{Partition\&} $curPart$, \textbf{Partition\&} $prevPart$, \textbf{Instruction} $I$}
+    \State
+    \State $curPart \gets prevPart$
+    \State
+    \If{$I$ is $z := x$}
+        \State $curPart[z] \gets curPart[x]$
+    \ElsIf{$I$ is $z := x\ op\ y$}
+        \State $curPart[z] \gets$ \textbf{FindIDstruct}$(op,\ curPart[x],\ curPart[y])$
+    \EndIf
+    \State
+    \State $x \gets$ \textbf{LValue}$(I)$
+    \For{$op \in Operators$}
+        \For{$y \in (Constants \cup Variables)$}
+            \State $curPart[x\ op\ y] = $ \textbf{FindIDstruct}$(op,\ curPart[x],\ curPart[y])$
+            \State $curPart[y\ op\ x] = $ \textbf{FindIDstruct}$(op,\ curPart[y],\ curPart[x])$
+        \EndFor
+    \EndFor
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{Confluence Function}\label{ConfluenceFunction}
+\begin{algorithmic}[1]
+\Procedure{ConfluenceFunction}{\textbf{Instruction} $I$}
+    \State \textbf{Partition} $confPartition$
+    \State $vector<bool> accessFlag$
+    \State
+    \For{$x \in (Constants \cup Variables)$}
+        $accessFlag[x] \gets false$
+    \EndFor
+    \State
+    \For{$x \in (Constants \cup Variables)$}
+        \If{not $accessFlag[x]$}
+            \State $accessFlag[x] \gets true$
+            \If{$\forall I' \in $ \textbf{Predecessors}$(I),\ partitions[I'][x]$ is same}
+                \State $confPartition[x] \gets partitions[I'][x]$
+            \Else
+                \State $ptr \gets$ \textbf{IDstruct}$()$
+                \State $tempSet \gets$ \textbf{Intersection}$($\textbf{GetClass}$(x, partition[I']), \forall I'\in$\textbf{Predecessors}$(I))$
+                \For{$y \in (tempSet \cap (Constants \cup Variables))$}
+                    \State $accessFlag[y] \gets true$
+                    \State $confPartition[y] \gets ptr$
+                \EndFor
+            \EndIf
+        \EndIf
+    \EndFor
+    \State
+    \For{$(x\ op\ y) \in Expressions$}
+        \State $confPartition[x\ op\ y] \gets$ \textbf{FindIDstruct}$(op, confPartition[x], confPartition[y])$
+    \EndFor
+    \State
+    \State \textbf{return} $confPartition$
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{To check if two partitions are same}\label{SamePartition}
+\begin{algorithmic}[1]
+\Procedure{SamePartition}{\textbf{Partition} $first$, \textbf{Partition} $second$}
+    \For{$x \in Expressions$}
+        \If{\textbf{GetClass}$(first,\ x) \neq$ \textbf{GetClass}$(second,\ x)$}
+            \State \textbf{return} $false$
+        \EndIf
+    \EndFor
+    \State \textbf{return} $true$
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{Finding equivalence class of an expression in a partition}\label{GetClass}
+\begin{algorithmic}[1]
+\Procedure{GetClass}{\textbf{Partition} $partition$, \textbf{Expression} $exp$}
+    \State \Comment{\textbf{Expression} represents constants, variables and length two epxressions}
+    \State \textbf{set}$<$\textbf{Expression}$> equivalenceClass$
+    \For{$x \in Expressions$}
+        \If{$partition[exp] == partition[x]$}
+            \State $equivalenceClass.insert(x)$
+        \EndIf
+    \EndFor
+    \State \textbf{return} $equivalenceClass$
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}

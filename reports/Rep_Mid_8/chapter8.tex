@@ -1,0 +1,146 @@
+\chapter{Performing Optimizations}
+\label{chap:chapter8}
+
+This chapter explains how to use the Herbrand Equivalence analysis
+information to perform actual program optimizations.
+
+\section{Available Variables}
+\label{AvailableVariables}
+A variable is said to be \textbf{available} at a basic block if 
+it is defined at some point along all the execution paths from the 
+start of the program that reaches the beginnning of that basic block.
+It is forward data analysis problem and can be determined via fixed 
+point computation.
+
+The universe $\mathcal U$ would be the set of all program variables.
+Also, let $\mathcal B$ be the set of all basic blocks in the program.
+Denote by $DEF[B]$ the set of variables defined in the basic block
+$B \in \mathcal B$, and $IN[B]$ be corresponding set of available 
+variables. Initialise $OUT[B] = \mathcal U, \forall B \in \mathcal B$ 
+and perform updates as follows till a fixed point is reached.
+$$IN[B] = \cap_{B' \in Predecessors(B)} OUT[B']$$
+$$OUT[B] = IN[B] \cup DEF[B]$$
+
+Note that the definition of \textbf{available variables} is different
+from that of \textbf{reaching definitions} and \textbf{available 
+expressions}. If a variable is available at the beginning of a given
+basic block, then that variable can be used in the basic block without
+defining it because by \textit{definition of avilable variables} it 
+would already be defined along every path from the start of the 
+program to that basic block.
+
+The definition of available variables can be extended to that of any
+instruction. Variables available at an instruction $I$ is the union 
+of variables available at the beginning of its basic block and any 
+variables defined by the instructions preceding it in that block.
+
+\section{Performing Optimizations}
+\label{PerformingOptimizations}
+The results of Herbrand Equivalence and available variables analysis 
+can be used to perform optimizations involving redundant expression 
+elimination and some dead code elimination.
+
+Suppose, there is an instruction $I : z \gets e$, where $e$ is an 
+expression (as already mentioned expression means either a constant, 
+or a variable or a length two expression). First find the Herbrand 
+equivalence class of $z$ at that program point. If the class represents
+a constant valued expression ($partitions[I][z].isConst == true$), then
+this instruction can be deleted and all uses of $z$ replaced by 
+$partitions[I][z].constVal$, till $z$ is redefined. Else if it is not 
+a constant valued expression, 
+$\mathcal S = (getClass(partitions[I], z) \cap IN[I])$
+will be the set of variables, such that $z$ can be replaced by 
+$s \in \mathcal S$ (before $z$ and $s$ are redefined), without changing
+the meaning of the program. \\ 
+Pseudocode \ref{Optimize} is the precise formulation of the mentioned facts.
+
+\begin{algorithm}
+\caption{Performing Optimizations}\label{Optimize}
+\begin{algorithmic}[1]
+\Procedure{Optimize}{}
+    \For{$B \in \mathcal B$}
+        \State $Insts \gets$ \textbf{Instructions}$(B)$
+        \State $AvailVars \gets IN[B]$
+        \State
+        \For{$I \in Insts$}
+            \State $Insts.remove(I)$
+            \State $z \gets$ \textbf{LValue}$(I)$
+\algstore{Optimize}
+\end{algorithmic}
+\end{algorithm}
+                    
+
+\begin{algorithm}
+\begin{algorithmic}[1]
+\algrestore{Optimize}
+            \If{\textbf{Defined}$(z)$}
+                \State \textbf{IDstruct*} $ptr \gets partitions[I][z]$
+                \State
+                \If{$ptr.isConst$}
+                    \State \textbf{Bool} $reachedEnd \gets true$
+                    \For{$I' \in Insts$}
+                        \If{\textbf{LValue}$(I') == z$}
+                            \State $reachedEnd \gets false$
+                            \State \textbf{break}
+                        \EndIf
+                        \State \textbf{Replace}$(I',\ z,\ ptr.constVal)$
+                    \EndFor
+                    \If{$reachedEnd$}
+                        \State $B.insert(z \gets ptr.constVal)$
+                    \EndIf
+                    \State
+                    \State \textbf{DeleteInstruction}$(I)$
+                \Else
+                    \State \textbf{set}$<$\textbf{Expressions}$> curPart \gets$ \textbf{GetClass}$(partitions[I],\ z)$
+                    \State $curPart \gets (curPart \cap AvailVars)$
+                    \State
+                    \If{not $curPart.empty()$}
+                        \State \textbf{Bool} $reachedEnd \gets true$
+                        \State $replacement \gets curPart.first()$
+                        \State
+                        \For{$I' \in Insts$}
+                            \If{\textbf{LValue}$(I') == z$}
+                                \State $reachedEnd \gets false$           
+                                \State \textbf{break}
+                            \EndIf
+                            \State $curPart = curPart \setminus \{$\textbf{LValue}$(I')\}$
+                            \If{not $curPart.empty()$}
+                                \State $replacement \gets curPart.first()$
+                                \State \textbf{Replace}$(I',\ z,\ replacement)$
+                            \Else
+                                \State $B.insert(I', z \gets replacement)$
+                                \State $AvailVars \gets AvailVars \cup \{z\}$
+                                \State $reachedEnd \gets false$
+                                \State \textbf{break}
+                            \EndIf
+                        \EndFor
+                        \State
+                        \If{$reachedEnd$}
+                            \State $B.insert(z \gets replacement)$
+                        \EndIf
+                        \State \textbf{DeleteInstruction}$(I)$
+                        \State
+                    \Else
+                        \State $AvailVars \gets AvarilVars \cup \{z\}$
+                    \EndIf
+                \EndIf
+            \EndIf
+        \EndFor
+    \EndFor
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+    
+Also note the following functions whose details has not been provided.\\
+\textbf{Instructions}$(B)$ :- Returns a list of instructions in the basic block $B$.\\
+\textbf{Replace}$(I', z, replacement)$ :- Replaces variable $z$ in the instruction $I'$ with $replacement$ which can be a constant or another variable.\\
+\textbf{B.insert}$(I)$ :- Inserts instruction $I$, at the end of basic block $B$.\\
+\textbf{B.insert}$(I, I')$ :- Insert instruction $I'$ before instruction $I$ in basic block $B$.\\
+\textbf{DeleteInstruction}$(I)$ :- Deletes instruction $I$ from the program.\\
+\textbf{set.empty}$()$ :- Returns $true$ if $set$ is empty, else $false$.\\
+\textbf{set.first}$()$ :- Returns first element from $set$.\\
+
+\section{LLVM Implementation}
+\label{LLVMImplementation}
+The LLVM specific implementation of the pseudocodes mentioned can be found in 
+\href{https://github.com/himanshu520/HerbrandEquivalence}{this github repository}.

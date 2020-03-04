@@ -1,0 +1,64 @@
+\chapter{Summary of Saleena and Paleri}
+\label{chap:chapter4}
+
+Saleena and Paleri gave an algorithm for 
+\textbf{global value numbering (GVN)}. GVN works by assigning a value 
+number to variables and expressions. The same value number is 
+assigned to those variables and expressions which are provably 
+equivalent. A notable difference between Herbrand equivalence and GVN 
+is that in Herbrand equivalence we talk about equivalences at a 
+particular program point but in GVN are concerned with equivalence 
+between expressions at two different program points.
+
+The data structure used in the algorithm is called \textbf{value 
+expression} - an expression with value numbers as operands. Two 
+expressions are equivalent if they have same value expression. 
+So, a value expression can be used to represent a set of equivalent 
+program expressions.
+
+\section{Notation}
+\label{sec:Notation}
+Input is a flow graph atmost one assignment statement in each node
+which has one of the following forms
+$$x\; ::=\; e$$ 
+$$e\; ::=\; x\: |\: c\: |\: x\,op\,x$$
+The flow graph also has two additional empty $ENTRY$ and $EXIT$ nodes.
+For a node $n$, $IN_n$ and $OUT_n$ denotes the input and output 
+program points of the node.
+
+Expression pool at a program point, is a partition of expressions at 
+that point, in which equivalent expression belongs to the same 
+partition. Each class will have a value number which we will consider 
+as its first element. For a node $n$, $EIN_n$ and $EOUT_n$ denotes 
+the expression pools at input and output program points of the node.
+
+\section{Value Expression}
+\label{sec:ValueExpression}
+The value expression corresponding to an expression is obtained by 
+replacing actual operands with their corresponding value numbers.
+Example - For the expression-pool $\{\{v_1, a, x\}$, $\{v_2, b, y \}\}$ 
+and statement $z ::= x + y$ , the value-expression for $x + y$ will be
+$v_1 + v_2$. Instead of $x + y$, its value-expression is included in 
+the expression-pool, with a new value number ie. the new 
+expression-pool would be 
+$\{\{v_1, a, x\},\{v_2, b, y\}, \{v_3, v_1 + v_2, z\}\}$.
+
+The value expression $v_1 + v_2$ represents not just $x + y$ but the
+set of equivalent expressions $\{a + b, x + b, a + y, x + y\}$. Its 
+presence indicates that an expression from this set is already 
+computed and this information is enough for detection of redundant 
+computations. Also, a single binary value expression can represent 
+equivalence among any numbre of expressions of any length. Example - 
+$v_1 + v_3$ represents, $a + z$, $x + z$, $a + (a + b)$, 
+$a + (x + b)$ and so on.
+
+\section{Algorithm}
+\label{sec:Algorithm}
+Similar to Gulwani's algorithm, the algorithm consists of two main 
+functions - a transfer function for changes in expression pool across 
+assignment statements and a confluence function to find the 
+expression pool at points were two branches meet. The algorithm 
+starts with $EOUT_{ENTRY} = \phi$, and uses transfer and confluence 
+functions to calculate expression pools at other points. This process 
+is repeated till there is any change in the equivalence information.
+For detailed implementation refer to \cite{Saleena}.
