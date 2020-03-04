@@ -22,7 +22,7 @@ using namespace std;
 
 // If DEBUG flag is 0, the pass won't print any debug information
 // else it will
-#define DEBUG 0
+#define DEBUG 1
 
 /**
  * @brief Generic function to find the intersection of two std::set.
@@ -297,36 +297,7 @@ namespace HerbrandPass {
      *  Stores the instructions which represents confluence points - an
      * instruction having more than one predecessors.
      **/
-    set<Instruction *> confluencePoints; 
-
-    /**
-     * @brief
-     *  Stores the variables available at each point in the program.
-     * 
-     * @details
-     *  Calculation of \c availVariables is a forward dataflow problem, 
-     *  calculated via fixed point computation. A variable is available 
-     *  at a point if all paths from the start of the program to that 
-     *  point contains a definition of the variable. Our universe is
-     *  <b> U - the set of program variables </b> and for each program 
-     *  point <b> P </b>, we initialise <b> OUT[P] </b> to 
-     *  <b> U </b>. Also, let <b> GEN[P] </b> to be the variable 
-     *  defined at <b> P </b> if any, otherwise empty set. We will perform 
-     *  updates as \n \n
-     *  <tt> IN[P] = intersect(availVariables[P']) </tt>
-     *  <tt> OUT[P] = union(IN[P], GEN[P]) </tt>
-     *  \n \n where \c union is normal set union and \c intersect is 
-     *  performed over all <b> P' </b> belonging to the predecessor of <b> P </b>.
-     *  Finally, <tt> availVariables[P] = OUT[P] </tt>.
-     * 
-     * @note
-     *  This is different from both available expressions and reaching
-     *  definition.
-     * 
-     * @see Reaching definition, available expression
-     *  
-     **/
-    map<Instruction *, set<Value *>> availVariables;
+    set<Instruction *> confluencePoints;
 
     /**
      * @brief 
@@ -1178,121 +1149,6 @@ namespace HerbrandPass {
 
     /**
      * @brief 
-     *  Finds available variables at each instruction
-     *  of a function.
-     * 
-     * @details
-     *  Calculation of \c availVariables is a forward dataflow problem, 
-     *  calculated via fixed point computation. A variable is available 
-     *  at a point if all paths from the start of the program to that 
-     *  point contains a definition of the variable. Our universe is
-     *  <b> U - the set of program variables </b> and for each program 
-     *  point <b> P </b>, we initialise <b> OUT[P] </b> to 
-     *  <b> U </b>. Also, let <b> GEN[P] </b> to be the variable 
-     *  defined at <b> P </b> if any, otherwise empty set. We will perform 
-     *  updates as \n \n
-     *  <tt> IN[P] = intersect(availVariables[P']) </tt>
-     *  <tt> OUT[P] = union(IN[P], GEN[P]) </tt>
-     *  \n \n where \c union is normal set union and \c intersect is 
-     *  performed over all <b> P' </b> belonging to the predecessor of 
-     *  <b> P </b>. Finally, <tt> availVariables[P] = OUT[P] </tt>. \n
-     *  For the purpose of implementation, IN and OUT will not be maintained
-     *  explicitly, but the same information will be kept in availVariables 
-     *  itself.
-     * 
-     * @param[in]  F    Function under consideration
-     * @returns    Void
-     * 
-     * @note
-     *  Available Variables is different from both available expressions 
-     *  and reaching definition.
-     * 
-     * @see availVariables
-     **/
-    void findAvailableVariables(Function &F) {
-        if(DEBUG) {
-            PRINT("Available Variable Computation");
-            errs() << "\n\n";
-        }
-
-        // first clear the map to remove any previous contents
-        availVariables.clear();
-
-        // initialise availVariables for each instruction
-        for(Instruction &I : instructions(F)) 
-            availVariables.emplace(&I, Variables);
-        
-        // variable to check for convergence
-        bool converged = false;
-        // iteration counter
-        int iterationCtr = 1;
-
-        while(not converged) {
-            if(DEBUG) PRINT("Iteration " + to_string(iterationCtr++));
-
-            converged = true;
-
-            for(Instruction &I : instructions(F)) {
-                // store old availVariable information to check
-                // for convergence
-                set<Value *> oldAvail = availVariables[&I];
-
-                // vector of predecessors of current instruction
-                vector<Instruction *> &predecessors = Predecessors[&I];
-                
-                // first find IN of current instruction and store it
-                // in availVariables[&I]
-                if(confluencePoints.find(&I) != confluencePoints.end()) {
-                    // if the instruction is not a transfer point
-
-                    if(predecessors.empty()) {
-                        // if current instruction has no predecessors -
-                        // it means either the instruction is the first
-                        // instruction in the program or is the first
-                        // instruction in an unreachable basic block
-                        availVariables[&I].clear();
-                    } else {
-                        // if the current instruction is a confluence point
-                        // find the intersection of availVariables at all the
-                        // predecessors
-                        availVariables[&I] = Variables;
-                        for(auto el : predecessors)
-                            setIntersect<Value *>(availVariables[&I], availVariables[el]);
-                    }
-                } else {
-                    // if the current instruction is a transfer point
-                    Instruction *prevInst = predecessors[0];
-                    availVariables[&I] = availVariables[prevInst];
-                }
-
-                if(DEBUG) {
-                    errs() << I << "\n\tIN: ";
-                    printSetCV(availVariables[&I]);
-                }
-                
-                // now update IN information in availVariables[&I] to
-                // contain OUT. For the purpose of LLVM implementation
-                // variables defined by alloca instruction should not
-                // be considered for available Variables computation
-                if(not I.getType()->isVoidTy() and not isa<AllocaInst>(&I))
-                    availVariables[&I].insert(&I);
-
-                if(DEBUG) {
-                    errs() << "\tOUT: ";
-                    printSetCV(availVariables[&I]);
-                    errs() << "\n";
-                }
-                
-                // update convergence flag
-                if(oldAvail != availVariables[&I]) converged = false;
-            }
-
-            if(DEBUG) errs() << "\n\n";
-        }
-    }
-
-    /**
-     * @brief 
      *  Function to remove redundant instructions by using
      *  herbrand equivalence and available expression information.
      * 
@@ -1305,9 +1161,10 @@ namespace HerbrandPass {
             errs() << "\n\n";
         }
 
-        // set to store deleted variables and their names
+        // set to store deleted variables and also other
+        // variables which can't be used as a replacement
+        // during optimization
         set<Value *> deletedVars;
-        set<string> deletedVarsName;
 
         // iterate over instructions removing redundant ones
         auto insts = instructions(F);
@@ -1318,6 +1175,12 @@ namespace HerbrandPass {
 
             if(not isa<LoadInst>(I) and not isa<BinaryOperator>(I)) {
                 // if there is no RValue skip current instruction
+
+                // also non-temporary stack variables (those
+                // assigned values using alloca instruction)
+                // cannot be used for replacements, so store
+                // them in deletedVars
+                if(isa<AllocaInst>(I)) deletedVars.insert(I);
                 if(DEBUG) errs() << "  => Instruction skipped\n\n\n";
                 continue;
             }
@@ -1347,9 +1210,8 @@ namespace HerbrandPass {
                 set<expTuple> setExp;
                 getClass(index, partitions[I], setCV, setExp);
                 
-                for(auto el : availVariables[I])
-                    if(el != I and setCV.find(el) != setCV.end() 
-                               and deletedVars.find(el) == deletedVars.end()) {
+                for(auto el : setCV)
+                    if(el != I and deletedVars.find(el) == deletedVars.end()) {
                         replacement = el;
 
                         if(DEBUG) errs() << "  => Value already available in variable\n";
@@ -1360,16 +1222,15 @@ namespace HerbrandPass {
             // if a replacement is found delete current instruction
             // and replace all its uses
             if(replacement != nullptr) {
-                deletedVars.insert(I);
-                deletedVarsName.insert(I->getName());
-                I->replaceAllUsesWith(replacement);
-                I->eraseFromParent();
-
                 if(DEBUG) {
-                    errs() << "  => Instruction deleted and replaced with : ";
+                    errs() << "  => Instruction being deleted and replaced with : ";
                     printCV(replacement);
                     errs() << "\n";
                 }
+
+                deletedVars.insert(I);
+                I->replaceAllUsesWith(replacement);
+                I->eraseFromParent();
             } else {
                 if(DEBUG) errs() << "  => Instruction not deleted\n";
             }
@@ -1392,8 +1253,7 @@ namespace HerbrandPass {
         bool runOnFunction(Function &F) override {
             // clear the contents of global variables
             Constants.clear(), CuV.clear(), Variables.clear();
-            indexCV.clear(), indexExp.clear();
-            partitions.clear(), availVariables.clear();
+            indexCV.clear(), indexExp.clear(), partitions.clear();
             Predecessors.clear(), confluencePoints.clear();
             Parent.clear(), constIDStruct.clear();
 
@@ -1408,7 +1268,6 @@ namespace HerbrandPass {
             }
 
             findHerbrandEquivalence(F);
-            findAvailableVariables(F);
             removeRedundantExpressions(F);
 
             if(DEBUG) PRINT("Optimised Code"), printCode(F);
