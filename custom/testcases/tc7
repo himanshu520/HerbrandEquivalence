@@ -1,0 +1,6 @@
+x = 0
+y = 0
+
+LABEL L1
+x = 0
+GOTO L1

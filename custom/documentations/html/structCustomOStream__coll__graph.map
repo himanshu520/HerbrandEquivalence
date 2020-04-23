@@ -1,0 +1,5 @@
+<map id="CustomOStream" name="CustomOStream">
+<area shape="rect" id="node2" href="$classProgram.html" title="Defines structures and methods to capture a program, and operate with it. " alt="" coords="153,95,223,121"/>
+<area shape="rect" id="node3" href="$classMapVector.html" title="MapVector\&lt; std::string \&gt;" alt="" coords="150,5,317,32"/>
+<area shape="rect" id="node4" href="$classMapVector.html" title="MapVector\&lt; int \&gt;" alt="" coords="341,5,464,32"/>
+</map>

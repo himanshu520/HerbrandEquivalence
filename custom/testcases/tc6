@@ -1,0 +1,24 @@
+GOTO L1 L2 L3
+
+LABEL L1
+a = 2
+b = 1
+c = 1
+d = 1
+GOTO L4
+
+LABEL L2
+a = 1
+b = 2
+c = 1
+d = 1
+GOTO L4
+
+LABEL L3 
+a = 1
+b = 1
+c = 2
+d = 1
+GOTO L4
+
+LABEL L4

@@ -1,0 +1,10 @@
+x = 0
+
+LABEL L1
+x = 1
+y = 1
+
+LABEL L2
+z = 2
+y = 2
+GOTO L1 L2

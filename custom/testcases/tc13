@@ -1,0 +1,13 @@
+GOTO L1 L2
+
+LABEL L1
+a = y + z
+x = a + n
+GOTO L3
+
+LABEL L2 
+b = y + z
+x = b + n
+GOTO L3
+
+LABEL L3

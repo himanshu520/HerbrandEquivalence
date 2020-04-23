@@ -1,0 +1,151 @@
+============================================================================================
+File/Folder descriptions
+============================================================================================
+
+* testcases 
+    This folder contains testcases. Other testcases can also be added to this 
+    folder which would be run automatically while running the script file 'run.sh'
+    (see below) - only thing is the test file name should be 'tc' followed by a number.
+
+* HerbrandEquivalence.cpp
+    This file contains the main implementation of the algorithm
+
+* MapVector.h
+    This file describes a templated MapVector class which can used to map objects of 
+    any type to integers and also reverse map integers to those objects
+
+* Program.h
+    This file describes classes to store/capture an input program - defines the 
+    functions to parse the input program, create control flow graph etc.
+
+* run.sh
+    This is a bash script to automatically run the testcases placed in 'testcases' 
+    folder (files with name starting with 'tc' followed by a number). For each run 
+    the results are stored in a new folder (inside 'testcases' folder with name 
+    same as the timestamp during execution). For each testcase file there are two 
+    output files - one with the same name as testcase file (which contains 
+    information of only original variables), and other with file name suffixed by 
+    '_ext' (which also contains information of shadowed variables)
+
+============================================================================================
+Manually running the program on a testfile
+============================================================================================
+* First compile the program - 'g++ HerbrandEquivalence.cpp'
+
+* Now run the program providing two command line inputs - the first is name of the file 
+  which contains the input program and second is one of 0 and 1. If the second input is 
+  0, the program prints information of only original variables and if it is 1, the it also 
+  prints information of shadowed variables.
+    './a.out tc1 0'
+    './a.out tc1 1'
+
+  All the output is written to stdout.
+
+
+============================================================================================
+Running through the script file
+============================================================================================
+The bash script automatically runs the testcases placed in 'testcases' folder (files 
+with name starting with 'tc' followed by a number). For each run the results are 
+stored in a new folder (inside testcases folder with name same as the timestamp during 
+execution). For each testcase file there are two output files - one with the same 
+name as testcase file (which contains information of only original variables), 
+and other with file name suffixed by '_ext' (which also contains information of 
+shadowed variables)
+
+* First change the permission for the script file (only for the first time)
+    'chmod +x ./run.sh'
+
+* Now run the scirpt 
+    './run.sh HerbrandEquivalence'
+
+
+============================================================================================
+Format for input program
+============================================================================================
+Each non empty line in the program should be one of the following (empty lines are ignored) - 
+
+* Instruction
+    Valid program instructions are either of the following three forms -
+        x = y
+        x = y + z
+        x = *
+    Here 'x' must be a variable and 'y' and 'z' can be a variable or a constant. A variable 
+    can be used without definition. The third stands for non-deterministic assignment.
+
+* Label
+    These are of the following form and refers to the immediate next instruction (the first type)
+    or the end of the program (if there are no such instruction).
+        LABEL label_identifier
+
+    More than one label identifiers can also be used - either in the same line (with 'LABEL' only 
+    at the beginning and label identifiers separated by spaces) or different lines (with 'LABEL'
+    at the beginning in each line before the identifiers)
+
+    Labels can be specified anywhere either at the beginning of the program, or in the end, in 
+    succession etc.
+
+    Label identifiers must be distinct (even if they refer to same instruction)
+
+* Jump
+    These specify the successors of the immediate previous instruction (the first type). By 
+    default for each instruction (the first type) its successor is the immediate next instruction 
+    (the first type) unless there is this jump statement - then only instructions specified by 
+    jump statement are considered as successors.
+
+    These are of the following form
+        GOTO label_identifier
+
+    Like 'LABEL' statement we can have multiple label identifiers in the same statement (with only 
+    one 'GOTO' in the beginning and label identifiers separated by spaces) or in different lines 
+    (with 'GOTO' at the beginning of each line before the identifiers)
+
+    Each label used must be a valid lable - defined in some 'LABEL' statement within the program.
+    Also, there can be duplicate lables in a 'GOTO' statement.
+
+    A 'GOTO' statement can occur anywhere except before the first instruction (of the first type)
+    in the program. Also, a 'GOTO' just after a 'LABEL' is same as 'LABEL' after the 'GOTO' - a 
+    'GOTO' always specifies the successor of previous instruction (non-label and non-jump) and 
+    'LABEL' always refers to the next instruction (non-label and non-jump).  
+
+
+Make sure that each token is valid and they are separated by atleast a space.
+
+Also each statement of the above three types must be in a single line and it should be the only 
+statement in the line.
+
+Constants and variables for unreachable instructions are taken for analysis but 
+the analysis is not done for those unreachable instructions.
+
+For sample testcases refer to 'testcases' folder. And to see if an input program has been correctly
+parsed see the beginning part of the output.
+
+
+============================================================================================
+Interpreting the output
+============================================================================================
+* First the variables and constants in the program are given (these are used 
+    the ones used in the analysis)
+
+* Next is the program itself, with the following format 
+    <instruction_index>: <instruction> [Predecessors : <list_of_indexes_of_predecessor_instructions>]
+
+* Next is the control flow graph description of the program, which can be one of the following three types (depending on the program point)
+    - for the start node 
+        <node_index> START 
+
+    - for a transfer point 
+        <CFG_node_index>: Transfer Point => (<instruction_index_for_the_transfer_instruction>) <transfer_instruction> [<index_of_predecessor_CFG_node>]
+        
+    - for a confluence point 
+        <CFG_node_index>: Confluence point => [<list_of_indexes_of_predecessor_CFG_nodes>]
+
+
+* Next is the information for herbrand equivalence computation
+
+    - First it shows the intial partition at the starting program point (which never changes)
+      The number in the brackets after each set is an integer identifier for that set.
+
+    - Class information for each iteration and each program point. The program point is specified as either of the two forms
+        <CFG_node_index>: <transfer_instruction> [index_of_predecessor_CFG_node>]
+        <CFG_node_index>: Confluence of [<list_of_indexes_of_predecessor_CFG_nodes>]

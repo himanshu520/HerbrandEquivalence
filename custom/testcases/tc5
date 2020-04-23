@@ -1,0 +1,13 @@
+x = 1
+GOTO L1 L2
+
+LABEL L1
+x = 2
+y = 1
+GOTO L3
+
+LABEL L2
+y = 1
+GOTO L3
+
+LABEL L3
