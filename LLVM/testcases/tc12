@@ -1,17 +1,18 @@
 =======================================================
-Toy Program
+Program (C Code)
 =======================================================
-x = 1
-y = 1
+void main() {
+    int T1 = 1, T2 = 1;
 
-LABEL L1
-y = x + 1
-x = y
-GOTO L1 
+    while(1) {
+        T2 = T1 + 1;
+        T1 = T2;
+    }
+}
 
 
 =======================================================
 Explanation
 =======================================================
-Here x and y must be equivalent after the second
-statement under label L1.
+Here T1 and T2 must be equivalent after the second 
+statement inside the while loop.

@@ -1,7 +1,7 @@
 
-# Herbrand Equivalence
+# Herbrand Equivalence Analysis
 
-LLVM implementation of Herbrand Equivalence algorithm mentioned [here](https://arxiv.org/abs/1708.04976 "A fix-point characterization of Herbrand equivalence of expressions in data flow frameworks").
+LLVM implementation of Herbrand Equivalence analysis algorithm mentioned [here](https://arxiv.org/abs/1708.04976 "A fix-point characterization of Herbrand equivalence of expressions in data flow frameworks").
 
 ## How to run
 
@@ -48,12 +48,17 @@ LLVM implementation of Herbrand Equivalence algorithm mentioned [here](https://a
     `clang -emit-llvm filename.c -o newname.bc`  
     `./bin/opt -load ./lib/LLVMHello.so -hello newname.bc -o newname_hello.bc`
 
-## Repository structure
+## Directory structure
 
-* **references** - Contains relevant papers  
-* **reports** - Contains reports and presentations
-* **src** - Contains the LLVM pass - implementation of the algorithm  
-* **testcases** - Contains examples used for testing
+* **documentation** - Folder containing [Doxygen](http://www.doxygen.nl/ "Doxygen") documentation files, generated from inline comments
+
+* **src** - Folder containing the LLVM pass - implementation of the algorithm  
+
+* **testcases** - Folder containing testcases used for verification of the algorithm
+
+* **Doxyfile** - File containing doxygen configurations used for generating the documentations
+
+* **README.md** - Readme file
 
 ## References
 

@@ -1,3 +1,6 @@
+=======================================================
+Toy Program 
+=======================================================
 GOTO L1 L2
 
 LABEL L1
@@ -11,3 +14,10 @@ x = b + n
 GOTO L3
 
 LABEL L3
+
+
+=======================================================
+Explanation
+=======================================================
+Here the set identifiers allocated to x must be the 
+same along both the branches (with labels L1 and L2).

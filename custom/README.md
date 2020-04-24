@@ -3,7 +3,7 @@
 
 Implementation of Herbrand Equivalence analysis algorithm mentioned [here](https://arxiv.org/abs/1708.04976 "A fix-point characterization of Herbrand equivalence of expressions in data flow frameworks") for a toy language.
 
-# Toy Language
+## Toy Language
 
 There are three different kinds of statements in any program of the toy language.
 

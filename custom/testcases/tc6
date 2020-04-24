@@ -1,3 +1,6 @@
+=======================================================
+Toy Program
+=======================================================
 GOTO L1 L2 L3
 
 LABEL L1
@@ -22,3 +25,11 @@ d = 1
 GOTO L4
 
 LABEL L4
+
+
+=======================================================
+Explanation
+=======================================================
+Here at the end of the program d and 1 must be 
+equivalent, but a, b, c and d must be in different
+equivalence classes.

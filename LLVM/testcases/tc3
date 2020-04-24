@@ -1,17 +1,17 @@
 =======================================================
-Toy Program
+Program (C Code)
 =======================================================
-x = 1
-y = 1
-
-LABEL L1
-y = x + 1
-x = y
-GOTO L1 
+void main() {
+    int T1 = 1;
+    int T2 = 1 + T1;
+    int T3 = T1 + 1;
+    int T4 = 1 + T2;
+    int T5 = T3 + 1;
+}
 
 
 =======================================================
 Explanation
 =======================================================
-Here x and y must be equivalent after the second
-statement under label L1.
+Here at the end of the program T2 and T3 must be 
+equivalent but T4 and T5 must not.
