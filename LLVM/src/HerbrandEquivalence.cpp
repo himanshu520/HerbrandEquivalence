@@ -14,69 +14,38 @@
 #include <bits/stdc++.h>
 
 using namespace llvm;
-using namespace std;
 
 // Macro to print a header 
-#define PRINT(str) errs() << string(100, '=') << "\n" << (str) \
-                          << "\n" << string(100, '=') << "\n"
+#define PRINT_HEADER(str) errs() << std::string(100, '=') << "\n" << (str) \
+                                 << "\n" << std::string(100, '=') << "\n"
 
 // If DEBUG flag is 0, the pass won't print any debug information
 // else it will
 #define DEBUG 1
 
+// ExpressionTy value for a constant or a variable
+#define EXP(x) {'\0', (x), nullptr}
+
 /**
- * @brief Generic function to find the intersection of two std::set.
+ * @brief 
+ *  Generic function to find the intersection 
+ *  of two std::set.
  * 
- * @tparam          T     Any valid type for which std::set can be created
+ * @tparam          T     Any valid type for which std::set 
+ *                        can be created
  * @param[in]       xset  Reference to first input set
  * @param[in, out]  yset  Reference to second input set
  * @return          Void
  * 
- * @note        The first input argument is modified to contain the intersection.
+ * @note The first input argument is modified to contain the intersection.
  **/
 template <typename T>
-void setIntersect(set<T> &xset, set<T> &yset) {
+void setIntersect(std::set<T> &xset, std::set<T> &yset) {
     for(auto it = xset.begin(); it != xset.end(); ) {
         auto it_ = it++;
         if(yset.find(*it_) == yset.end())
             xset.erase(it_);
     }
-}
-
-/**
- * @brief Generic function to find the union of two std::set.
- * 
- * @tparam          T     Any valid type for which std::set can be created
- * @param[in]       xset  Reference to first input set
- * @param[in, out]  yset  Reference to second input set
- * @return          Void
- * 
- * @note        The first input argument is modified to contain the union.
- **/ 
-template <typename T>
-void setUnion(set<T> &xset, set<T> &yset) {
-    for(auto el : yset)
-        xset.insert(el);
-}
-
-/**
- * @brief Returns result of evaluation of two length expression
- * 
- * @param[in]   op    Character corresponding to operator
- * @param[in]   left  First operand
- * @param[in]   right Second operand
- * @return      result of "left op right"
- * 
- * @note        The switch case is supposed to be exhaustive
- **/ 
-int findVal(char op, int left, int right) {
-    switch(op) {
-        case '+' : return left + right;
-        case '-' : return left - right;
-        case '*' : return left * right;
-        case '/' : return left / right;
-    }
-    return 0;
 }
 
 /**
@@ -87,9 +56,9 @@ int findVal(char op, int left, int right) {
  * @param[in]   opCodeName  A string returned by getOpcodeName
  * @returns     The character symbol corresponding to the operator name
  * 
- * @see llvm::Instruction::getOpcodeName
+ * @see     llvm::Instruction::getOpcodeName
  **/
-char getOpSymbol(string opCodeName) {
+char getOpSymbol(std::string opCodeName) {
     if(opCodeName == "add") return '+';
     if(opCodeName == "sub") return '-';
     if(opCodeName == "mul") return '*';
@@ -105,924 +74,238 @@ char getOpSymbol(string opCodeName) {
 namespace HerbrandPass {
 
     /** 
-     * @struct IDstruct
-     * @brief Structure for capturing Herbrand Equivalence classes.
-     * 
-     * @details 
-     *  At a given program point, expressions pointing to the same 
-     *  IDstruct object are Herbrand Equivalent at that point.
-     * 
-     * @note
-     *  Expressions across different program points, pointing to
-     *  the same IDstruct object also have equivalent value and this
-     *  information can be used for global value numbering.
-    **/
-    struct IDstruct {
-        /**
-         * @brief 
-         *  Operator of the Herbrand class represented by the object.
-         * 
-         * @details
-         *  For a constant or variable it is just null character. 
-         *  For compound expressions, it represents the operator 
-         *  which combines the left and right subexpressions.
-         **/
-        char opSymbol;
-
-        /**
-         * @brief Count of number of pointers to the object.
-         * 
-         * @details
-         *  Whenever a variable points to an IDstruct object,
-         *  parentCnt of the object is incremented. Similarly, 
-         *  when a variable stops pointing to the object,
-         *  parentCnt is decremented. If at any point of time
-         *  parentCnt is 0, then it means that the object 
-         *  is of no use and can be destroyed to free memory.
-         **/
-        int parentCnt;
-
-        /**
-         * @brief 
-         *  Pointer to IDstruct object corresponding to the equivalence
-         *  class of left subexpression of the current object.
-         **/
-        IDstruct *leftID;
-        
-        /**
-         * @brief 
-         *  Pointer to IDstruct object corresponding to the equivalence
-         *  class of right subexpression of the current object.
-         **/
-        IDstruct *rightID;
-
-        /**
-         * @brief
-         * Boolean to represent if the IDstruct object represents a 
-         * constant expression.
-         **/
-        bool isConst;
-
-        /**
-         * @brief
-         * Stores the constant value represented by expressions corresponding
-         * to the IDstruct object. This field stores valid information only
-         * if isConst is true.
-         **/
-        int constVal;
-
-        /**
-         * @brief Default constructor for the structure.
-         * 
-         * @details
-         *  It can be used to create an IDstruct object to represent a
-         *  non-constant variable, or a variable whose value is unknown.
-         **/
-        IDstruct() : opSymbol('\0'), parentCnt(0), leftID(nullptr), rightID(nullptr),
-                     isConst(false), constVal(0) {}
-
-        /**
-         * @brief A parameterised constructor for the structure.
-         * 
-         * @param   constVal The value to be represented by the IDstruct object
-         * 
-         * @details
-         *  It can be used to create an IDstruct object to represent a constant.
-         **/
-        IDstruct(int constVal) : opSymbol('\0'), parentCnt(0), leftID(nullptr),
-                                 rightID(nullptr), isConst(true), constVal(constVal) {}
-
-        /**
-         * @brief A parameterised constructor for the structure.
-         * 
-         * @param   op      Operator for the current Herbrand Equivalence class
-         * @param   leftID  Pointer to the class corresponding to left subexpression
-         * @param   rightID Pointer to the class corresponding to right subexpression
-         * 
-         * @details
-         *  It can be used to create an IDstruct object to represent a two length
-         *  expression. It automatically checks the child objects to determine 
-         *  whether the new object will represent a constant expression or not.
-         **/
-        IDstruct(char op, IDstruct *leftID, IDstruct *rightID) {
-            // first set the fields corresponding to the passed arguments
-            this->opSymbol = op;
-            this->leftID = leftID;
-            this->rightID = rightID;
-
-            // intialise parentCnt to be 0
-            this->parentCnt = 0;
-
-            // determine if the childrens are constant and if find the 
-            // corresponding value and set the fields isConst and constVal
-            if(leftID->isConst and rightID->isConst) {
-                this->isConst = true;
-                this->constVal = findVal(op, leftID->constVal, rightID->constVal);
-            } else {
-                this->isConst = false;
-                this->constVal = 0;
-            }
-        }
-    };
-
-    /** 
-     * @brief Represents a two operand expression in prefix form.
-     * 
-     * @details 
-     *  In LLVM expressions are of type Value*. An expTuple
-     *  of the form {op, left, right} represents an expression
-     *  "left op right".
-     **/
-    typedef tuple<char, Value *, Value *> expTuple;
-
-    /**
-     * @brief
-     *  Vector to hold equivalence information for each
-     *  constant/variable/two operand expression at a
-     *  program point.
-     **/
-    typedef vector<IDstruct *> Partition;
-
-    /** 
      * @brief Set of constants used in the program.
+     *
+     * @note 
+     *  Value is LLVM structure used for representing
+     *  constants and variables.
+     * 
+     * @see     llvm::Value
      **/
-    set<Value *> Constants;
+    std::set<Value *> Constants;
     
     /** 
      * @brief Set of variables used in the program.
+     *
+     * @note 
+     *  Value is LLVM structure used for representing
+     *  constants and variables.
+     * 
+     * @see     llvm::Value
      **/
-    set<Value *> Variables;
-    
-    /**
-     * @brief Set of constants and variables used in the program.
-     **/
-    set<Value *> CuV;
+    std::set<Value *> Variables;
 
     /**
      * @brief Set of operators used in the program.
-     **/
-    set<char> Ops({'+'});
-
-    /**
-     * @brief 
-     *  Maps constants and variables in the program to integers
-     *  for indexing purpose.
-     **/
-    map<Value *, int> indexCV;
-
-    /**
-     * @brief 
-     *  Maps all possible two operand expressions that can be formed
-     *  using constants, variables and operators in the program to
-     *  integers for indexing purpose.
-     **/
-    map<expTuple, int> indexExp;
-
-    /**
-     * @brief 
-     *  Count of number of expressions of length atmost two that
-     *  can be formed using constants and variables in the program.
-     **/
-    int numExps;
-
-    /**
-     * @brief 
-     *  Stores predecessors for each instruction - an instruction
-     *  can have zero, one or more than one predecessors.
-     **/
-    map<Instruction *, vector<Instruction *>> Predecessors;
-
-    /**
-     * @brief 
-     *  Stores the instructions which represents confluence points - an
-     * instruction having more than one predecessors.
-     **/
-    set<Instruction *> confluencePoints;
-
-    /**
-     * @brief 
-     *  Stores Herbrand Equivalence information after each instruction
-     *  in the program.
      * 
-     * @details
-     *  Each index of Partition, corresponds to either a 
-     *  constant or a variable or a two operand expression as determined
-     *  by indexCV and indexExp. There will be an IDstruct object for each
-     *  program point and those variables/constants/expressions that
-     *  point to the same IDstruct object (has same pointer value) at a
-     *  given program point are Herbrand Equivalent at that program point.
-     * 
-     * @see indexCV, indexExp, Partition
+     * @note
+     *  This set needs to be updated by adding operators
+     *  if the programs on which the pass is being run 
+     *  contains more operators.
      **/
-    map<Instruction *, Partition> partitions;
+    std::set<char> Ops({'+'});
 
-    /**
+    /** 
      * @brief 
-     *  For a given {op, leftID, rightID} as key, stores pointer to
-     *  IDstruct object whose fields are {op, _, leftID, rightID}.
+     *  Represents an expression of length at most two.
      * 
-     * @details
-     *  When we create an IDstruct object with fields 
-     *  {op, _, leftID, rightID}, we store this information in the
-     *  map so that when we again need such an object we do not
-     *  create it again and use the already existing one.
+     * @details 
+     *  For two length expressions `x op y` the tuple 
+     *  holds `{op, x, y}` whereas for a constant or
+     *  variable `x` it holds `{'\0', x, nullptr}` 
+     *  (here the first and last element of the tuple 
+     *  have default value for consistency).
+     *
+     * @note 
+     *  Value is LLVM structure used for representing
+     *  constants and variables.
+     * 
+     * @see     llvm::Value
      **/
-    map<tuple<char, IDstruct *, IDstruct *>, IDstruct *> Parent;
+    typedef std::tuple<char, Value *, Value *> ExpressionTy;
 
     /**
      * @brief
-     *  Stores the pointer to IDstruct object corresponding to
-     *  a constant, so that we never create a duplicate IDstruct 
-     *  object for the same.
+     *  Maps expressions to integer indexes. This indexing is
+     *  arbitrarily fixed in the beginning and used throughout 
+     *  wherever indexing is required for the expressions.
+     * 
+     * @see     ExpressionTy, Partitions
+     **/
+    std::map<ExpressionTy, int> IndexExp;
+
+    /**
+     * @brief
+     *  Counter to keep track of set identifiers. New set 
+     *  identifiers are created by incrementing this counter.
+     * 
+     * @see     ExpressionTy, Partitions
+     **/
+    int SetCnt = 0;
+
+    /**
+     * @brief
+     *  Vector to keep track of equivalence classes at each
+     *  program point.
      * 
      * @details
-     *  This is required just for logical consistency. A basic
-     *  block other than the starting block can have no predecessor
-     *  (in case a block of code is unreachable). In that case, 
-     *  to make the code also useful for GVN along with herbrand 
-     *  equivalence, this information is required. Otherwise 
-     *  at the start of all such unreachable basic blocks we would
-     *  be creating a new IDstruct object for the same constant - 
-     *  which means according to our program, they are not equivalent
-     *  (as they do not point to the same IDstruct object), which
-     *  is not correct. However, for herbrand equivalence we can
-     *  even do without this.
-     **/
-    map<int, IDstruct *> constIDStruct;
-
-    /**
-     * @brief Function to decrement parentCnt of an IDstruct object.
-     * 
-     * @details
-     *  If parentCnt of an IDstruct object becomes zero then it 
-     *  means that the object is no longer of any use and its memory
-     *  can be freed. In the second case, we need to recursively call
-     *  decreaseParentCnt for its left and right.
-     * 
-     * @param[in, out]  ptr  Pointer to the IDstruct object
-     * @returns         Void
-     * 
-     * @see IDstruct
-     **/
-    void decreaseParentCnt(IDstruct *&ptr) {
-        if(ptr == nullptr) return;
-        assert(ptr->parentCnt > 0);
-
-        ptr->parentCnt -= 1;
-        if(ptr->parentCnt > 0) return;
-
-        // object pointed by ptr has no pointers to it,
-        // so it can now be destroyed
-
-        // first check whether the object has some children
-        // (in the form of leftID and rightID), and if so
-        // first call decreaseParentCnt for them recursively
-        // (here we can also use `ptr->opSymbol != ""` 
-        // or `ptr->left != nullptr` or `ptr->right != nullptr`)
-        if(ptr->leftID != nullptr and ptr->rightID != nullptr) {
-            auto it = Parent.find({ptr->opSymbol, ptr->leftID, ptr->rightID});
-            Parent.erase(it);
-            decreaseParentCnt(ptr->leftID);
-            decreaseParentCnt(ptr->rightID);
-        }
-
-        // free the memory allocated to object pointed by ptr
-        // and set it to nullptr
-        delete(ptr);
-        ptr = nullptr;
-    }
-
-    /**
-     * @brief Function to increment parentCnt of an IDstruct object.
-     * 
-     * @param[in]  ptr  Pointer to the IDstruct object
-     * @returns    Void
-     * 
-     * @see IDstruct
-     **/
-    void increaseParentCnt(IDstruct *&ptr) {
-        if(ptr == nullptr) return;
-        ptr->parentCnt += 1;
-    }
-
-    /**
-     * @brief 
-     *  Returns pointer to IDstruct object that represents
-     *  equivalence class corresponding to expression
-     *  "left op right" in a given partition.
-     * 
-     * @details
-     *  If such an object doesn't exists it creates one
-     *  such and updates other required things.
-     * 
-     * @param[in]   curPart Partition under consideration
-     * @param[in]   op      Operator
-     * @param[in]   left    Left operand
-     * @param[out]  right   Right operand
-     * @returns     Pointer to IDstruct object representing
-     *              "left op right" in curPart
-     * 
-     * @see IDstruct, Partition, partitions
-     **/
-    IDstruct* findIDstrct(Partition const &curPart, 
-                          char op, Value *left, Value *right) {
-                              
-        IDstruct *leftID = curPart[indexCV[left]];
-        IDstruct *rightID = curPart[indexCV[right]];
-
-        // the required IDstruct object exists, return
-        // a pointer to it
-        auto it = Parent.find({op, leftID, rightID});
-        if(it != Parent.end()) return (it->second);
-
-        // the required IDstruct object doesn't exists,
-        // create a new one and return a pointer to it
-        IDstruct *ptr = new IDstruct(op, leftID, rightID);
-        Parent[{op, leftID, rightID}] = ptr;
-        increaseParentCnt(leftID), increaseParentCnt(rightID);
-        
-        return ptr;
-    }
-
-    /**
-     * @brief 
-     *  Finds initial partition in which every expression is in a separate
-     *  equivalence class.
-     * 
-     * @param[out]  v    Vector to hold the initial partition
-     * @returns     Void
-     * 
-     * @see Partition
-     **/
-    void findInitialPartition(Partition &partition) {
-        // initialise partition
-        partition.assign(numExps, nullptr);
-
-        // create new IDstruct object for a constant, if it doesn't 
-        // already exists, otherwise use the previous one
-        for(auto el : Constants) {
-            int constVal = dyn_cast<ConstantInt>(el)->getSExtValue();
-
-            auto it = constIDStruct.find(constVal);
-            if(it != constIDStruct.end()) {
-                partition[indexCV[el]] = it->second;
-                it->second->parentCnt += 1;
-            } else {
-                IDstruct *ptr = new IDstruct(constVal);
-                partition[indexCV[el]] = ptr;
-                ptr->parentCnt += 1;
-
-                constIDStruct[constVal] = ptr;
-            }
-        }
-
-        // create a new IDstruct object for each variable
-        for(auto el : Variables) {
-            IDstruct *ptr = new IDstruct;
-            partition[indexCV[el]] = ptr;
-            ptr->parentCnt += 1;
-        }
-
-        // create new IDstruct object for each possible two operand
-        // expression
-        for(auto op : Ops)
-            for(auto left : CuV)
-                for(auto right : CuV) {
-                    // first find IDstruct object to represent current
-                    // expression and then store it in partition map
-                    IDstruct *ptr = findIDstrct(partition, op, left, right);
-                    partition[indexExp[{op, left, right}]] = ptr;
-
-                    // increment parentCnt of the object because the
-                    // current expression in the partition points to it
-                    ptr->parentCnt += 1;
-                }
-    }
-
-    /**
-     * @brief 
-     *  Finds the equivalence class corresponding to a constant, 
-     *  variable or two operand expression at a given program point.
-     * 
-     * @param[in]   index       Index corresponding to the 
-     *                          variable/constant/expression as
-     *                          given by indexCV/indexExp
-     * @param[in]   partition   The Equivalence information at
-     *                          the program point
-     * @param[out]  setCV       Set of variables/constants belonging
-     *                          to the equivalence class
-     * @param[out]  setExp      Set of two operand expressions belonging
-     *                          to the equivalence class
-     * @returns     Void
-     * 
-     * @see indexCV, indexExp, Partition, partitions
-     **/
-    void getClass(int index, Partition const &partition,
-                  set<Value *> &setCV, set<expTuple> &setExp) {
-
-        IDstruct *ptr = partition[index];
-        setCV.clear(), setExp.clear();
-        
-        if(ptr == nullptr) return;
-
-        // compare the values in partition vector with ptr,
-        // if they are same then the corresponding expression
-        // is in the required equivalence class
-        for(auto &el : indexCV)
-            if(partition[el.second] == ptr)
-                setCV.insert(el.first);
-        for(auto &el : indexExp)
-            if(partition[el.second] == ptr)
-                setExp.insert(el.first);
-    }
-
-    /**
-     * @brief 
-     *  Checks whether two partitions are equivalent or not.
-     * 
-     * @note
-     *  We don't need to check whether two expressions at
-     *  different points are equivalent. Instead, we are 
-     *  checking if the equivalence class of each expression
-     *  at two different program points are same.
-     * 
-     * @param[in]   first       Equivalence information for the
-     *                          first partition
-     * @param[in]   second      Equivalence information for the
-     *                          second partition
-     * @returns     true/false
-     * 
-     * @see Partition, partitions
-     **/
-    bool samePartition(Partition const &first, Partition const &second) {
-        // variables to store the equivalence class for
-        // first and second partitions
-        set<Value *> setCVfirst, setCVsecond;
-        set<expTuple> setExpfirst, setExpsecond;
-
-        // to check which expressions have already been considered
-        vector<bool> done(numExps, false);
-
-        for(auto el : indexCV) {
-            if(done[el.second]) continue;
-
-            getClass(el.second, first, setCVfirst, setExpfirst);
-            getClass(el.second, second, setCVsecond, setExpsecond);
-            if(setCVfirst != setCVsecond or setExpfirst != setExpsecond)
-                return false;
-
-            // mark other constants/variables/expressions in the equivalence
-            // class as done
-            for(auto el_ : setCVfirst) done[indexCV[el_]] = true;
-            for(auto el_ : setExpfirst) done[indexExp[el_]] = true;
-        }
-
-        for(auto el : indexExp) {
-            if(done[el.second]) continue;
-
-            getClass(el.second, first, setCVfirst, setExpfirst);
-            getClass(el.second, second, setCVsecond, setExpsecond);
-            if(setCVfirst != setCVsecond or setExpfirst != setExpsecond)
-                return false;
-
-            // mark other constants/variables/expressions in the equivalence
-            // class as done
-            for(auto el_ : setCVfirst) done[indexCV[el_]] = true;
-            for(auto el_ : setExpfirst) done[indexExp[el_]] = true;
-        }
-        return true;
-    }
-
-    /**
-     * @brief Creates a copy of a partition.
-     * 
-     * @details
-     *  First call decreaseParentCnt for each element
-     *  of the old partition, because we are removing references
-     *  to them. Copy the required partition and then call 
-     *  increaseParentCnt for each member of the copied
-     *  partition, because we are adding a new reference 
-     *  to them during copying.
-     * 
-     * @param[in, out]  oldPart  Old partition
-     * @param[in]       toCopy   Partition to be copied
-     * @returns         Void
-     * 
-     * @see IDstruct, Partition, partitions
-     **/
-    void copyPartition(Partition &oldPart, Partition const &toCopy) {
-        // call decreaseParentCnt for each reference in the 
-        // old partition because we would be removing them
-        for(auto &el : oldPart)
-            decreaseParentCnt(el);
-
-        // now copy the partition
-        oldPart = toCopy;
-
-        // call increaseParentCnt for each reference in the
-        // new copied partition (in oldPart) becase we have
-        // created a new pointer reference to them
-        for(auto &el : oldPart)
-            increaseParentCnt(el);
-    }
-
-    /**
-     * @brief 
-     *  Updates Predecessors map and confluencePoints set
-     *  for instructions in a function.
-     * 
-     * @param[in]   F     Function under consideration
-     * @returns     Void 
-     * 
-     * @see Predecessors, confluencePoints
-     **/
-    void findPredecessors(Function &F) {
-        // first clear the variables, to remove any previous contents
-        Predecessors.clear();
-        confluencePoints.clear();
-
-        // prevInst will store the previous instruction
-        // processed, so when we are not at the beginning
-        // of a basic block, prevInst will be the predecessor
-        // of current instruction.
-        Instruction *prevInst = nullptr;
-
-        for(Instruction &I : instructions(F)) {
-            BasicBlock *BB = I.getParent();
-            
-            if(&BB->front() == &I) {
-                // if we are at the beginnning of a basic block
-                // traverse through the predecessor basic blocks -
-                // their last instructions would be predecessors
-                // of current instruction
-                vector<Instruction *> pred = {};
-                for(auto it = pred_begin(BB); it != pred_end(BB); it++)
-                    pred.push_back(&(*it)->back());
-
-                Predecessors.emplace(&I, pred);
-                confluencePoints.insert(&I);
-            } else Predecessors.emplace(&I, vector<Instruction *>({prevInst}));
-
-            prevInst = &I;
-        }
-    }
-
-    /**
-     * @brief Transfer function.
-     * 
-     * @param[in, out]  curPart   Partition at current program point
-     * @param[in]       prevPart  Partition at predecessor program
-     *                            point
-     * @param[in]       I         Current instruction
-     * @returns         Void
-     *  
-     * @see Partition, partitions
-     **/
-    void transferFunction(Partition &curPart, Partition const &prevPart, 
-                          Instruction &I) {
-                             
-        // first copy the partition at predecessor instruction
-        // and then make required changes
-        copyPartition(curPart, prevPart);
-        
-        // changed stores the variable whose equivalence has
-        // been changed
-        Value *changed = nullptr;
-        
-        Value *left, *right;
-        IDstruct *leftID, *rightID, *IID, *newID;
-
-        if(isa<LoadInst>(I)) {
-            left = I.getOperand(0);
-            leftID = curPart[indexCV[left]];
-            IID = curPart[indexCV[&I]];
-
-            decreaseParentCnt(IID);
-            curPart[indexCV[&I]] = leftID;
-            increaseParentCnt(leftID);
-
-            changed = &I;
-        } else if(isa<StoreInst>(I)) {
-            left = I.getOperand(0);
-            right = I.getOperand(1);
-            leftID = curPart[indexCV[left]];
-            rightID = curPart[indexCV[right]];
-
-            decreaseParentCnt(rightID);
-            curPart[indexCV[right]] = leftID;
-            increaseParentCnt(leftID);
-
-            changed = right;
-        } else if(isa<BinaryOperator>(&I)) {
-            left = I.getOperand(0);
-            right = I.getOperand(1);
-            IID = curPart[indexCV[&I]];
-            char op = getOpSymbol(I.getOpcodeName());
-            newID = findIDstrct(curPart, op, left, right);
-
-            decreaseParentCnt(IID);
-            curPart[indexCV[&I]] = newID;
-            increaseParentCnt(newID);
-
-            changed = &I;
-        } else if(isa<CallInst>(I)) {
-            IID = curPart[indexCV[&I]];
-            newID = new IDstruct;
-
-            decreaseParentCnt(IID);
-            curPart[indexCV[&I]] = newID;
-            increaseParentCnt(newID);
-
-            changed = &I;
-        }
-
-        // if no variable has been changed then return,
-        // otherwise update equivalence information for
-        // every two operand expression containing the 
-        // changed variable
-        if(changed == nullptr) return;
-        for(auto op : Ops)
-            for(auto x : CuV) {
-                decreaseParentCnt(curPart[indexExp[{op, x, changed}]]);
-                newID = findIDstrct(curPart, op, x, changed);
-                curPart[indexExp[{op, x, changed}]] = newID;
-                increaseParentCnt(newID);
-
-                decreaseParentCnt(curPart[indexExp[{op, changed, x}]]);
-                newID = findIDstrct(curPart, op, changed, x);
-                curPart[indexExp[{op, changed, x}]] = newID;
-                increaseParentCnt(newID);
-            }
-    }
-
-    /**
-     * @brief Confluence function.
-     * 
-     * @param[in]   I          Current instruction
-     * @param[out]  partition  Partition at the confluence point
-     * 
-     * @see Partition, partitions
-     **/
-    void confluenceFunction(Instruction &I, Partition &partition) {
-        vector<Instruction *> &predecessors = Predecessors[&I];
-
-        if(predecessors.empty()) findInitialPartition(partition);
-        else {
-            // vector to check which constant/variable has already 
-            // been considered while processing
-            vector<bool> accessFlag(CuV.size(), false);
-
-            // initialize partition vector
-            partition.assign(numExps, nullptr);
-
-            // process each constant/variable that has not
-            // already been considered
-            for(auto el : indexCV) {
-                if(not accessFlag[el.second]) {
-                    accessFlag[el.second] = true;
-                    
-                    // check if the variable/constant is equivalent on all
-                    // the predecessors, if so make it point to the same
-                    // IDstruct object for the confluence partition. Notice 
-                    // that this case will always be true for a constant.
-                    // Also another thing is if in a partition, the variable/
-                    // constant contains nullptr we have to just ignore it,
-                    // as theoretically it means that the corresponding partition 
-                    // represents the top element
-                    bool flag = true;
-                    IDstruct *ptr = nullptr;
-                    for(int i = 0; i < (int)predecessors.size() and flag; i++) {
-                        IDstruct *nptr = partitions[predecessors[i]][el.second];
-                        if(nptr == nullptr) continue;
-                        else if(ptr == nullptr) ptr = nptr;
-                        else if(ptr != nptr) flag = false;
-                    }
-
-                    if(flag) {
-                        partition[el.second] = ptr;
-                        increaseParentCnt(ptr);
-                    } else {
-                        // however if the previous case is not
-                        // true, we must create a new IDstruct
-                        // object to represent the class of 
-                        // the varible in the temporary partition.
-                        // Also, every other variable that is 
-                        // equivalent (belong to the same class)
-                        // to the current variable at all the
-                        // predecessors must also point to the same
-                        // IDstruct object
-                        set<Value *> setCV, intersection(CuV);
-                        set<expTuple> setExp;
-                        for(auto inst : predecessors) {
-                            getClass(el.second, partitions[inst], setCV, setExp);
-                            setIntersect<Value *>(intersection, setCV);
-                        }
-
-                        IDstruct *ID = new IDstruct();
-                        for(auto el_ : intersection) {
-                            accessFlag[indexCV[el_]] = true;
-                            partition[indexCV[el_]] = ID;
-                            increaseParentCnt(ID);
-                        }
-                    }
-                }
-            }
-
-            // now consider every two operand expression
-            for(auto el : indexExp) {
-                Value *left = get<1>(el.first);
-                Value *right = get<2>(el.first);
-                char op = get<0>(el.first);
-
-                // find ID struct object coressponding to the expression
-                IDstruct *ID = findIDstrct(partition, op, left, right);
-                partition[el.second] = ID;
-                increaseParentCnt(ID);
-            }
-        }
-    }
-
-    /**
-     * @brief Prints a constant/variable in readable form.
-     * 
-     * @param[in]   value   LLVM representation of constant/variable
-     * @returns     Void
-     **/
-    void printCV(Value const *value) {
-        // if the argument is a constant print its value
-        // else it is a variable - print its assigned name
-        if(dyn_cast<ConstantInt>(value))
-            errs() << dyn_cast<ConstantInt>(value)->getValue().toString(10, true);
-        else errs() << value->getName();
-    }
-
-    /**
-     * @brief Prints a set of constant/variable in readable form.
-     * 
-     * @param[in]   setCV   Set of constants/variables
-     * @returns     Void
-     **/
-    void printSetCV(set<Value *> const &setCV) {
-        for(auto el : setCV)
-            printCV(el), errs() << ", ";
-        errs() << "\n";
-    }
-
-    /**
-     * @brief Prints a two operand expression in readable form.
-     * 
-     * @param[in]   exp  Expression to be printed
-     * @returns     Void
-     * 
-     * @see expTuple
-     **/
-    void printExp(expTuple const &exp) {
-        // first print left operand, then the operator and finally
-        // the right operand
-        printCV(get<1>(exp));
-        errs() << " " << get<0>(exp) << " ";
-        printCV(get<2>(exp));
-    }
-
-    /**
-     * @brief Prints a set of two operand expressions in readable form.
-     * 
-     * @param[in]   value   Set of expressions to be printed
-     * @returns     Void
-     **/
-    void printSetExp(set<expTuple> const &setExp) {
-        for(auto el : setExp)
-            printExp(el), errs() << ", ";
-        errs() << "\n";
-    }
-
-    /**
-     * @brief Prints a partition in readable format.
-     * 
-     * @param[in]   partition   Partition to be printed
-     * @returns     Void
+     *  There is an entry for each program point in this vector
+     *  which itself is a vector containing an entry for each 
+     *  expression of length atmost two. The entries for the 
+     *  expressions contains integer set identifiers. For a
+     *  given program point two expressions are equivalent iff
+     *  they have the same set identifier.
      *
-     * @see Partition
+     * @note
+     *  For a normal program point the entries for expressions
+     *  in the `Partitions` vector are non-negative. But, if the 
+     *  partition represents TOP partition, the entries for all
+     *  the expressions are -1. And the entry for any expression
+     *  being -1 is sufficient to conclude that the partition
+     *  vector represents TOP partition.
+     * 
+     * @see     IndexExp, SetCnt
      **/
-    void printPartition(Partition const &partition) {
-        // variables to hold an equivalence class
-        set<Value *> setCV;
-        set<expTuple> setExp;
-
-        // to check whether an expression has already been 
-        // considered
-        vector<bool> done(numExps, false);
-
-        bool isConst;
-        int constVal;
-
-        // lambda function to print an equivalence class
-        // (setCV and setExp)
-        auto lambda = [&]() {
-            errs() << "[";
-            if(isConst) errs() << constVal;
-            errs() << "]";
-
-            errs() << "{";
-            
-            for(auto it = setCV.begin(); it != setCV.end();) {
-                printCV(*it);
-                done[indexCV[*it]] = true;
-                if(++it != setCV.end()) errs() << ", ";
-            }
-
-            if(not setCV.empty() and not setExp.empty()) errs() << ", ";
-
-            for(auto it = setExp.begin(); it != setExp.end();) {
-                printExp(*it);
-                done[indexExp[*it]] = true;
-                if(++it != setExp.end()) errs() << ", ";
-            }
-
-            errs() << "}, ";
-        };
-
-        // print equivalence class of each constant/variable
-        for(auto el : indexCV) {
-            if(done[el.second]) continue;
-
-            if(partition[el.second]->isConst) {
-                isConst = true;
-                constVal = partition[el.second]->constVal;
-            } else isConst = false;
-            
-            getClass(el.second, partition, setCV, setExp);
-            lambda();
-        }
-
-        // print equivalence class of each two operand expression
-        for(auto el : indexExp) {
-            if(done[el.second]) continue;
-
-            if(partition[el.second]->isConst) {
-                isConst = true;
-                constVal = partition[el.second]->constVal;
-            } else isConst = false;
-
-            getClass(el.second, partition, setCV, setExp);
-            lambda();
-        }
-    }
+    std::vector<std::vector<int>> Partitions;
 
     /**
-     * @brief Prints the llvm source code.
+     * @brief
+     *  Map to hold parent set identifiers.
      * 
-     * @param[in]   F     Function that has to be printed
-     * @returns     Void
+     * @details
+     *  a1 =~ a2 and b1 =~ b2 at a program point iff
+     *  (a1 + b1) =~ (a2 + b2). Parent map helps us 
+     *  to resolve this by storing set identifiers of 
+     *  compound expression (a1 + b1) as parent of set 
+     *  identifiers of its smaller sub-expressions (a1 
+     *  and b1). Now, later when a new expression is 
+     *  formed by combining expressions (a2 and b2) with 
+     *  same set identifiers as those of the two 
+     *  sub-expressions (a1 and b1), we assign it 
+     *  (a2 + b2) the same identifier as the previous 
+     *  compound expression (a1 + b1).
+     *  This map also helps to resolve other complex 
+     *  cases where some equivalence classes are lost in 
+     *  the middle of the program but appears later.
+     *  
+     * @note
+     *  The two integers in the key of this map are ordered.
+     *  Also this map is global used throughout the program.
+     * 
+     * @see     IndexExp, Partitions, SetCnt
      **/
-    void printCode(Function &F) {
-        for(auto BB = F.begin(); BB != F.end(); BB++) {
-            errs() << "BasicBlock: " << BB->getName() << "\t\t[Predecessors: ";
-            for (auto it = pred_begin(&*BB); it != pred_end(&*BB); it++)
-                errs() << (*it)->getName() << " ";
-            errs() << "]\n";
+    std::map<std::tuple<char, int, int>, int> Parent;
 
-            for(auto I = BB->begin(); I != BB->end(); I++)
-                errs() << (*I) << "\n";
-            errs() << "\n";
-        }
-    }
+    /**
+     * @struct 
+     *  Represents a control flow graph node. There
+     *  is a node for each program point, alongwith
+     *  two special - START and END nodes.
+     * 
+     * @see     CFG, createCFG, llvm::Instruction
+     **/
+    struct CfgNodeTy {
+        /**
+         * @brief Type of control flow graph node
+         * 
+         * @details
+         *  START and END are two special nodes to
+         *  represent start and end point of a program.
+         *  TRANSFER and CONFLUENCE corresponds to 
+         *  whether the node represents a transfer or
+         *  a confluence point.
+         **/
+        enum {START, END, TRANSFER, CONFLUENCE} NodeTy;
+
+        /**
+         * @brief
+         *  Pointer to instruction corresponding to the
+         *  node if it represents a transfer point, 
+         *  otherwise holds `nullptr` for consistency.
+         **/
+        Instruction *instPtr;
+
+        /**
+         * @brief
+         *  Vector of indexes of predecessor control flow
+         *  graph nodes corresponding to `CFG` vector.
+         * 
+         * @details
+         *  For START nodes this is empty, for TRANSFER nodes
+         *  this is singular vector, for CONFLUENCE nodes this
+         *  has more than one members and for END nodes this
+         *  is non-empty.
+         **/
+        std::vector<int> predecessors;
+    };
+
+    /**
+     * @brief
+     *  Control flow graph corresponding to the program.
+     * 
+     * @details
+     *  It contains nodes only corresponding to reachable
+     *  instructions and confluence points along with two
+     *  special START and END nodes.
+     * 
+     * @see     CfgNodeTy, createCFG
+     **/
+    std::vector<CfgNodeTy> CFG;
+
+    /**
+     * @brief Stores `CFG` index for each instruction.
+     * 
+     * @see     CFG, CfgNodeTy
+     **/
+    std::map<Instruction *, int> CfgIndex;
 
     /**
      * @brief 
-     *  Assigns name to basic blocks and variables for 
-     *  easy reference.
+     *  Assigns names to basic blocks and variables 
+     *  for easy reference.
      * 
-     * @param[in]  F    Function block over which we are operating
+     * @param[in]  F    Function block over which 
+     *                  we are operating
      * @returns    Void
+     *
+     * @note 
+     *  These are not the names used in the original
+     *  C/C++ source files.
      **/
     void assignNames(Function &F) {
         int BBCtr = 1, varCtr = 1;
 
-        for(auto BB = F.begin(); BB != F.end(); BB++) {
+        for(BasicBlock &BB : F) {
             // first assign name to the basic block
-            BB->setName("BB" + to_string(BBCtr++));
+            BB.setName("BB" + std::to_string(BBCtr++));
 
             // now assign name to all non-void instructions
-            for(auto I = BB->begin(); I != BB->end(); I++)
-                if(not I->getType()->isVoidTy())
-                    I->setName("T" + to_string(varCtr++));
+            for(Instruction &I : BB)
+                if(not I.getType()->isVoidTy())
+                    I.setName("T" + std::to_string(varCtr++));
         }
     }
 
     /**
      * @brief 
-     *  Initialises Constants, Variables, CuV, indexExp and indexCV
-     *  by looking through the instructions in the program.
+     *  Maps expressions of length atmost two to integers
+     *  arbitrarily for indexing purpose by updating 
+     *  `IndexExp` map. Also Initialises `Constants` and
+     *  `Variables` by looking through the instructions in 
+     *  the program.
      * 
-     * @param[in]   F     Function block over which we are operating
+     * @param[in]   F     Function block over which 
+     *                    we are operating
      * @returns     Void
      * 
-     * @see Constants, CuV, indexCV, indexExp, Variables
+     * @see     Constants, IndexExp, Variables
      **/
     void assignIndex(Function &F) {
-        // first find the set of constants and variables
-        // by iterating over the instructions
+        ////////////////////////////////////////////////////
+        // First update `Constants` and `Variables` sets by
+        // iterating over instructions in the program
+        ////////////////////////////////////////////////////
+        
         for(Instruction &I : instructions(&F)) {
             // if the instruction is not of void type then 
             // it represents a variable. All the variables
@@ -1043,248 +326,750 @@ namespace HerbrandPass {
                 }
             }
         }
-        CuV = Constants, CuV.insert(Variables.begin(), Variables.end());
 
-        // now assign integer indexes to variables, constants
-        // and two operand instructions
+        ////////////////////////////////////////////////////
+        // Now assign indexes to expressions of length 
+        // atmost two by updating `IndexExp` map
+        ////////////////////////////////////////////////////
+
+        // set to hold both constants and variables
+        std::set<Value *> CuV = Constants;
+        CuV.insert(Variables.begin(), Variables.end());
+
         int ctr = 0;
-        for(auto el : CuV) indexCV[el] = ctr++;
+        for(auto el : CuV) IndexExp[EXP(el)] = ctr++;
         for(auto op : Ops)
             for(auto left : CuV)
                 for(auto right : CuV)
-                    indexExp[{op, left, right}] = ctr++;
-
-        // update the value of numExps
-        numExps = ctr;
+                    IndexExp[{op, left, right}] = ctr++;
     }
 
     /**
-     * @brief 
-     *  Finds herbrand equivalence information by updating
-     *  partitions map, for a given function.
+     * @brief
+     *  Creates control flow graph corresponding to
+     *  the program.
      * 
-     * @param[in]  F    Function under consideration
-     * @returns    Void
-     * 
-     * @see partitions
+     * @see     CfgNodeTy, CFG
      **/
-    void findHerbrandEquivalence(Function &F) {
-        if(DEBUG) {
-            PRINT("Herbrand Equivalence Computation");
-            errs() << "\n\n";
-        }
+    void createCFG(Function &F) {
+        ////////////////////////////////////////////////////
+        // First find the set of reachable basic blocks by
+        // performing BFS from the starting basic block
+        ////////////////////////////////////////////////////
+        
+        std::set<BasicBlock *> reachableBB;
+        std::queue<BasicBlock *> q;
 
-        // first clear the map, to remove any previous contents
-        partitions.clear();
+        // the list of basic blocks in the same order as
+        // visited by BFS, for same traversal later again
+        std::vector<BasicBlock *> bfsOrder;
 
-        // for each instruction, initialise its partition to be the
-        // one in which every element is assigned to nullptr.
-        // This is equivalent to the top element theoretically.
-        for(Instruction &I : instructions(F)) 
-            partitions.emplace(&I, Partition(numExps, nullptr));
+        // mark the starting basic block as reachable
+        // and also push it into the queue for BFS
+        q.push(&F.front()), reachableBB.insert(&F.front());
 
-        // variable to check for convergence
-        bool converged = false;
-        // iteration counter
-        int iterationCtr = 1;
+        while(not q.empty()) {
+            BasicBlock *bb = q.front();
+            q.pop(), bfsOrder.push_back(bb);
 
-        while(not converged) {
-            if(DEBUG) PRINT("Iteration " + to_string(iterationCtr++));
-
-            converged = true;
-
-            for(Instruction &I : instructions(F)) {
-                // store old partition to check for changes
-                // in the convergence information
-                Partition oldPartition = partitions[&I];
-
-                if(confluencePoints.find(&I) != confluencePoints.end()) {
-                    // if the instruction is at a confluence point
-
-                    // first find the partition at the confluence,
-                    // this would be a intermediate information needed
-                    Partition confluencePartition;
-                    confluenceFunction(I, confluencePartition);
-
-                    if(DEBUG) {
-                        // parent basic block of current instruction
-                        BasicBlock *BB = I.getParent();
-                        
-                        errs() << "Start of basic block " << BB->getName();
-                        errs() << "\t\t[Confluence of ";
-                        for (auto it = pred_begin(BB); it != pred_end(BB); it++)
-                            errs() << (*it)->getName() << " ";
-                        errs() << "]\n";
-                        printPartition(confluencePartition);
-                        errs() << "\n\n";
-                    }
-                    
-                    // now apply transfer function with confluencePartition
-                    // as predecessor partition
-                    transferFunction(partitions[&I], confluencePartition, I);
-
-                    // remove any reference information from confluencePartition
-                    for(auto el : confluencePartition)
-                        decreaseParentCnt(el);
-                } else { 
-                    // else the instruction is at a transfer point
-                    Instruction *prevInst = Predecessors[&I][0];
-                    transferFunction(partitions[&I], partitions[prevInst], I);
-                }
-
-                if(DEBUG) {
-                    errs() << I << "\n";
-                    printPartition(partitions[&I]);
-                    errs() << "\n\n";
-                }
-
-                // update convergence flag
-                if(not samePartition(oldPartition, partitions[&I])) 
-                    converged = false;
+            for(BasicBlock *nbb : successors(bb)) {
+                if(reachableBB.find(nbb) == reachableBB.end())
+                    reachableBB.insert(nbb), q.push(nbb);
             }
         }
 
-        if(DEBUG) errs() << "\n\n";
-    }
+        ////////////////////////////////////////////////////
+        // Now again visit the basic blocks in the same 
+        // order assigning an index for nodes in the control
+        // flow graph vector `CFG` corresponding to
+        // instructions and confluence points
+        ////////////////////////////////////////////////////
 
-    /**
-     * @brief 
-     *  Function to remove redundant instructions by using
-     *  herbrand equivalence and available expression information.
-     * 
-     * @param[in]   F     Function that has to be printed
-     * @returns     Void
-     **/
-    void removeRedundantExpressions(Function &F) {
-        if(DEBUG) {
-            PRINT("Removing Redundant Instructions");
-            errs() << "\n\n";
-        }
+        // some basic blocks might have just one
+        // predecessor, in that case they don't require
+        // a confluence node in the control flow graph.
+        // This set keeps track of all the basic blocks
+        // that require a confluence node
+        std::set<BasicBlock *> confBlocks;
 
-        // set to store deleted variables and also other
-        // variables which can't be used as a replacement
-        // during optimization
-        set<Value *> deletedVars;
+        // keeps track of current `CFG` index. Index 0 is
+        // assigned to the starting node
+        int curCfgIndex = 1;
 
-        // iterate over instructions removing redundant ones
-        auto insts = instructions(F);
-        for(auto itr = insts.begin(); itr != insts.end();) {
-            Instruction *I = &(*itr++);
+        for(BasicBlock *bb : bfsOrder) {
+            // number of predecessor basic blocks of `bb`,
+            // which are reachable
+            int predSz = 0;
+            for(BasicBlock *nbb : predecessors(bb)) {
+                if(reachableBB.find(nbb) != reachableBB.end())
+                    predSz++;
+            }
+
+            // if this basic block requires a confluence node,
+            // first assign an index to it
+            if(predSz > 1)
+                confBlocks.insert(bb), curCfgIndex++;
             
-            if(DEBUG) errs() << (*I) << "\n";
+            // now assign nodes for the instructions in the
+            // basic block
+            for(Instruction &I : (*bb))
+                CfgIndex[&I] = curCfgIndex++;
+        }
 
-            if(not isa<LoadInst>(I) and not isa<BinaryOperator>(I)) {
-                // if there is no RValue skip current instruction
+        ////////////////////////////////////////////////////
+        // Now actually create control flow graph nodes by
+        // filling `CFG` vector. Note that the consistency
+        // between `CfgIndex` and actual index of node for
+        // instructions in `CFG` vector is implicitly 
+        // maintained
+        ////////////////////////////////////////////////////
 
-                // also non-temporary stack variables (those
-                // assigned values using alloca instruction)
-                // cannot be used for replacements, so store
-                // them in deletedVars
-                if(isa<AllocaInst>(I)) deletedVars.insert(I);
-                if(DEBUG) errs() << "  => Instruction skipped\n\n\n";
-                continue;
-            }
+        // START node
+        CFG.push_back({CfgNodeTy::START, nullptr, std::vector<int>()});
 
-           // value with which to replace current instruction
-            int index = indexCV[I];
-            Value *replacement = nullptr;
+        // `CFG` nodes that are predecessors of the special END
+        // END instruction. Last instruction of the basic blocks 
+        // that have no successors belong to this category. Only
+        // if this vector is non-empty, an END node is created
+        std::vector<int> predsEnd;
 
-            if(partitions[I][index]->isConst) {
-                // if the current expression is a constant expression
-                // find Value* to represent the constant expression
+        for(auto bb : bfsOrder) {
+            // holds index of predecessor nodes for instructions
+            // in this block
+            int predIndex;
 
-                // check if Constants is not empty to get a type for
-                // creating the Value*, otherwise skip
-                if(not Constants.empty()) {
-                    int constVal = partitions[I][index]->constVal;
-                    Type *ty = (*Constants.begin())->getType();
-                    replacement = ConstantInt::get(ty, constVal);
-
-                    if(DEBUG) errs() << "  => A constant expression\n";
+            // if the block requires a confluence point,
+            // first push it into the `CFG` vector
+            if(confBlocks.find(bb) != confBlocks.end()) {
+                std::vector<int> preds;
+                for(BasicBlock *nbb : predecessors(bb)) {
+                    if(reachableBB.find(nbb) != reachableBB.end())
+                        preds.push_back(CfgIndex[&nbb->back()]);
                 }
-            } else {
-                // get herbrand class of RValue at current program point
-                // and check if some available variable is in the same 
-                // equivalence class as the RValue and is still not deleted
-                set<Value *> setCV;
-                set<expTuple> setExp;
-                getClass(index, partitions[I], setCV, setExp);
-                
-                for(auto el : setCV)
-                    if(el != I and deletedVars.find(el) == deletedVars.end()) {
-                        replacement = el;
+                CFG.push_back({CfgNodeTy::CONFLUENCE, nullptr, preds});
 
-                        if(DEBUG) errs() << "  => Value already available in variable\n";
+                // initialise `predIndex`
+                predIndex = CFG.size() - 1;
+            } else {
+                // here only `predIndex` is 
+                
+                // this initialisation is for the first basic block
+                // for which the `if` condition inside `for` never
+                // becomes true
+                predIndex = 0;
+
+                for(BasicBlock *nbb : predecessors(bb))
+                    if(reachableBB.find(nbb) != reachableBB.end()) {
+                        // if `break` is removed, even then the `if` 
+                        // block should be entered only once (except
+                        // for the first basic block for which it is 
+                        // entered never)
+                        predIndex = CfgIndex[&nbb->back()];
                         break;
                     }
             }
 
-            // if a replacement is found delete current instruction
-            // and replace all its uses
-            if(replacement != nullptr) {
-                if(DEBUG) {
-                    errs() << "  => Instruction being deleted and replaced with : ";
-                    printCV(replacement);
-                    errs() << "\n";
+            // now insert nodes corresponding to the instructions
+            for(Instruction &I : (*bb)) {
+                CFG.push_back({CfgNodeTy::TRANSFER, &I, 
+                               std::vector<int>({predIndex})});
+
+                // update `predIndex`
+                predIndex = CFG.size() - 1;
+
+                // this assertion must be passed for consistency
+                // of this function
+                assert(predIndex == CfgIndex[&I]);
+            }
+
+            if(succ_empty(bb)) predsEnd.push_back(CfgIndex[&bb->back()]);
+        }
+
+        // now create node corresponding to END, if required
+        if(not predsEnd.empty()) {
+            CFG.push_back({CfgNodeTy::END, nullptr, predsEnd});
+        }
+    }
+    
+    /**
+     * @brief Prints a constant/variable in readable form.
+     * 
+     * @param[in]   value   LLVM representation of constant/variable
+     * @returns     Void
+     * 
+     * @see     llvm::Value
+     **/
+    void printValue(Value const *value) {
+        // if the argument is a constant print its value
+        // else it is a variable - print its assigned name
+        if(dyn_cast<ConstantInt>(value))
+            errs() << dyn_cast<ConstantInt>(value)->getValue().toString(10, true);
+        else errs() << value->getName();
+    }
+
+    /**
+     * @brief Prints an expression in readable form.
+     * 
+     * @param[in]   exp  Expression to be printed
+     * @returns     Void
+     * 
+     * @see     ExpressionTy
+     **/
+    void printExpression(ExpressionTy const &exp) {
+        if(std::get<0>(exp)) {
+            // if `exp` is a two length expression
+            printValue(std::get<1>(exp));
+            errs() << " " << std::get<0>(exp) << " ";
+            printValue(std::get<2>(exp));
+        } else {
+            // if `exp` is just a constant/variable
+            printValue(std::get<1>(exp));
+        }
+    }
+
+    /**
+     * @brief Prints the llvm source code.
+     * 
+     * @param[in]   F     Function that has to be printed
+     * @returns     Void
+     **/
+    void printCode(Function &F) {
+        PRINT_HEADER("LLVM CODE");
+        errs() << "\n";
+
+        for(BasicBlock &BB : F) {
+            errs() << "BasicBlock: " << BB.getName();
+            
+            errs() << "\t\t[Predecessors:";
+            for(BasicBlock *nbb : predecessors(&BB))
+                errs() << ' ' << nbb->getName();
+            errs() << "]\n";
+
+            for(Instruction &I : BB)
+                errs() << I << "\n";
+            errs() << "\n";
+        }
+
+        errs() << "\n\n";
+    }
+
+    /**
+     * @brief 
+     *  Prints the control flow graph corresponding to 
+     *  the program
+     * 
+     * @returns     Void
+     * 
+     * @see     CFG, CfgNodeTy
+     **/
+    void printCFG() {
+        PRINT_HEADER("CONTROL FLOW GRAPH");
+        errs() << "\n";
+
+        for(int i = 0; i < (int)CFG.size(); i++) {
+            CfgNodeTy &node = CFG[i];
+            errs() << '[' << i << "] : ";
+
+            switch(node.NodeTy) {
+                case CfgNodeTy::START :
+                    errs() << "START\n";
+                    break;
+
+                case CfgNodeTy::END :
+                    errs() << "END  [Predecessors :";
+                    for(auto el : node.predecessors)
+                        errs() << ' ' << el;
+                    errs() << "]\n";
+                    break;
+
+                case CfgNodeTy::TRANSFER :
+                    errs() << "Transfer Point => [" 
+                           << node.instPtr->getParent()->getName() 
+                           << "]" << (*node.instPtr) << "\t[Predecessor : " 
+                           << node.predecessors[0] << "]\n";
+                    break;
+
+                case CfgNodeTy::CONFLUENCE :
+                    errs() << "Confluence Point => [Predecessors Nodes :";
+                    for(auto el : node.predecessors)
+                        errs() << ' ' << el << '('
+                               << CFG[el].instPtr->getParent()->getName()
+                               << ')';
+                    errs() << "]\n";
+
+                    break;
+            }
+        }
+        errs() << "\n\n";
+    }
+
+    /**
+     * @brief Prints a partition in readable format.
+     * 
+     * @param[in]   partition   The partition vector to 
+     *                          be printed.
+     * @return      Void
+     * 
+     * @see     IndexExp, Partitions
+     **/
+    void printPartition(std::vector<int> const &partition) {
+        // if any index stores -1, then the whole vector
+        // stores -1, representing the TOP element
+        if(partition[0] == -1) {
+            errs() << "<TOP ELEMENT>";
+            return;    
+        }
+
+        int cnt = 0;
+        // finding equivalent expressions in `mp` map
+        std::map<int, std::vector<ExpressionTy>> mp;
+        for(auto &el : IndexExp)
+            mp[partition[el.second]].push_back(el.first), cnt++;
+
+        // print the equivalence classes along with their
+        // set identifiers
+        for(auto &el : mp) {
+            errs() << '[' << el.first << "]{";
+
+            int sz = el.second.size();
+            for(int i = 0; i < sz; i++) {
+                printExpression(el.second[i]); 
+                if(i != sz - 1) errs() << ", ";
+            }
+
+            errs() << "}, ";
+        }
+    }
+
+    /**
+     * @brief Checks whether two partitions are same.
+     * 
+     * @details
+     *  Two partitions are same if in the vectors representing
+     *  them values at two indexes are equal in the first 
+     *  vector iff they are equal in the second vector.
+     * 
+     * @param[in]   first   First partition
+     * @param[in]   second  Second partition
+     * @return      Returns true if the two partitions are same,
+     *              otherwise false
+     * 
+     * @see     IndexExp, Partitions
+     **/
+    bool samePartition(std::vector<int> const &first, std::vector<int> const &second) {
+        // map to store equivalent indexes (have same value) 
+        // in the first partition
+        std::map<int, std::vector<int>> mp;
+        for(int i = 0; i < (int)first.size(); i++)
+            mp[first[i]].push_back(i);
+
+        // checking if equivalent indexes in the first 
+        // partition are also equivalent in the second.
+        // If not `false` is returned
+        for(auto &el : mp) {
+            int elSetId = second[el.second[0]];
+            for(auto &nel : el.second)
+                if(second[nel] != elSetId) return false;
+        }
+
+        // the partitions are equivalent, so return `true`
+        return true;
+    }
+
+    /**
+     * @brief 
+     *  Returns set identifier for a given two length expression 
+     *  at a program point.
+     * 
+     * @details
+     *  With the help of `Parent` map, first a check is made if 
+     *  a set identifier representing the expression at the
+     *  current program point exists. If so it is returned else
+     *  a new set identifier is created by updating `SetCnt` and
+     *  returned. This information is also stored in the 
+     *  `Parent` map for future use.
+     * 
+     * @param[in]   partition   Vector representing the partition 
+     *                          at the program point.
+     * @param[in]   exp         Expression whose set identifier is
+     *                          required at the program point.
+     * @return      The set identifier for the expression at the 
+     *              program point.
+     * 
+     * @note    Make sure that the second argument passed represents a 
+     *          length two expression.
+     * 
+     * @see     IndexExp, Parent, Partitions, SetCnt
+     **/
+    int findSet(std::vector<int> const &partition, ExpressionTy const &exp) {
+        // operator and set identifiers corresponding to left and right 
+        // subexpressions at the current program point 
+        char op = std::get<0>(exp);
+        int leftSetId = partition[IndexExp[EXP(std::get<1>(exp))]];
+        int rightSetId = partition[IndexExp[EXP(std::get<2>(exp))]];
+
+        // checking if a set representing the expression
+        // already exists
+        std::tuple<char, int, int> tup = {op, leftSetId, rightSetId};
+        auto it = Parent.find(tup);
+
+        // if the set already exists return its identifier,
+        // otherwise return new set identifier and update
+        // `Parent` map with this information
+        if(it == Parent.end()) return Parent[tup] = SetCnt++;
+
+        return it->second;
+    }
+
+    /**
+     * @brief Finds initial partition.
+     * 
+     * @details
+     *  Finds a vector representing initial partition
+     *  in which all expressions are in different 
+     *  partition (has non-equivalent set identifiers).
+     *  It also updates `Parent` map for set identifiers
+     *  assigned to length two expressions.
+     * 
+     * @param[out]  partition   Vector to store the 
+     *                          initial partition.
+     * @return      Void
+     * 
+     * @see     findSet, IndexExp, Partitions
+     **/
+    void findInitialPartition(std::vector<int> &partition) {
+        // create new IDstruct object for each epxression.
+        // For length two expressions this is done indirectly
+        // by calling `findSet` function which also updates
+        // `Parent` map
+        for(auto &el : IndexExp) {
+            if(std::get<0>(el.first) == '\0') partition[el.second] = SetCnt++;
+            else partition[el.second] = findSet(partition, el.first);
+        }
+    }
+
+    /**
+     * @brief
+     *  Returns equivalence class of an expression at a 
+     *  given program point.
+     * 
+     * @details
+     *  The equivalence class is the set of indexes corresponding
+     *  to expressions (as given by `IndexExp`) which have same
+     *  set identifiers as the index representing the expression 
+     *  (passed as parameter) in the partition at the program point.
+     *  
+     *
+     * @param[in]   partition   Vector representing the partition
+     *                          at current program point.
+     * @param[in]   expIdx      Index of expression whose equivalence
+     *                          class is required.
+     * @param[out]  expClass    Set containing identifiers corresponding
+     *                          to the required equivalence class.
+     * @return      Void
+     * 
+     * @see     IndexExp, Partitions
+     **/
+    void getClass(std::vector<int> const &partition, int expIdx, 
+                  std::set<int> &expClass) {
+
+        expClass.clear();
+        int expSetId = partition[expIdx];
+
+        for(int i = 0; i < (int)IndexExp.size(); i++) {
+            if(expSetId == partition[i])
+                expClass.insert(i);
+        }
+    }
+
+    /**
+     * @brief Transfer function associated with Herbrand analysis.
+     * 
+     * @param[in]   cfgIndex    Control flow graph node index on which 
+     *                          transfer function is applied. The 
+     *                          function modifies `Partitions[cfgIndex]`.
+     * @returns     Void
+     * 
+     * @see     findSet, IndexExp, Partitions
+     **/
+    void transferFunction(int cfgIndex) {
+        // current partition vector
+        std::vector<int> &partition = Partitions[cfgIndex];
+
+        // first copy predecessor partition into current partition
+        partition = Partitions[CFG[cfgIndex].predecessors[0]];
+
+        // if the current partition has any index with value -1, it 
+        // means that it represents the TOP element and it has to be
+        // left as such without any modifications
+        if(partition[0] == -1) return;
+
+        // if the node is the END CFG node, return
+        if(CFG[cfgIndex].NodeTy == CfgNodeTy::END) return;
+
+        // `changedExp` is expression (ie. a variable) which
+        // has been assigned value and `changedToExp` is the 
+        // expression which has been assigned to it. If 
+        // operator in `changedToExp` is `#` - it symbolises
+        // non-deterministic assignment
+        Instruction *inst = CFG[cfgIndex].instPtr;
+        ExpressionTy changedExp, changedToExp;
+
+        if(isa<LoadInst>(inst)) {
+            changedExp = EXP(inst);
+            changedToExp = EXP(inst->getOperand(0));
+        } else if(isa<StoreInst>(inst)) {
+            changedExp = EXP(inst->getOperand(1));
+            changedToExp = EXP(inst->getOperand(0));
+        } else if(isa<BinaryOperator>(inst)) {
+            char op = getOpSymbol(inst->getOpcodeName());
+            Value *leftOp = inst->getOperand(0);
+            Value *rightOp = inst->getOperand(1);
+            changedExp = EXP(inst);
+            changedToExp = {op, leftOp, rightOp};
+        } else if(isa<CallInst>(inst)) {
+            changedExp = EXP(inst);
+            // here `#` symbolises non-deterministic assignment
+            changedToExp = {'#', nullptr, nullptr};
+        } else {
+            // in this case the current instruction has not
+            // modified the partition, so the function returns
+            return;
+        }
+
+        if(std::get<0>(changedToExp) == '#') {
+            // if it is a non-deterministic assignment, 
+            // then create a new set identifier
+            partition[IndexExp[changedExp]] = SetCnt++;
+        } else {
+            // assign the `changedExp`, the set identifier of 
+            // `changedToExp`
+            partition[IndexExp[changedExp]] = partition[IndexExp[changedToExp]];
+        }
+
+        // update set identifiers for two length expressions 
+        // involving `changedExp`. Here set identifiers of all 
+        // two length expressions are assigned values, but only
+        // those involving `changedExp` are updated
+        for(auto &el : IndexExp) {
+            if(std::get<0>(el.first) == '\0') continue;
+            partition[el.second] = findSet(partition, el.first);
+        }
+    }
+
+    /**
+     * @brief Confluence function associated with Herbrand analysis.
+     * 
+     * @param[in]   cfgIndex    Control flow graph node index on 
+     *                          which confluence function is applied.
+     * @returns     Void
+     * 
+     * @see     findSet, IndexExp, Partitions
+     **/
+    void confluenceFunction(int cfgIndex) {
+        // vector of  predecessor CFG node indexes
+        std::vector<int> &predecessors = CFG[cfgIndex].predecessors;
+        
+        // if all the predecessors partition represents TOP 
+        // element then their confluence is also TOP element.
+        // So, the current partition need not be modified as
+        // by initialisation the current partition should also
+        // hold TOP partition
+        bool cont = false;
+        for(int pred : predecessors)
+            cont |= (Partitions[pred][0] != -1);
+        if(not cont) return;
+
+        // the current partition
+        std::vector<int> &partition = Partitions[cfgIndex];
+
+        // to check which expressions has already been processed
+        std::vector<bool> accessFlag(IndexExp.size(), false);
+
+        // process all the expressions one by one
+        for(auto &el : IndexExp) {
+            int elIdx = el.second;
+
+            // continue if the expression is already processed
+            if(accessFlag[elIdx]) continue;
+
+            // mark it as processed
+            accessFlag[elIdx] = true;
+
+            // if the set identifier for the expression in all
+            // the predecessors is same it is assigned the same
+            // set identifier; else a new set identifier is 
+            // created and assigned to all the expressions which
+            // belongs to the same equivalence class as the 
+            // current expression across all the predecessors and
+            // they are also marked processed
+            int elSetId = -1;
+            bool flag = true;
+            for(int pred : predecessors) {
+                int elSetIdPred = Partitions[pred][elIdx];
+                if(elSetIdPred == -1) continue;
+                else if(elSetId == -1) elSetId = elSetIdPred;
+                else if(elSetId != elSetIdPred) flag = false;
+            }
+
+            if(flag) partition[elIdx] = elSetId;
+            else {
+                std::set<int> intersection, elClassPred;
+                for(int i = 0; i < (int)IndexExp.size(); i++)
+                    intersection.insert(i);
+                
+                for(int pred : predecessors) {
+                    getClass(Partitions[pred], elIdx, elClassPred);
+                    setIntersect<int>(intersection, elClassPred);
                 }
 
-                deletedVars.insert(I);
-                I->replaceAllUsesWith(replacement);
-                I->eraseFromParent();
-            } else {
-                if(DEBUG) errs() << "  => Instruction not deleted\n";
+                int newSetId = SetCnt++;
+                for(int nel : intersection)
+                    accessFlag[nel] = true, partition[nel] = newSetId;
             }
+        }
+
+        // now update `Parent` map
+        for(auto &el : IndexExp) {
+            char op = std::get<0>(el.first);
+            if(op == '\0') continue;
             
-            if(DEBUG) errs() << "\n\n";
+            int leftSetID = partition[IndexExp[EXP(std::get<1>(el.first))]];
+            int rightSetID = partition[IndexExp[EXP(std::get<2>(el.first))]];
+
+            auto tup = std::make_tuple(op, leftSetID, rightSetID);
+            // this assertion must be passed for the consistency of the algorithm
+            assert(Parent.find(tup) == Parent.end() or 
+                   Parent[tup] == partition[el.second]);
+
+            Parent[tup] = partition[el.second];
+        }
+    }
+
+    /**
+     * @brief Main Herbrand analysis function.
+     * 
+     * @returns     Void
+     * 
+     * @see     Partitions, IndexExp, Parent
+     **/
+    void HerbrandAnalysis(Function &F) {
+        PRINT_HEADER("Herbrand Equivalence Computation");
+        errs() << "\n";
+
+        // assign index to expressions arbitrarily
+        assignIndex(F);
+
+        // initialise partition vector with -1 for each program
+        // points and each expression - this stands for TOP 
+        // partition at each program point. Note that any element
+        // of partition vector being -1 means that whole vector
+        // holds -1 and represents TOP partition
+        Partitions.assign(CFG.size(), 
+                          std::vector<int>(IndexExp.size(), -1));
+
+        // initialise starting partition for START node
+        findInitialPartition(Partitions[0]);
+
+        PRINT_HEADER("Initial Partition");
+        printPartition(Partitions[0]);
+        errs() << "\n\n\n";
+
+        bool converged = false;
+        int iterationCtr = 0;
+
+        // repeat while convergence
+        while(not converged) {
+            PRINT_HEADER("Iteration " + std::to_string(++iterationCtr));
+            converged = true;
+
+            // for all program points (nodes in CFG) except
+            // START apply transfer/confluence function as
+            // applicable
+            for(int i = 1; i < (int)CFG.size(); i++) {
+                std::vector<int> oldPartition = Partitions[i];
+                std::vector<int> &predecessors = CFG[i].predecessors;
+                Instruction *inst = CFG[i].instPtr;
+
+                errs() << '[' << i << "] : ";
+
+                bool isConfluence = (CFG[i].NodeTy == CfgNodeTy::CONFLUENCE);
+                if(CFG[i].NodeTy == CfgNodeTy::END and predecessors.size() > 1)
+                    isConfluence = true;
+
+                if(isConfluence) {
+                    // if CFG node corresponds to a confluence point
+                    if(CFG[i].NodeTy == CfgNodeTy::CONFLUENCE)
+                        errs() << "Confluence Point => ";
+                    else errs() << "END => ";
+                    
+                    errs() << "[Predecessors :";
+                    for(auto el : predecessors) {
+                        errs() << ' ' << el << '(' 
+                               << CFG[el].instPtr->getParent()->getName() 
+                               << ')';
+                    }
+                    errs() << "]\n\t";
+
+                    confluenceFunction(i);
+                } else {
+                    // if CFG node corresponds to a transfer point
+
+                    if(CFG[i].NodeTy == CfgNodeTy::TRANSFER) {
+                        errs() << "Transfer Point => ["
+                               << inst->getParent()->getName() << "] "
+                               << (*inst) << ' ';
+                    } else errs() << "END => ";
+
+                    errs() << "[Predecessors : " << predecessors[0] << "]\n\t";
+
+                    transferFunction(i);
+                }
+
+                printPartition(Partitions[i]);
+                errs() << "\n\n";
+
+                // update convergence flag
+                if(not samePartition(oldPartition, Partitions[i]))
+                    converged = false;
+            }
+            errs() << "\n\n";
         }
     }
 
     /**
      * @brief Body of the pass
      **/
-    struct HerbrandEquivalence : public FunctionPass {
+    struct HerbrandPass : public FunctionPass {
         // LLVM uses ID’s address to identify a pass
         static char ID;
 
         // constructor - calls base class constructor
-        HerbrandEquivalence() : FunctionPass(ID) {}
+        HerbrandPass() : FunctionPass(ID) {}
 
         // the function pass
         bool runOnFunction(Function &F) override {
             // clear the contents of global variables
-            Constants.clear(), CuV.clear(), Variables.clear();
-            indexCV.clear(), indexExp.clear(), partitions.clear();
-            Predecessors.clear(), confluencePoints.clear();
-            Parent.clear(), constIDStruct.clear();
+            Constants.clear(), Variables.clear();
+            IndexExp.clear(), Partitions.clear();
+            Parent.clear(), CFG.clear(), CfgIndex.clear();
+            SetCnt = 0;
 
-            // assign indexes to constants, variables and two operand 
-            // expressions; assign names to variables; fill Predecessors
-            // map; print renamed code
-            assignIndex(F), assignNames(F);
-            findPredecessors(F);
-            if(DEBUG) {
-                PRINT("Renamed Code"), printCode(F);
-                errs() << "\n\n";
-            }
+            // assign names to variables; create control flow graph
+            assignNames(F), createCFG(F);
+            printCode(F), printCFG();
 
-            findHerbrandEquivalence(F);
-            removeRedundantExpressions(F);
+            // perform Herbrand Analysis
+            HerbrandAnalysis(F);
 
-            if(DEBUG) PRINT("Optimised Code"), printCode(F);
-
-            // call decreaseParentCnt to free dynamically allocated memory
-            for(auto partition : partitions)
-                for(auto el : partition.second)
-                    decreaseParentCnt(el);
-
-            // return true, because the pass is making changes
+            // return false, because the pass is not making changes
             // in the input file
-            return true;
+            return false;
         }
     };
 }
 
 // initialse static variable ID and register the pass
-char HerbrandPass::HerbrandEquivalence::ID = 0;
-static RegisterPass<HerbrandPass::HerbrandEquivalence> 
-        Pass("HerbrandEquivalence", "Herbrand equivalence analysis");
+char HerbrandPass::HerbrandPass::ID = 0;
+static RegisterPass<HerbrandPass::HerbrandPass> 
+        Pass("HerbrandPass", "Herbrand equivalence analysis");
