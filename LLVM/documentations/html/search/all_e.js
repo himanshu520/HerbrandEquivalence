@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['transferfunction',['transferFunction',['../namespaceHerbrandPass.html#a935f7f798be6c8401551fdd99cdc9176',1,'HerbrandPass']]]
+  ['variables',['Variables',['../namespaceHerbrandPass.html#a74ce7a15961ac17a9d42b3f3b06ec742',1,'HerbrandPass']]]
 ];

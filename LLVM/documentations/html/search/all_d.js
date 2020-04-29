@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['samepartition',['samePartition',['../namespaceHerbrandPass.html#a9084269140ae26bba795a51935544ff4',1,'HerbrandPass']]],
-  ['setintersect',['setIntersect',['../HerbrandEquivalence_8cpp.html#a42f8f0d10ba2af845a0f8ac810f46c7d',1,'HerbrandEquivalence.cpp']]],
-  ['setunion',['setUnion',['../HerbrandEquivalence_8cpp.html#ae34878e9872c768e08ed5fb0063585d4',1,'HerbrandEquivalence.cpp']]]
+  ['transfer',['TRANSFER',['../structHerbrandPass_1_1CfgNodeTy.html#ad207adac5a80fdbe6b062a8a6b40f995ae2fade03205bda3c1c9908b9c9644a13',1,'HerbrandPass::CfgNodeTy']]],
+  ['transferfunction',['transferFunction',['../namespaceHerbrandPass.html#a2953dd14c2adb7e5e3967d21ab01a1c9',1,'HerbrandPass']]]
 ];

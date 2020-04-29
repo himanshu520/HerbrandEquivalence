@@ -71,165 +71,115 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structHerbrandPass_1_1HerbrandEquivalence.html">HerbrandEquivalence</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Body of the pass.  <a href="structHerbrandPass_1_1HerbrandEquivalence.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structHerbrandPass_1_1CfgNodeTy.html">CfgNodeTy</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structHerbrandPass_1_1IDstruct.html">IDstruct</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Structure for capturing Herbrand Equivalence classes.  <a href="structHerbrandPass_1_1IDstruct.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structHerbrandPass_1_1HerbrandPass.html">HerbrandPass</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Body of the pass.  <a href="structHerbrandPass_1_1HerbrandPass.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a97bf17f6357ba3c70f792249a915f5bf"><td class="memItemLeft" align="right" valign="top">typedef tuple&lt; char, Value *, Value * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a97bf17f6357ba3c70f792249a915f5bf">expTuple</a></td></tr>
-<tr class="memdesc:a97bf17f6357ba3c70f792249a915f5bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a two operand expression in prefix form.  <a href="#a97bf17f6357ba3c70f792249a915f5bf">More...</a><br /></td></tr>
-<tr class="separator:a97bf17f6357ba3c70f792249a915f5bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac7e108d9424dd34872c42cabf00f0597"><td class="memItemLeft" align="right" valign="top">typedef vector&lt; <a class="el" href="structHerbrandPass_1_1IDstruct.html">IDstruct</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#ac7e108d9424dd34872c42cabf00f0597">Partition</a></td></tr>
-<tr class="memdesc:ac7e108d9424dd34872c42cabf00f0597"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector to hold equivalence information for each constant/variable/two operand expression at a program point.  <a href="#ac7e108d9424dd34872c42cabf00f0597">More...</a><br /></td></tr>
-<tr class="separator:ac7e108d9424dd34872c42cabf00f0597"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9d4811b3bacd40fafe61f7659f277b3"><td class="memItemLeft" align="right" valign="top">typedef std::tuple&lt; char, Value *, Value * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#ae9d4811b3bacd40fafe61f7659f277b3">ExpressionTy</a></td></tr>
+<tr class="memdesc:ae9d4811b3bacd40fafe61f7659f277b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents an expression of length at most two.  <a href="#ae9d4811b3bacd40fafe61f7659f277b3">More...</a><br /></td></tr>
+<tr class="separator:ae9d4811b3bacd40fafe61f7659f277b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ab38c0589dc5ad070c91686e954142b3c"><td class="memItemLeft" align="right" valign="top">set&lt; char &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#ab38c0589dc5ad070c91686e954142b3c">Ops</a> ({'+'})</td></tr>
-<tr class="memdesc:ab38c0589dc5ad070c91686e954142b3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set of operators used in the program.  <a href="#ab38c0589dc5ad070c91686e954142b3c">More...</a><br /></td></tr>
-<tr class="separator:ab38c0589dc5ad070c91686e954142b3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a50e241df2577a4354cb57105b4c52f5b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a50e241df2577a4354cb57105b4c52f5b">decreaseParentCnt</a> (<a class="el" href="structHerbrandPass_1_1IDstruct.html">IDstruct</a> *&amp;ptr)</td></tr>
-<tr class="memdesc:a50e241df2577a4354cb57105b4c52f5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function to decrement parentCnt of an <a class="el" href="structHerbrandPass_1_1IDstruct.html" title="Structure for capturing Herbrand Equivalence classes. ">IDstruct</a> object.  <a href="#a50e241df2577a4354cb57105b4c52f5b">More...</a><br /></td></tr>
-<tr class="separator:a50e241df2577a4354cb57105b4c52f5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a015096462c8a5fb384827f87e03f679c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a015096462c8a5fb384827f87e03f679c">increaseParentCnt</a> (<a class="el" href="structHerbrandPass_1_1IDstruct.html">IDstruct</a> *&amp;ptr)</td></tr>
-<tr class="memdesc:a015096462c8a5fb384827f87e03f679c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function to increment parentCnt of an <a class="el" href="structHerbrandPass_1_1IDstruct.html" title="Structure for capturing Herbrand Equivalence classes. ">IDstruct</a> object.  <a href="#a015096462c8a5fb384827f87e03f679c">More...</a><br /></td></tr>
-<tr class="separator:a015096462c8a5fb384827f87e03f679c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7870ef5ab02ec0664bdf7ce58ede4e2c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structHerbrandPass_1_1IDstruct.html">IDstruct</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a7870ef5ab02ec0664bdf7ce58ede4e2c">findIDstrct</a> (<a class="el" href="namespaceHerbrandPass.html#ac7e108d9424dd34872c42cabf00f0597">Partition</a> const &amp;curPart, char op, Value *left, Value *right)</td></tr>
-<tr class="memdesc:a7870ef5ab02ec0664bdf7ce58ede4e2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns pointer to <a class="el" href="structHerbrandPass_1_1IDstruct.html" title="Structure for capturing Herbrand Equivalence classes. ">IDstruct</a> object that represents equivalence class corresponding to expression "left op right" in a given partition.  <a href="#a7870ef5ab02ec0664bdf7ce58ede4e2c">More...</a><br /></td></tr>
-<tr class="separator:a7870ef5ab02ec0664bdf7ce58ede4e2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a68d0c8656e7fedbed7fb46cf5babae66"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a68d0c8656e7fedbed7fb46cf5babae66">findInitialPartition</a> (<a class="el" href="namespaceHerbrandPass.html#ac7e108d9424dd34872c42cabf00f0597">Partition</a> &amp;partition)</td></tr>
-<tr class="memdesc:a68d0c8656e7fedbed7fb46cf5babae66"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds initial partition in which every expression is in a separate equivalence class.  <a href="#a68d0c8656e7fedbed7fb46cf5babae66">More...</a><br /></td></tr>
-<tr class="separator:a68d0c8656e7fedbed7fb46cf5babae66"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afa3901867588a5a413c2b4b623b0c786"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#afa3901867588a5a413c2b4b623b0c786">getClass</a> (int index, <a class="el" href="namespaceHerbrandPass.html#ac7e108d9424dd34872c42cabf00f0597">Partition</a> const &amp;partition, set&lt; Value *&gt; &amp;setCV, set&lt; <a class="el" href="namespaceHerbrandPass.html#a97bf17f6357ba3c70f792249a915f5bf">expTuple</a> &gt; &amp;setExp)</td></tr>
-<tr class="memdesc:afa3901867588a5a413c2b4b623b0c786"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds the equivalence class corresponding to a constant, variable or two operand expression at a given program point.  <a href="#afa3901867588a5a413c2b4b623b0c786">More...</a><br /></td></tr>
-<tr class="separator:afa3901867588a5a413c2b4b623b0c786"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9084269140ae26bba795a51935544ff4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a9084269140ae26bba795a51935544ff4">samePartition</a> (<a class="el" href="namespaceHerbrandPass.html#ac7e108d9424dd34872c42cabf00f0597">Partition</a> const &amp;first, <a class="el" href="namespaceHerbrandPass.html#ac7e108d9424dd34872c42cabf00f0597">Partition</a> const &amp;second)</td></tr>
-<tr class="memdesc:a9084269140ae26bba795a51935544ff4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether two partitions are equivalent or not.  <a href="#a9084269140ae26bba795a51935544ff4">More...</a><br /></td></tr>
-<tr class="separator:a9084269140ae26bba795a51935544ff4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8b558d99a8deb96e9281a0ead4b4204d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a8b558d99a8deb96e9281a0ead4b4204d">copyPartition</a> (<a class="el" href="namespaceHerbrandPass.html#ac7e108d9424dd34872c42cabf00f0597">Partition</a> &amp;oldPart, <a class="el" href="namespaceHerbrandPass.html#ac7e108d9424dd34872c42cabf00f0597">Partition</a> const &amp;toCopy)</td></tr>
-<tr class="memdesc:a8b558d99a8deb96e9281a0ead4b4204d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a copy of a partition.  <a href="#a8b558d99a8deb96e9281a0ead4b4204d">More...</a><br /></td></tr>
-<tr class="separator:a8b558d99a8deb96e9281a0ead4b4204d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7cffce63f197880059e0bdef676862a3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a7cffce63f197880059e0bdef676862a3">findPredecessors</a> (Function &amp;F)</td></tr>
-<tr class="memdesc:a7cffce63f197880059e0bdef676862a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates Predecessors map and confluencePoints set for instructions in a function.  <a href="#a7cffce63f197880059e0bdef676862a3">More...</a><br /></td></tr>
-<tr class="separator:a7cffce63f197880059e0bdef676862a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a935f7f798be6c8401551fdd99cdc9176"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a935f7f798be6c8401551fdd99cdc9176">transferFunction</a> (<a class="el" href="namespaceHerbrandPass.html#ac7e108d9424dd34872c42cabf00f0597">Partition</a> &amp;curPart, <a class="el" href="namespaceHerbrandPass.html#ac7e108d9424dd34872c42cabf00f0597">Partition</a> const &amp;prevPart, Instruction &amp;I)</td></tr>
-<tr class="memdesc:a935f7f798be6c8401551fdd99cdc9176"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transfer function.  <a href="#a935f7f798be6c8401551fdd99cdc9176">More...</a><br /></td></tr>
-<tr class="separator:a935f7f798be6c8401551fdd99cdc9176"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a54160f0f584050c576045cb53745dc2b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a54160f0f584050c576045cb53745dc2b">confluenceFunction</a> (Instruction &amp;I, <a class="el" href="namespaceHerbrandPass.html#ac7e108d9424dd34872c42cabf00f0597">Partition</a> &amp;partition)</td></tr>
-<tr class="memdesc:a54160f0f584050c576045cb53745dc2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Confluence function.  <a href="#a54160f0f584050c576045cb53745dc2b">More...</a><br /></td></tr>
-<tr class="separator:a54160f0f584050c576045cb53745dc2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afef7f12241090812a47ba39f5a25bda3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#afef7f12241090812a47ba39f5a25bda3">printCV</a> (Value const *value)</td></tr>
-<tr class="memdesc:afef7f12241090812a47ba39f5a25bda3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints a constant/variable in readable form.  <a href="#afef7f12241090812a47ba39f5a25bda3">More...</a><br /></td></tr>
-<tr class="separator:afef7f12241090812a47ba39f5a25bda3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aae79b80fdd4a587c4adf146501ecd46a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#aae79b80fdd4a587c4adf146501ecd46a">printSetCV</a> (set&lt; Value *&gt; const &amp;setCV)</td></tr>
-<tr class="memdesc:aae79b80fdd4a587c4adf146501ecd46a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints a set of constant/variable in readable form.  <a href="#aae79b80fdd4a587c4adf146501ecd46a">More...</a><br /></td></tr>
-<tr class="separator:aae79b80fdd4a587c4adf146501ecd46a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3d8c527b6399f440e3125a2208c25d2c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a3d8c527b6399f440e3125a2208c25d2c">printExp</a> (<a class="el" href="namespaceHerbrandPass.html#a97bf17f6357ba3c70f792249a915f5bf">expTuple</a> const &amp;exp)</td></tr>
-<tr class="memdesc:a3d8c527b6399f440e3125a2208c25d2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints a two operand expression in readable form.  <a href="#a3d8c527b6399f440e3125a2208c25d2c">More...</a><br /></td></tr>
-<tr class="separator:a3d8c527b6399f440e3125a2208c25d2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae790b2fb98b0500a9bb633d20f19f54d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#ae790b2fb98b0500a9bb633d20f19f54d">printSetExp</a> (set&lt; <a class="el" href="namespaceHerbrandPass.html#a97bf17f6357ba3c70f792249a915f5bf">expTuple</a> &gt; const &amp;setExp)</td></tr>
-<tr class="memdesc:ae790b2fb98b0500a9bb633d20f19f54d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints a set of two operand expressions in readable form.  <a href="#ae790b2fb98b0500a9bb633d20f19f54d">More...</a><br /></td></tr>
-<tr class="separator:ae790b2fb98b0500a9bb633d20f19f54d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a24f9cb1984b9cb51c1045d487e01452d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a24f9cb1984b9cb51c1045d487e01452d">printPartition</a> (<a class="el" href="namespaceHerbrandPass.html#ac7e108d9424dd34872c42cabf00f0597">Partition</a> const &amp;partition)</td></tr>
-<tr class="memdesc:a24f9cb1984b9cb51c1045d487e01452d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints a partition in readable format.  <a href="#a24f9cb1984b9cb51c1045d487e01452d">More...</a><br /></td></tr>
-<tr class="separator:a24f9cb1984b9cb51c1045d487e01452d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58ef56c67680d6c6b45a260360c54b4c"><td class="memItemLeft" align="right" valign="top">std::set&lt; char &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a58ef56c67680d6c6b45a260360c54b4c">Ops</a> ({'+'})</td></tr>
+<tr class="memdesc:a58ef56c67680d6c6b45a260360c54b4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set of operators used in the program.  <a href="#a58ef56c67680d6c6b45a260360c54b4c">More...</a><br /></td></tr>
+<tr class="separator:a58ef56c67680d6c6b45a260360c54b4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d0394d3bbf97550f08d1541f3e5c4fa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a6d0394d3bbf97550f08d1541f3e5c4fa">assignNames</a> (Function &amp;F)</td></tr>
+<tr class="memdesc:a6d0394d3bbf97550f08d1541f3e5c4fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assigns names to basic blocks and variables for easy reference.  <a href="#a6d0394d3bbf97550f08d1541f3e5c4fa">More...</a><br /></td></tr>
+<tr class="separator:a6d0394d3bbf97550f08d1541f3e5c4fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a753b807df7b1489cb4f233d11a99a1e3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a753b807df7b1489cb4f233d11a99a1e3">assignIndex</a> (Function &amp;F)</td></tr>
+<tr class="memdesc:a753b807df7b1489cb4f233d11a99a1e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maps expressions of length atmost two to integers arbitrarily for indexing purpose by updating <code>IndexExp</code> map. Also Initialises <code>Constants</code> and <code>Variables</code> by looking through the instructions in the program.  <a href="#a753b807df7b1489cb4f233d11a99a1e3">More...</a><br /></td></tr>
+<tr class="separator:a753b807df7b1489cb4f233d11a99a1e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae92f46ccb815f1c42d66475957699d76"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#ae92f46ccb815f1c42d66475957699d76">createCFG</a> (Function &amp;F)</td></tr>
+<tr class="memdesc:ae92f46ccb815f1c42d66475957699d76"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates control flow graph corresponding to the program.  <a href="#ae92f46ccb815f1c42d66475957699d76">More...</a><br /></td></tr>
+<tr class="separator:ae92f46ccb815f1c42d66475957699d76"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a149647446349bac41b669bc33cd62a18"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a149647446349bac41b669bc33cd62a18">printValue</a> (Value const *value)</td></tr>
+<tr class="memdesc:a149647446349bac41b669bc33cd62a18"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints a constant/variable in readable form.  <a href="#a149647446349bac41b669bc33cd62a18">More...</a><br /></td></tr>
+<tr class="separator:a149647446349bac41b669bc33cd62a18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36c0729da495737eae62b68e2cc4d37c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a36c0729da495737eae62b68e2cc4d37c">printExpression</a> (<a class="el" href="namespaceHerbrandPass.html#ae9d4811b3bacd40fafe61f7659f277b3">ExpressionTy</a> const &amp;exp)</td></tr>
+<tr class="memdesc:a36c0729da495737eae62b68e2cc4d37c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints an expression in readable form.  <a href="#a36c0729da495737eae62b68e2cc4d37c">More...</a><br /></td></tr>
+<tr class="separator:a36c0729da495737eae62b68e2cc4d37c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a68d323ff3861c2a22aa27cd2a8d8ec3e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a68d323ff3861c2a22aa27cd2a8d8ec3e">printCode</a> (Function &amp;F)</td></tr>
 <tr class="memdesc:a68d323ff3861c2a22aa27cd2a8d8ec3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints the llvm source code.  <a href="#a68d323ff3861c2a22aa27cd2a8d8ec3e">More...</a><br /></td></tr>
 <tr class="separator:a68d323ff3861c2a22aa27cd2a8d8ec3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6d0394d3bbf97550f08d1541f3e5c4fa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a6d0394d3bbf97550f08d1541f3e5c4fa">assignNames</a> (Function &amp;F)</td></tr>
-<tr class="memdesc:a6d0394d3bbf97550f08d1541f3e5c4fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assigns name to basic blocks and variables for easy reference.  <a href="#a6d0394d3bbf97550f08d1541f3e5c4fa">More...</a><br /></td></tr>
-<tr class="separator:a6d0394d3bbf97550f08d1541f3e5c4fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a753b807df7b1489cb4f233d11a99a1e3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a753b807df7b1489cb4f233d11a99a1e3">assignIndex</a> (Function &amp;F)</td></tr>
-<tr class="memdesc:a753b807df7b1489cb4f233d11a99a1e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialises Constants, Variables, CuV, indexExp and indexCV by looking through the instructions in the program.  <a href="#a753b807df7b1489cb4f233d11a99a1e3">More...</a><br /></td></tr>
-<tr class="separator:a753b807df7b1489cb4f233d11a99a1e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5e48516480dd873cf655f00821120b4d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a5e48516480dd873cf655f00821120b4d">findHerbrandEquivalence</a> (Function &amp;F)</td></tr>
-<tr class="memdesc:a5e48516480dd873cf655f00821120b4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds herbrand equivalence information by updating partitions map, for a given function.  <a href="#a5e48516480dd873cf655f00821120b4d">More...</a><br /></td></tr>
-<tr class="separator:a5e48516480dd873cf655f00821120b4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:add5dc3a7269f965f003a6b83d0e96838"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#add5dc3a7269f965f003a6b83d0e96838">findAvailableVariables</a> (Function &amp;F)</td></tr>
-<tr class="memdesc:add5dc3a7269f965f003a6b83d0e96838"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds available variables at each instruction of a function.  <a href="#add5dc3a7269f965f003a6b83d0e96838">More...</a><br /></td></tr>
-<tr class="separator:add5dc3a7269f965f003a6b83d0e96838"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a61d96f9326349a62d2cf35441a6bb2f0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a61d96f9326349a62d2cf35441a6bb2f0">removeRedundantExpressions</a> (Function &amp;F)</td></tr>
-<tr class="memdesc:a61d96f9326349a62d2cf35441a6bb2f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Function to remove redundant instructions by using herbrand equivalence and available expression information.  <a href="#a61d96f9326349a62d2cf35441a6bb2f0">More...</a><br /></td></tr>
-<tr class="separator:a61d96f9326349a62d2cf35441a6bb2f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeea50c7a9e951caf9634819446b4145f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#aeea50c7a9e951caf9634819446b4145f">printCFG</a> ()</td></tr>
+<tr class="memdesc:aeea50c7a9e951caf9634819446b4145f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints the control flow graph corresponding to the program.  <a href="#aeea50c7a9e951caf9634819446b4145f">More...</a><br /></td></tr>
+<tr class="separator:aeea50c7a9e951caf9634819446b4145f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd53e2a72aeb290bea35c54a12c43a86"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#abd53e2a72aeb290bea35c54a12c43a86">printPartition</a> (std::vector&lt; int &gt; const &amp;partition)</td></tr>
+<tr class="memdesc:abd53e2a72aeb290bea35c54a12c43a86"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints a partition in readable format.  <a href="#abd53e2a72aeb290bea35c54a12c43a86">More...</a><br /></td></tr>
+<tr class="separator:abd53e2a72aeb290bea35c54a12c43a86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab01078a889dc0f407231662fa02a60d4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#ab01078a889dc0f407231662fa02a60d4">samePartition</a> (std::vector&lt; int &gt; const &amp;first, std::vector&lt; int &gt; const &amp;second)</td></tr>
+<tr class="memdesc:ab01078a889dc0f407231662fa02a60d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether two partitions are same.  <a href="#ab01078a889dc0f407231662fa02a60d4">More...</a><br /></td></tr>
+<tr class="separator:ab01078a889dc0f407231662fa02a60d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a009cedf38791d04ae492f8af628af0a8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a009cedf38791d04ae492f8af628af0a8">findSet</a> (std::vector&lt; int &gt; const &amp;partition, <a class="el" href="namespaceHerbrandPass.html#ae9d4811b3bacd40fafe61f7659f277b3">ExpressionTy</a> const &amp;exp)</td></tr>
+<tr class="memdesc:a009cedf38791d04ae492f8af628af0a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns set identifier for a given two length expression at a program point.  <a href="#a009cedf38791d04ae492f8af628af0a8">More...</a><br /></td></tr>
+<tr class="separator:a009cedf38791d04ae492f8af628af0a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab28c27aedb71cf9b5c6ebdec6f9a2ce3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#ab28c27aedb71cf9b5c6ebdec6f9a2ce3">findInitialPartition</a> (std::vector&lt; int &gt; &amp;partition)</td></tr>
+<tr class="memdesc:ab28c27aedb71cf9b5c6ebdec6f9a2ce3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds initial partition.  <a href="#ab28c27aedb71cf9b5c6ebdec6f9a2ce3">More...</a><br /></td></tr>
+<tr class="separator:ab28c27aedb71cf9b5c6ebdec6f9a2ce3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3787917d15acfe04771f88e64fd10996"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a3787917d15acfe04771f88e64fd10996">getClass</a> (std::vector&lt; int &gt; const &amp;partition, int expIdx, std::set&lt; int &gt; &amp;expClass)</td></tr>
+<tr class="memdesc:a3787917d15acfe04771f88e64fd10996"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns equivalence class of an expression at a given program point.  <a href="#a3787917d15acfe04771f88e64fd10996">More...</a><br /></td></tr>
+<tr class="separator:a3787917d15acfe04771f88e64fd10996"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2953dd14c2adb7e5e3967d21ab01a1c9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a2953dd14c2adb7e5e3967d21ab01a1c9">transferFunction</a> (int cfgIndex)</td></tr>
+<tr class="memdesc:a2953dd14c2adb7e5e3967d21ab01a1c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transfer function associated with Herbrand analysis.  <a href="#a2953dd14c2adb7e5e3967d21ab01a1c9">More...</a><br /></td></tr>
+<tr class="separator:a2953dd14c2adb7e5e3967d21ab01a1c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b9168235f2e1216cb272cc240d3475d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a3b9168235f2e1216cb272cc240d3475d">confluenceFunction</a> (int cfgIndex)</td></tr>
+<tr class="memdesc:a3b9168235f2e1216cb272cc240d3475d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Confluence function associated with Herbrand analysis.  <a href="#a3b9168235f2e1216cb272cc240d3475d">More...</a><br /></td></tr>
+<tr class="separator:a3b9168235f2e1216cb272cc240d3475d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89912b4f8db2df4b6b55039826a6ef4b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a89912b4f8db2df4b6b55039826a6ef4b">HerbrandAnalysis</a> (Function &amp;F)</td></tr>
+<tr class="memdesc:a89912b4f8db2df4b6b55039826a6ef4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main Herbrand analysis function.  <a href="#a89912b4f8db2df4b6b55039826a6ef4b">More...</a><br /></td></tr>
+<tr class="separator:a89912b4f8db2df4b6b55039826a6ef4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:a99ba7bd568779859b8bf683c5686903c"><td class="memItemLeft" align="right" valign="top">set&lt; Value * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a99ba7bd568779859b8bf683c5686903c">Constants</a></td></tr>
-<tr class="memdesc:a99ba7bd568779859b8bf683c5686903c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set of constants used in the program.  <a href="#a99ba7bd568779859b8bf683c5686903c">More...</a><br /></td></tr>
-<tr class="separator:a99ba7bd568779859b8bf683c5686903c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac59d73a491bb4b2163ece8f690c5793a"><td class="memItemLeft" align="right" valign="top">set&lt; Value * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#ac59d73a491bb4b2163ece8f690c5793a">Variables</a></td></tr>
-<tr class="memdesc:ac59d73a491bb4b2163ece8f690c5793a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set of variables used in the program.  <a href="#ac59d73a491bb4b2163ece8f690c5793a">More...</a><br /></td></tr>
-<tr class="separator:ac59d73a491bb4b2163ece8f690c5793a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1b055c340188ac99e89e189cd182ce35"><td class="memItemLeft" align="right" valign="top">set&lt; Value * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a1b055c340188ac99e89e189cd182ce35">CuV</a></td></tr>
-<tr class="memdesc:a1b055c340188ac99e89e189cd182ce35"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set of constants and variables used in the program.  <a href="#a1b055c340188ac99e89e189cd182ce35">More...</a><br /></td></tr>
-<tr class="separator:a1b055c340188ac99e89e189cd182ce35"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a404919f39cd800c8611622962b1265a2"><td class="memItemLeft" align="right" valign="top">map&lt; Value *, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a404919f39cd800c8611622962b1265a2">indexCV</a></td></tr>
-<tr class="memdesc:a404919f39cd800c8611622962b1265a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maps constants and variables in the program to integers for indexing purpose.  <a href="#a404919f39cd800c8611622962b1265a2">More...</a><br /></td></tr>
-<tr class="separator:a404919f39cd800c8611622962b1265a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a382184e119c6a18f3ca9fb05731cccf9"><td class="memItemLeft" align="right" valign="top">map&lt; <a class="el" href="namespaceHerbrandPass.html#a97bf17f6357ba3c70f792249a915f5bf">expTuple</a>, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a382184e119c6a18f3ca9fb05731cccf9">indexExp</a></td></tr>
-<tr class="memdesc:a382184e119c6a18f3ca9fb05731cccf9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maps all possible two operand expressions that can be formed using constants, variables and operators in the program to integers for indexing purpose.  <a href="#a382184e119c6a18f3ca9fb05731cccf9">More...</a><br /></td></tr>
-<tr class="separator:a382184e119c6a18f3ca9fb05731cccf9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2f4d1a03d0a9a560ead6541fa4173ff6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a2f4d1a03d0a9a560ead6541fa4173ff6">numExps</a></td></tr>
-<tr class="memdesc:a2f4d1a03d0a9a560ead6541fa4173ff6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Count of number of expressions of length atmost two that can be formed using constants and variables in the program.  <a href="#a2f4d1a03d0a9a560ead6541fa4173ff6">More...</a><br /></td></tr>
-<tr class="separator:a2f4d1a03d0a9a560ead6541fa4173ff6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa18fbc255053d9ee23288888334b14a4"><td class="memItemLeft" align="right" valign="top">map&lt; Instruction *, vector&lt; Instruction * &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#aa18fbc255053d9ee23288888334b14a4">Predecessors</a></td></tr>
-<tr class="memdesc:aa18fbc255053d9ee23288888334b14a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stores predecessors for each instruction - an instruction can have zero, one or more than one predecessors.  <a href="#aa18fbc255053d9ee23288888334b14a4">More...</a><br /></td></tr>
-<tr class="separator:aa18fbc255053d9ee23288888334b14a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acec8bc8e1580960eabba44d89a792a12"><td class="memItemLeft" align="right" valign="top">set&lt; Instruction * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#acec8bc8e1580960eabba44d89a792a12">confluencePoints</a></td></tr>
-<tr class="memdesc:acec8bc8e1580960eabba44d89a792a12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stores the instructions which represents confluence points - an instruction having more than one predecessors.  <a href="#acec8bc8e1580960eabba44d89a792a12">More...</a><br /></td></tr>
-<tr class="separator:acec8bc8e1580960eabba44d89a792a12"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab0b61a0ba19cda60c57bb08b6716cca3"><td class="memItemLeft" align="right" valign="top">map&lt; Instruction *, set&lt; Value * &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#ab0b61a0ba19cda60c57bb08b6716cca3">availVariables</a></td></tr>
-<tr class="memdesc:ab0b61a0ba19cda60c57bb08b6716cca3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stores the variables available at each point in the program.  <a href="#ab0b61a0ba19cda60c57bb08b6716cca3">More...</a><br /></td></tr>
-<tr class="separator:ab0b61a0ba19cda60c57bb08b6716cca3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a95436e05185013557b7af5320af57aa6"><td class="memItemLeft" align="right" valign="top">map&lt; Instruction *, <a class="el" href="namespaceHerbrandPass.html#ac7e108d9424dd34872c42cabf00f0597">Partition</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a95436e05185013557b7af5320af57aa6">partitions</a></td></tr>
-<tr class="memdesc:a95436e05185013557b7af5320af57aa6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stores Herbrand Equivalence information after each instruction in the program.  <a href="#a95436e05185013557b7af5320af57aa6">More...</a><br /></td></tr>
-<tr class="separator:a95436e05185013557b7af5320af57aa6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab2ab9e3cae9037da678ab884ff6b8ec6"><td class="memItemLeft" align="right" valign="top">map&lt; tuple&lt; char, <a class="el" href="structHerbrandPass_1_1IDstruct.html">IDstruct</a> *, <a class="el" href="structHerbrandPass_1_1IDstruct.html">IDstruct</a> * &gt;, <a class="el" href="structHerbrandPass_1_1IDstruct.html">IDstruct</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#ab2ab9e3cae9037da678ab884ff6b8ec6">Parent</a></td></tr>
-<tr class="memdesc:ab2ab9e3cae9037da678ab884ff6b8ec6"><td class="mdescLeft">&#160;</td><td class="mdescRight">For a given {op, leftID, rightID} as key, stores pointer to <a class="el" href="structHerbrandPass_1_1IDstruct.html" title="Structure for capturing Herbrand Equivalence classes. ">IDstruct</a> object whose fields are {op, _, leftID, rightID}.  <a href="#ab2ab9e3cae9037da678ab884ff6b8ec6">More...</a><br /></td></tr>
-<tr class="separator:ab2ab9e3cae9037da678ab884ff6b8ec6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a660bb7e40f7fdf7ba807f94a9a8a3ab1"><td class="memItemLeft" align="right" valign="top">map&lt; int, <a class="el" href="structHerbrandPass_1_1IDstruct.html">IDstruct</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a660bb7e40f7fdf7ba807f94a9a8a3ab1">constIDStruct</a></td></tr>
-<tr class="memdesc:a660bb7e40f7fdf7ba807f94a9a8a3ab1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stores the pointer to <a class="el" href="structHerbrandPass_1_1IDstruct.html" title="Structure for capturing Herbrand Equivalence classes. ">IDstruct</a> object corresponding to a constant, so that we never create a duplicate <a class="el" href="structHerbrandPass_1_1IDstruct.html" title="Structure for capturing Herbrand Equivalence classes. ">IDstruct</a> object for the same.  <a href="#a660bb7e40f7fdf7ba807f94a9a8a3ab1">More...</a><br /></td></tr>
-<tr class="separator:a660bb7e40f7fdf7ba807f94a9a8a3ab1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a084e5af60f6918c197f3a8b78e9caa44"><td class="memItemLeft" align="right" valign="top">std::set&lt; Value * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a084e5af60f6918c197f3a8b78e9caa44">Constants</a></td></tr>
+<tr class="memdesc:a084e5af60f6918c197f3a8b78e9caa44"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set of constants used in the program.  <a href="#a084e5af60f6918c197f3a8b78e9caa44">More...</a><br /></td></tr>
+<tr class="separator:a084e5af60f6918c197f3a8b78e9caa44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74ce7a15961ac17a9d42b3f3b06ec742"><td class="memItemLeft" align="right" valign="top">std::set&lt; Value * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a74ce7a15961ac17a9d42b3f3b06ec742">Variables</a></td></tr>
+<tr class="memdesc:a74ce7a15961ac17a9d42b3f3b06ec742"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set of variables used in the program.  <a href="#a74ce7a15961ac17a9d42b3f3b06ec742">More...</a><br /></td></tr>
+<tr class="separator:a74ce7a15961ac17a9d42b3f3b06ec742"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97bf3b8d86f3cafbd4e6b388e225a7eb"><td class="memItemLeft" align="right" valign="top">std::map&lt; <a class="el" href="namespaceHerbrandPass.html#ae9d4811b3bacd40fafe61f7659f277b3">ExpressionTy</a>, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a97bf3b8d86f3cafbd4e6b388e225a7eb">IndexExp</a></td></tr>
+<tr class="memdesc:a97bf3b8d86f3cafbd4e6b388e225a7eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maps expressions to integer indexes. This indexing is arbitrarily fixed in the beginning and used throughout wherever indexing is required for the expressions.  <a href="#a97bf3b8d86f3cafbd4e6b388e225a7eb">More...</a><br /></td></tr>
+<tr class="separator:a97bf3b8d86f3cafbd4e6b388e225a7eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2dae61e7e4a25da10c587b0b5be91d8e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a2dae61e7e4a25da10c587b0b5be91d8e">SetCnt</a> = 0</td></tr>
+<tr class="memdesc:a2dae61e7e4a25da10c587b0b5be91d8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Counter to keep track of set identifiers. New set identifiers are created by incrementing this counter.  <a href="#a2dae61e7e4a25da10c587b0b5be91d8e">More...</a><br /></td></tr>
+<tr class="separator:a2dae61e7e4a25da10c587b0b5be91d8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51f46da45893ff797e0de94d130f073e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; int &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a51f46da45893ff797e0de94d130f073e">Partitions</a></td></tr>
+<tr class="memdesc:a51f46da45893ff797e0de94d130f073e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vector to keep track of equivalence classes at each program point.  <a href="#a51f46da45893ff797e0de94d130f073e">More...</a><br /></td></tr>
+<tr class="separator:a51f46da45893ff797e0de94d130f073e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa13c370b7668233c6fc088b371937539"><td class="memItemLeft" align="right" valign="top">std::map&lt; std::tuple&lt; char, int, int &gt;, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#aa13c370b7668233c6fc088b371937539">Parent</a></td></tr>
+<tr class="memdesc:aa13c370b7668233c6fc088b371937539"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map to hold parent set identifiers.  <a href="#aa13c370b7668233c6fc088b371937539">More...</a><br /></td></tr>
+<tr class="separator:aa13c370b7668233c6fc088b371937539"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54dc99c6ff9ae67032426b99ed8830be"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structHerbrandPass_1_1CfgNodeTy.html">CfgNodeTy</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a54dc99c6ff9ae67032426b99ed8830be">CFG</a></td></tr>
+<tr class="memdesc:a54dc99c6ff9ae67032426b99ed8830be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Control flow graph corresponding to the program.  <a href="#a54dc99c6ff9ae67032426b99ed8830be">More...</a><br /></td></tr>
+<tr class="separator:a54dc99c6ff9ae67032426b99ed8830be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a10b94a731f6ddc38c3e0262223dd23"><td class="memItemLeft" align="right" valign="top">std::map&lt; Instruction *, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceHerbrandPass.html#a8a10b94a731f6ddc38c3e0262223dd23">CfgIndex</a></td></tr>
+<tr class="memdesc:a8a10b94a731f6ddc38c3e0262223dd23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stores <code>CFG</code> index for each instruction.  <a href="#a8a10b94a731f6ddc38c3e0262223dd23">More...</a><br /></td></tr>
+<tr class="separator:a8a10b94a731f6ddc38c3e0262223dd23"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Typedef Documentation</h2>
-<a id="a97bf17f6357ba3c70f792249a915f5bf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a97bf17f6357ba3c70f792249a915f5bf">&#9670;&nbsp;</a></span>expTuple</h2>
+<a id="ae9d4811b3bacd40fafe61f7659f277b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9d4811b3bacd40fafe61f7659f277b3">&#9670;&nbsp;</a></span>ExpressionTy</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef tuple&lt;char, Value *, Value *&gt; <a class="el" href="namespaceHerbrandPass.html#a97bf17f6357ba3c70f792249a915f5bf">HerbrandPass::expTuple</a></td>
+          <td class="memname">typedef std::tuple&lt;char, Value *, Value *&gt; <a class="el" href="namespaceHerbrandPass.html#ae9d4811b3bacd40fafe61f7659f277b3">HerbrandPass::ExpressionTy</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Represents a two operand expression in prefix form. </p>
-<p>In LLVM expressions are of type Value*. An expTuple of the form {op, left, right} represents an expression "left op right". </p>
+<p>Represents an expression of length at most two. </p>
+<p>For two length expressions <code>x op y</code> the tuple holds <code>{op, x, y}</code> whereas for a constant or variable <code>x</code> it holds `{'\0', x, nullptr}` (here the first and last element of the tuple have default value for consistency).</p>
+<dl class="section note"><dt>Note</dt><dd>Value is LLVM structure used for representing constants and variables.</dd></dl>
+<dl class="section see"><dt>See also</dt><dd>llvm::Value </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00236">236</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
-
-</div>
-</div>
-<a id="ac7e108d9424dd34872c42cabf00f0597"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac7e108d9424dd34872c42cabf00f0597">&#9670;&nbsp;</a></span>Partition</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef vector&lt;<a class="el" href="structHerbrandPass_1_1IDstruct.html">IDstruct</a> *&gt; <a class="el" href="namespaceHerbrandPass.html#ac7e108d9424dd34872c42cabf00f0597">HerbrandPass::Partition</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Vector to hold equivalence information for each constant/variable/two operand expression at a program point. </p>
-
-<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00244">244</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00125">125</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
 
 </div>
 </div>
@@ -250,7 +200,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Initialises Constants, Variables, CuV, indexExp and indexCV by looking through the instructions in the program. </p>
+<p>Maps expressions of length atmost two to integers arbitrarily for indexing purpose by updating <code>IndexExp</code> map. Also Initialises <code>Constants</code> and <code>Variables</code> by looking through the instructions in the program. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">F</td><td>Function block over which we are operating </td></tr>
@@ -258,9 +208,9 @@ Variables</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Void</dd></dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="namespaceHerbrandPass.html#a99ba7bd568779859b8bf683c5686903c" title="Set of constants used in the program. ">Constants</a>, <a class="el" href="namespaceHerbrandPass.html#a1b055c340188ac99e89e189cd182ce35" title="Set of constants and variables used in the program. ">CuV</a>, <a class="el" href="namespaceHerbrandPass.html#a404919f39cd800c8611622962b1265a2" title="Maps constants and variables in the program to integers for indexing purpose. ">indexCV</a>, <a class="el" href="namespaceHerbrandPass.html#a382184e119c6a18f3ca9fb05731cccf9" title="Maps all possible two operand expressions that can be formed using constants, variables and operators...">indexExp</a>, <a class="el" href="namespaceHerbrandPass.html#ac59d73a491bb4b2163ece8f690c5793a" title="Set of variables used in the program. ">Variables</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="namespaceHerbrandPass.html#a084e5af60f6918c197f3a8b78e9caa44" title="Set of constants used in the program. ">Constants</a>, <a class="el" href="namespaceHerbrandPass.html#a97bf3b8d86f3cafbd4e6b388e225a7eb" title="Maps expressions to integer indexes. This indexing is arbitrarily fixed in the beginning and used thr...">IndexExp</a>, <a class="el" href="namespaceHerbrandPass.html#a74ce7a15961ac17a9d42b3f3b06ec742" title="Set of variables used in the program. ">Variables</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l01052">1052</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00303">303</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
 
 </div>
 </div>
@@ -280,21 +230,22 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Assigns name to basic blocks and variables for easy reference. </p>
+<p>Assigns names to basic blocks and variables for easy reference. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">F</td><td>Function block over which we are operating </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Void </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Void</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>These are not the names used in the original C/C++ source files. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l01028">1028</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00275">275</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
 
 </div>
 </div>
-<a id="a54160f0f584050c576045cb53745dc2b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a54160f0f584050c576045cb53745dc2b">&#9670;&nbsp;</a></span>confluenceFunction()</h2>
+<a id="a3b9168235f2e1216cb272cc240d3475d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b9168235f2e1216cb272cc240d3475d">&#9670;&nbsp;</a></span>confluenceFunction()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -302,118 +253,35 @@ Variables</h2></td></tr>
         <tr>
           <td class="memname">void HerbrandPass::confluenceFunction </td>
           <td>(</td>
-          <td class="paramtype">Instruction &amp;&#160;</td>
-          <td class="paramname"><em>I</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cfgIndex</em></td><td>)</td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespaceHerbrandPass.html#ac7e108d9424dd34872c42cabf00f0597">Partition</a> &amp;&#160;</td>
-          <td class="paramname"><em>partition</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Confluence function. </p>
+<p>Confluence function associated with Herbrand analysis. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">I</td><td>Current instruction </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">partition</td><td>Partition at the confluence point</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="namespaceHerbrandPass.html#ac7e108d9424dd34872c42cabf00f0597" title="Vector to hold equivalence information for each constant/variable/two operand expression at a program...">Partition</a>, <a class="el" href="namespaceHerbrandPass.html#a95436e05185013557b7af5320af57aa6" title="Stores Herbrand Equivalence information after each instruction in the program. ">partitions</a> </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00795">795</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
-
-</div>
-</div>
-<a id="a8b558d99a8deb96e9281a0ead4b4204d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8b558d99a8deb96e9281a0ead4b4204d">&#9670;&nbsp;</a></span>copyPartition()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void HerbrandPass::copyPartition </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="namespaceHerbrandPass.html#ac7e108d9424dd34872c42cabf00f0597">Partition</a> &amp;&#160;</td>
-          <td class="paramname"><em>oldPart</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespaceHerbrandPass.html#ac7e108d9424dd34872c42cabf00f0597">Partition</a> const &amp;&#160;</td>
-          <td class="paramname"><em>toCopy</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Creates a copy of a partition. </p>
-<p>First call decreaseParentCnt for each element of the old partition, because we are removing references to them. Copy the required partition and then call increaseParentCnt for each member of the copied partition, because we are adding a new reference to them during copying.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">oldPart</td><td>Old partition </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">toCopy</td><td>Partition to be copied </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">cfgIndex</td><td>Control flow graph node index on which confluence function is applied. </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Void</dd></dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="structHerbrandPass_1_1IDstruct.html" title="Structure for capturing Herbrand Equivalence classes. ">IDstruct</a>, <a class="el" href="namespaceHerbrandPass.html#ac7e108d9424dd34872c42cabf00f0597" title="Vector to hold equivalence information for each constant/variable/two operand expression at a program...">Partition</a>, <a class="el" href="namespaceHerbrandPass.html#a95436e05185013557b7af5320af57aa6" title="Stores Herbrand Equivalence information after each instruction in the program. ">partitions</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="namespaceHerbrandPass.html#a009cedf38791d04ae492f8af628af0a8" title="Returns set identifier for a given two length expression at a program point. ">findSet</a>, <a class="el" href="namespaceHerbrandPass.html#a97bf3b8d86f3cafbd4e6b388e225a7eb" title="Maps expressions to integer indexes. This indexing is arbitrarily fixed in the beginning and used thr...">IndexExp</a>, <a class="el" href="namespaceHerbrandPass.html#a51f46da45893ff797e0de94d130f073e" title="Vector to keep track of equivalence classes at each program point. ">Partitions</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00642">642</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00869">869</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
 
 </div>
 </div>
-<a id="a50e241df2577a4354cb57105b4c52f5b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a50e241df2577a4354cb57105b4c52f5b">&#9670;&nbsp;</a></span>decreaseParentCnt()</h2>
+<a id="ae92f46ccb815f1c42d66475957699d76"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae92f46ccb815f1c42d66475957699d76">&#9670;&nbsp;</a></span>createCFG()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void HerbrandPass::decreaseParentCnt </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="structHerbrandPass_1_1IDstruct.html">IDstruct</a> *&amp;&#160;</td>
-          <td class="paramname"><em>ptr</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Function to decrement parentCnt of an <a class="el" href="structHerbrandPass_1_1IDstruct.html" title="Structure for capturing Herbrand Equivalence classes. ">IDstruct</a> object. </p>
-<p>If parentCnt of an <a class="el" href="structHerbrandPass_1_1IDstruct.html" title="Structure for capturing Herbrand Equivalence classes. ">IDstruct</a> object becomes zero then it means that the object is no longer of any use and its memory can be freed. In the second case, we need to recursively call decreaseParentCnt for its left and right.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">ptr</td><td>Pointer to the <a class="el" href="structHerbrandPass_1_1IDstruct.html" title="Structure for capturing Herbrand Equivalence classes. ">IDstruct</a> object </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>Void</dd></dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="structHerbrandPass_1_1IDstruct.html" title="Structure for capturing Herbrand Equivalence classes. ">IDstruct</a> </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00396">396</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
-
-</div>
-</div>
-<a id="add5dc3a7269f965f003a6b83d0e96838"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#add5dc3a7269f965f003a6b83d0e96838">&#9670;&nbsp;</a></span>findAvailableVariables()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void HerbrandPass::findAvailableVariables </td>
+          <td class="memname">void HerbrandPass::createCFG </td>
           <td>(</td>
           <td class="paramtype">Function &amp;&#160;</td>
           <td class="paramname"><em>F</em></td><td>)</td>
@@ -422,115 +290,15 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Finds available variables at each instruction of a function. </p>
-<p>Calculation of <code>availVariables</code> is a forward dataflow problem, calculated via fixed point computation. A variable is available at a point if all paths from the start of the program to that point contains a definition of the variable. Our universe is <b> U - the set of program variables </b> and for each program point <b> P </b>, we initialise <b> OUT[P] </b> to <b> U </b>. Also, let <b> GEN[P] </b> to be the variable defined at <b> P </b> if any, otherwise empty set. We will perform updates as <br />
- <br />
- <code> IN[P] = intersect(availVariables[P']) </code> <code> OUT[P] = union(IN[P], GEN[P]) </code> <br />
- <br />
- where <code>union</code> is normal set union and <code>intersect</code> is performed over all <b> P' </b> belonging to the predecessor of <b> P </b>. Finally, <code> availVariables[P] = OUT[P] </code>. <br />
- For the purpose of implementation, IN and OUT will not be maintained explicitly, but the same information will be kept in availVariables itself.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">F</td><td>Function under consideration </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>Void</dd></dl>
-<dl class="section note"><dt>Note</dt><dd>Available Variables is different from both available expressions and reaching definition.</dd></dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="namespaceHerbrandPass.html#ab0b61a0ba19cda60c57bb08b6716cca3" title="Stores the variables available at each point in the program. ">availVariables</a> </dd></dl>
+<p>Creates control flow graph corresponding to the program. </p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="structHerbrandPass_1_1CfgNodeTy.html">CfgNodeTy</a>, <a class="el" href="namespaceHerbrandPass.html#a54dc99c6ff9ae67032426b99ed8830be" title="Control flow graph corresponding to the program. ">CFG</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l01212">1212</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00354">354</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
 
 </div>
 </div>
-<a id="a5e48516480dd873cf655f00821120b4d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5e48516480dd873cf655f00821120b4d">&#9670;&nbsp;</a></span>findHerbrandEquivalence()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void HerbrandPass::findHerbrandEquivalence </td>
-          <td>(</td>
-          <td class="paramtype">Function &amp;&#160;</td>
-          <td class="paramname"><em>F</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Finds herbrand equivalence information by updating partitions map, for a given function. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">F</td><td>Function under consideration </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>Void</dd></dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="namespaceHerbrandPass.html#a95436e05185013557b7af5320af57aa6" title="Stores Herbrand Equivalence information after each instruction in the program. ">partitions</a> </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l01100">1100</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
-
-</div>
-</div>
-<a id="a7870ef5ab02ec0664bdf7ce58ede4e2c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7870ef5ab02ec0664bdf7ce58ede4e2c">&#9670;&nbsp;</a></span>findIDstrct()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="structHerbrandPass_1_1IDstruct.html">IDstruct</a>* HerbrandPass::findIDstrct </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="namespaceHerbrandPass.html#ac7e108d9424dd34872c42cabf00f0597">Partition</a> const &amp;&#160;</td>
-          <td class="paramname"><em>curPart</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">char&#160;</td>
-          <td class="paramname"><em>op</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Value *&#160;</td>
-          <td class="paramname"><em>left</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Value *&#160;</td>
-          <td class="paramname"><em>right</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Returns pointer to <a class="el" href="structHerbrandPass_1_1IDstruct.html" title="Structure for capturing Herbrand Equivalence classes. ">IDstruct</a> object that represents equivalence class corresponding to expression "left op right" in a given partition. </p>
-<p>If such an object doesn't exists it creates one such and updates other required things.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">curPart</td><td>Partition under consideration </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">op</td><td>Operator </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">left</td><td>Left operand </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">right</td><td>Right operand </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>Pointer to <a class="el" href="structHerbrandPass_1_1IDstruct.html" title="Structure for capturing Herbrand Equivalence classes. ">IDstruct</a> object representing "left op right" in curPart</dd></dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="structHerbrandPass_1_1IDstruct.html" title="Structure for capturing Herbrand Equivalence classes. ">IDstruct</a>, <a class="el" href="namespaceHerbrandPass.html#ac7e108d9424dd34872c42cabf00f0597" title="Vector to hold equivalence information for each constant/variable/two operand expression at a program...">Partition</a>, <a class="el" href="namespaceHerbrandPass.html#a95436e05185013557b7af5320af57aa6" title="Stores Herbrand Equivalence information after each instruction in the program. ">partitions</a> </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00456">456</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
-
-</div>
-</div>
-<a id="a68d0c8656e7fedbed7fb46cf5babae66"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a68d0c8656e7fedbed7fb46cf5babae66">&#9670;&nbsp;</a></span>findInitialPartition()</h2>
+<a id="ab28c27aedb71cf9b5c6ebdec6f9a2ce3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab28c27aedb71cf9b5c6ebdec6f9a2ce3">&#9670;&nbsp;</a></span>findInitialPartition()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -538,86 +306,45 @@ Variables</h2></td></tr>
         <tr>
           <td class="memname">void HerbrandPass::findInitialPartition </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespaceHerbrandPass.html#ac7e108d9424dd34872c42cabf00f0597">Partition</a> &amp;&#160;</td>
+          <td class="paramtype">std::vector&lt; int &gt; &amp;&#160;</td>
           <td class="paramname"><em>partition</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Finds initial partition in which every expression is in a separate equivalence class. </p>
+<p>Finds initial partition. </p>
+<p>Finds a vector representing initial partition in which all expressions are in different partition (has non-equivalent set identifiers). It also updates <code>Parent</code> map for set identifiers assigned to length two expressions.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[out]</td><td class="paramname">v</td><td>Vector to hold the initial partition </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">partition</td><td>Vector to store the initial partition. </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Void</dd></dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="namespaceHerbrandPass.html#ac7e108d9424dd34872c42cabf00f0597" title="Vector to hold equivalence information for each constant/variable/two operand expression at a program...">Partition</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="namespaceHerbrandPass.html#a009cedf38791d04ae492f8af628af0a8" title="Returns set identifier for a given two length expression at a program point. ">findSet</a>, <a class="el" href="namespaceHerbrandPass.html#a97bf3b8d86f3cafbd4e6b388e225a7eb" title="Maps expressions to integer indexes. This indexing is arbitrarily fixed in the beginning and used thr...">IndexExp</a>, <a class="el" href="namespaceHerbrandPass.html#a51f46da45893ff797e0de94d130f073e" title="Vector to keep track of equivalence classes at each program point. ">Partitions</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00486">486</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00740">740</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
 
 </div>
 </div>
-<a id="a7cffce63f197880059e0bdef676862a3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7cffce63f197880059e0bdef676862a3">&#9670;&nbsp;</a></span>findPredecessors()</h2>
+<a id="a009cedf38791d04ae492f8af628af0a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a009cedf38791d04ae492f8af628af0a8">&#9670;&nbsp;</a></span>findSet()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void HerbrandPass::findPredecessors </td>
+          <td class="memname">int HerbrandPass::findSet </td>
           <td>(</td>
-          <td class="paramtype">Function &amp;&#160;</td>
-          <td class="paramname"><em>F</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Updates Predecessors map and confluencePoints set for instructions in a function. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">F</td><td>Function under consideration </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>Void</dd></dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="namespaceHerbrandPass.html#aa18fbc255053d9ee23288888334b14a4" title="Stores predecessors for each instruction - an instruction can have zero, one or more than one predece...">Predecessors</a>, <a class="el" href="namespaceHerbrandPass.html#acec8bc8e1580960eabba44d89a792a12" title="Stores the instructions which represents confluence points - an instruction having more than one pred...">confluencePoints</a> </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00668">668</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
-
-</div>
-</div>
-<a id="afa3901867588a5a413c2b4b623b0c786"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afa3901867588a5a413c2b4b623b0c786">&#9670;&nbsp;</a></span>getClass()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void HerbrandPass::getClass </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>index</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespaceHerbrandPass.html#ac7e108d9424dd34872c42cabf00f0597">Partition</a> const &amp;&#160;</td>
+          <td class="paramtype">std::vector&lt; int &gt; const &amp;&#160;</td>
           <td class="paramname"><em>partition</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">set&lt; Value *&gt; &amp;&#160;</td>
-          <td class="paramname"><em>setCV</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">set&lt; <a class="el" href="namespaceHerbrandPass.html#a97bf17f6357ba3c70f792249a915f5bf">expTuple</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>setExp</em>&#160;</td>
+          <td class="paramtype"><a class="el" href="namespaceHerbrandPass.html#ae9d4811b3bacd40fafe61f7659f277b3">ExpressionTy</a> const &amp;&#160;</td>
+          <td class="paramname"><em>exp</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -627,61 +354,104 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Finds the equivalence class corresponding to a constant, variable or two operand expression at a given program point. </p>
+<p>Returns set identifier for a given two length expression at a program point. </p>
+<p>With the help of <code>Parent</code> map, first a check is made if a set identifier representing the expression at the current program point exists. If so it is returned else a new set identifier is created by updating <code>SetCnt</code> and returned. This information is also stored in the <code>Parent</code> map for future use.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">index</td><td>Index corresponding to the variable/constant/expression as given by indexCV/indexExp </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">partition</td><td>The Equivalence information at the program point </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">setCV</td><td>Set of variables/constants belonging to the equivalence class </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">setExp</td><td>Set of two operand expressions belonging to the equivalence class </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">partition</td><td>Vector representing the partition at the program point. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">exp</td><td>Expression whose set identifier is required at the program point. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Void</dd></dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="namespaceHerbrandPass.html#a404919f39cd800c8611622962b1265a2" title="Maps constants and variables in the program to integers for indexing purpose. ">indexCV</a>, <a class="el" href="namespaceHerbrandPass.html#a382184e119c6a18f3ca9fb05731cccf9" title="Maps all possible two operand expressions that can be formed using constants, variables and operators...">indexExp</a>, <a class="el" href="namespaceHerbrandPass.html#ac7e108d9424dd34872c42cabf00f0597" title="Vector to hold equivalence information for each constant/variable/two operand expression at a program...">Partition</a>, <a class="el" href="namespaceHerbrandPass.html#a95436e05185013557b7af5320af57aa6" title="Stores Herbrand Equivalence information after each instruction in the program. ">partitions</a> </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The set identifier for the expression at the program point.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Make sure that the second argument passed represents a length two expression.</dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="namespaceHerbrandPass.html#a97bf3b8d86f3cafbd4e6b388e225a7eb" title="Maps expressions to integer indexes. This indexing is arbitrarily fixed in the beginning and used thr...">IndexExp</a>, <a class="el" href="namespaceHerbrandPass.html#aa13c370b7668233c6fc088b371937539" title="Map to hold parent set identifiers. ">Parent</a>, <a class="el" href="namespaceHerbrandPass.html#a51f46da45893ff797e0de94d130f073e" title="Vector to keep track of equivalence classes at each program point. ">Partitions</a>, <a class="el" href="namespaceHerbrandPass.html#a2dae61e7e4a25da10c587b0b5be91d8e" title="Counter to keep track of set identifiers. New set identifiers are created by incrementing this counte...">SetCnt</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00549">549</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00704">704</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
 
 </div>
 </div>
-<a id="a015096462c8a5fb384827f87e03f679c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a015096462c8a5fb384827f87e03f679c">&#9670;&nbsp;</a></span>increaseParentCnt()</h2>
+<a id="a3787917d15acfe04771f88e64fd10996"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3787917d15acfe04771f88e64fd10996">&#9670;&nbsp;</a></span>getClass()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void HerbrandPass::increaseParentCnt </td>
+          <td class="memname">void HerbrandPass::getClass </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structHerbrandPass_1_1IDstruct.html">IDstruct</a> *&amp;&#160;</td>
-          <td class="paramname"><em>ptr</em></td><td>)</td>
+          <td class="paramtype">std::vector&lt; int &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>partition</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>expIdx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::set&lt; int &gt; &amp;&#160;</td>
+          <td class="paramname"><em>expClass</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns equivalence class of an expression at a given program point. </p>
+<p>The equivalence class is the set of indexes corresponding to expressions (as given by <code>IndexExp</code>) which have same set identifiers as the index representing the expression (passed as parameter) in the partition at the program point.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">partition</td><td>Vector representing the partition at current program point. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">expIdx</td><td>Index of expression whose equivalence class is required. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">expClass</td><td>Set containing identifiers corresponding to the required equivalence class. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Void</dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="namespaceHerbrandPass.html#a97bf3b8d86f3cafbd4e6b388e225a7eb" title="Maps expressions to integer indexes. This indexing is arbitrarily fixed in the beginning and used thr...">IndexExp</a>, <a class="el" href="namespaceHerbrandPass.html#a51f46da45893ff797e0de94d130f073e" title="Vector to keep track of equivalence classes at each program point. ">Partitions</a> </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00773">773</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a89912b4f8db2df4b6b55039826a6ef4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89912b4f8db2df4b6b55039826a6ef4b">&#9670;&nbsp;</a></span>HerbrandAnalysis()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void HerbrandPass::HerbrandAnalysis </td>
+          <td>(</td>
+          <td class="paramtype">Function &amp;&#160;</td>
+          <td class="paramname"><em>F</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Function to increment parentCnt of an <a class="el" href="structHerbrandPass_1_1IDstruct.html" title="Structure for capturing Herbrand Equivalence classes. ">IDstruct</a> object. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">ptr</td><td>Pointer to the <a class="el" href="structHerbrandPass_1_1IDstruct.html" title="Structure for capturing Herbrand Equivalence classes. ">IDstruct</a> object </td></tr>
-  </table>
-  </dd>
-</dl>
+<p>Main Herbrand analysis function. </p>
 <dl class="section return"><dt>Returns</dt><dd>Void</dd></dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="structHerbrandPass_1_1IDstruct.html" title="Structure for capturing Herbrand Equivalence classes. ">IDstruct</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="namespaceHerbrandPass.html#a51f46da45893ff797e0de94d130f073e" title="Vector to keep track of equivalence classes at each program point. ">Partitions</a>, <a class="el" href="namespaceHerbrandPass.html#a97bf3b8d86f3cafbd4e6b388e225a7eb" title="Maps expressions to integer indexes. This indexing is arbitrarily fixed in the beginning and used thr...">IndexExp</a>, <a class="el" href="namespaceHerbrandPass.html#aa13c370b7668233c6fc088b371937539" title="Map to hold parent set identifiers. ">Parent</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00432">432</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00956">956</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
 
 </div>
 </div>
-<a id="ab38c0589dc5ad070c91686e954142b3c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab38c0589dc5ad070c91686e954142b3c">&#9670;&nbsp;</a></span>Ops()</h2>
+<a id="a58ef56c67680d6c6b45a260360c54b4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58ef56c67680d6c6b45a260360c54b4c">&#9670;&nbsp;</a></span>Ops()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">set&lt;char&gt; HerbrandPass::Ops </td>
+          <td class="memname">std::set&lt;char&gt; HerbrandPass::Ops </td>
           <td>(</td>
           <td class="paramtype">{'+'}&#160;</td>
           <td class="paramname"></td><td>)</td>
@@ -691,6 +461,30 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Set of operators used in the program. </p>
+<dl class="section note"><dt>Note</dt><dd>This set needs to be updated by adding operators if the programs on which the pass is being run contains more operators. </dd></dl>
+
+</div>
+</div>
+<a id="aeea50c7a9e951caf9634819446b4145f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeea50c7a9e951caf9634819446b4145f">&#9670;&nbsp;</a></span>printCFG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void HerbrandPass::printCFG </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Prints the control flow graph corresponding to the program. </p>
+<dl class="section return"><dt>Returns</dt><dd>Void</dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="namespaceHerbrandPass.html#a54dc99c6ff9ae67032426b99ed8830be" title="Control flow graph corresponding to the program. ">CFG</a>, <a class="el" href="structHerbrandPass_1_1CfgNodeTy.html">CfgNodeTy</a> </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00565">565</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
 
 </div>
 </div>
@@ -719,18 +513,78 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Void </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l01007">1007</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00536">536</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
 
 </div>
 </div>
-<a id="afef7f12241090812a47ba39f5a25bda3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afef7f12241090812a47ba39f5a25bda3">&#9670;&nbsp;</a></span>printCV()</h2>
+<a id="a36c0729da495737eae62b68e2cc4d37c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36c0729da495737eae62b68e2cc4d37c">&#9670;&nbsp;</a></span>printExpression()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void HerbrandPass::printCV </td>
+          <td class="memname">void HerbrandPass::printExpression </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceHerbrandPass.html#ae9d4811b3bacd40fafe61f7659f277b3">ExpressionTy</a> const &amp;&#160;</td>
+          <td class="paramname"><em>exp</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Prints an expression in readable form. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">exp</td><td>Expression to be printed </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Void</dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="namespaceHerbrandPass.html#ae9d4811b3bacd40fafe61f7659f277b3" title="Represents an expression of length at most two. ">ExpressionTy</a> </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00518">518</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
+
+</div>
+</div>
+<a id="abd53e2a72aeb290bea35c54a12c43a86"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd53e2a72aeb290bea35c54a12c43a86">&#9670;&nbsp;</a></span>printPartition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void HerbrandPass::printPartition </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; int &gt; const &amp;&#160;</td>
+          <td class="paramname"><em>partition</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Prints a partition in readable format. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">partition</td><td>The partition vector to be printed. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Void</dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="namespaceHerbrandPass.html#a97bf3b8d86f3cafbd4e6b388e225a7eb" title="Maps expressions to integer indexes. This indexing is arbitrarily fixed in the beginning and used thr...">IndexExp</a>, <a class="el" href="namespaceHerbrandPass.html#a51f46da45893ff797e0de94d130f073e" title="Vector to keep track of equivalence classes at each program point. ">Partitions</a> </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00615">615</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a149647446349bac41b669bc33cd62a18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a149647446349bac41b669bc33cd62a18">&#9670;&nbsp;</a></span>printValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void HerbrandPass::printValue </td>
           <td>(</td>
           <td class="paramtype">Value const *&#160;</td>
           <td class="paramname"><em>value</em></td><td>)</td>
@@ -746,161 +600,15 @@ Variables</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Void </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00880">880</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
-
-</div>
-</div>
-<a id="a3d8c527b6399f440e3125a2208c25d2c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3d8c527b6399f440e3125a2208c25d2c">&#9670;&nbsp;</a></span>printExp()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void HerbrandPass::printExp </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="namespaceHerbrandPass.html#a97bf17f6357ba3c70f792249a915f5bf">expTuple</a> const &amp;&#160;</td>
-          <td class="paramname"><em>exp</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Prints a two operand expression in readable form. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">exp</td><td>Expression to be printed </td></tr>
-  </table>
-  </dd>
-</dl>
 <dl class="section return"><dt>Returns</dt><dd>Void</dd></dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="namespaceHerbrandPass.html#a97bf17f6357ba3c70f792249a915f5bf" title="Represents a two operand expression in prefix form. ">expTuple</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd>llvm::Value </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00908">908</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
-
-</div>
-</div>
-<a id="a24f9cb1984b9cb51c1045d487e01452d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a24f9cb1984b9cb51c1045d487e01452d">&#9670;&nbsp;</a></span>printPartition()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void HerbrandPass::printPartition </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="namespaceHerbrandPass.html#ac7e108d9424dd34872c42cabf00f0597">Partition</a> const &amp;&#160;</td>
-          <td class="paramname"><em>partition</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Prints a partition in readable format. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">partition</td><td>Partition to be printed </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>Void</dd></dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="namespaceHerbrandPass.html#ac7e108d9424dd34872c42cabf00f0597" title="Vector to hold equivalence information for each constant/variable/two operand expression at a program...">Partition</a> </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00936">936</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00502">502</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
 
 </div>
 </div>
-<a id="aae79b80fdd4a587c4adf146501ecd46a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aae79b80fdd4a587c4adf146501ecd46a">&#9670;&nbsp;</a></span>printSetCV()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void HerbrandPass::printSetCV </td>
-          <td>(</td>
-          <td class="paramtype">set&lt; Value *&gt; const &amp;&#160;</td>
-          <td class="paramname"><em>setCV</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Prints a set of constant/variable in readable form. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">setCV</td><td>Set of constants/variables </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>Void </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00894">894</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
-
-</div>
-</div>
-<a id="ae790b2fb98b0500a9bb633d20f19f54d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae790b2fb98b0500a9bb633d20f19f54d">&#9670;&nbsp;</a></span>printSetExp()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void HerbrandPass::printSetExp </td>
-          <td>(</td>
-          <td class="paramtype">set&lt; <a class="el" href="namespaceHerbrandPass.html#a97bf17f6357ba3c70f792249a915f5bf">expTuple</a> &gt; const &amp;&#160;</td>
-          <td class="paramname"><em>setExp</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Prints a set of two operand expressions in readable form. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">value</td><td>Set of expressions to be printed </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>Void </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00922">922</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
-
-</div>
-</div>
-<a id="a61d96f9326349a62d2cf35441a6bb2f0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a61d96f9326349a62d2cf35441a6bb2f0">&#9670;&nbsp;</a></span>removeRedundantExpressions()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void HerbrandPass::removeRedundantExpressions </td>
-          <td>(</td>
-          <td class="paramtype">Function &amp;&#160;</td>
-          <td class="paramname"><em>F</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Function to remove redundant instructions by using herbrand equivalence and available expression information. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">F</td><td>Function that has to be printed </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>Void </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l01302">1302</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
-
-</div>
-</div>
-<a id="a9084269140ae26bba795a51935544ff4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9084269140ae26bba795a51935544ff4">&#9670;&nbsp;</a></span>samePartition()</h2>
+<a id="ab01078a889dc0f407231662fa02a60d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab01078a889dc0f407231662fa02a60d4">&#9670;&nbsp;</a></span>samePartition()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -908,13 +616,13 @@ Variables</h2></td></tr>
         <tr>
           <td class="memname">bool HerbrandPass::samePartition </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespaceHerbrandPass.html#ac7e108d9424dd34872c42cabf00f0597">Partition</a> const &amp;&#160;</td>
+          <td class="paramtype">std::vector&lt; int &gt; const &amp;&#160;</td>
           <td class="paramname"><em>first</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespaceHerbrandPass.html#ac7e108d9424dd34872c42cabf00f0597">Partition</a> const &amp;&#160;</td>
+          <td class="paramtype">std::vector&lt; int &gt; const &amp;&#160;</td>
           <td class="paramname"><em>second</em>&#160;</td>
         </tr>
         <tr>
@@ -925,24 +633,24 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Checks whether two partitions are equivalent or not. </p>
-<dl class="section note"><dt>Note</dt><dd>We don't need to check whether two expressions at different points are equivalent. Instead, we are checking if the equivalence class of each expression at two different program points are same.</dd></dl>
+<p>Checks whether two partitions are same. </p>
+<p>Two partitions are same if in the vectors representing them values at two indexes are equal in the first vector iff they are equal in the second vector.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">first</td><td>Equivalence information for the first partition </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">second</td><td>Equivalence information for the second partition </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">first</td><td>First partition </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">second</td><td>Second partition </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>true/false</dd></dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="namespaceHerbrandPass.html#ac7e108d9424dd34872c42cabf00f0597" title="Vector to hold equivalence information for each constant/variable/two operand expression at a program...">Partition</a>, <a class="el" href="namespaceHerbrandPass.html#a95436e05185013557b7af5320af57aa6" title="Stores Herbrand Equivalence information after each instruction in the program. ">partitions</a> </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Returns true if the two partitions are same, otherwise false</dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="namespaceHerbrandPass.html#a97bf3b8d86f3cafbd4e6b388e225a7eb" title="Maps expressions to integer indexes. This indexing is arbitrarily fixed in the beginning and used thr...">IndexExp</a>, <a class="el" href="namespaceHerbrandPass.html#a51f46da45893ff797e0de94d130f073e" title="Vector to keep track of equivalence classes at each program point. ">Partitions</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00586">586</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00659">659</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
 
 </div>
 </div>
-<a id="a935f7f798be6c8401551fdd99cdc9176"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a935f7f798be6c8401551fdd99cdc9176">&#9670;&nbsp;</a></span>transferFunction()</h2>
+<a id="a2953dd14c2adb7e5e3967d21ab01a1c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2953dd14c2adb7e5e3967d21ab01a1c9">&#9670;&nbsp;</a></span>transferFunction()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -950,270 +658,184 @@ Variables</h2></td></tr>
         <tr>
           <td class="memname">void HerbrandPass::transferFunction </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespaceHerbrandPass.html#ac7e108d9424dd34872c42cabf00f0597">Partition</a> &amp;&#160;</td>
-          <td class="paramname"><em>curPart</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cfgIndex</em></td><td>)</td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespaceHerbrandPass.html#ac7e108d9424dd34872c42cabf00f0597">Partition</a> const &amp;&#160;</td>
-          <td class="paramname"><em>prevPart</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Instruction &amp;&#160;</td>
-          <td class="paramname"><em>I</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Transfer function. </p>
+<p>Transfer function associated with Herbrand analysis. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">curPart</td><td>Partition at current program point </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">prevPart</td><td>Partition at predecessor program point </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">I</td><td>Current instruction </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">cfgIndex</td><td>Control flow graph node index on which transfer function is applied. The function modifies <code>Partitions[cfgIndex]</code>. </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Void</dd></dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="namespaceHerbrandPass.html#ac7e108d9424dd34872c42cabf00f0597" title="Vector to hold equivalence information for each constant/variable/two operand expression at a program...">Partition</a>, <a class="el" href="namespaceHerbrandPass.html#a95436e05185013557b7af5320af57aa6" title="Stores Herbrand Equivalence information after each instruction in the program. ">partitions</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="namespaceHerbrandPass.html#a009cedf38791d04ae492f8af628af0a8" title="Returns set identifier for a given two length expression at a program point. ">findSet</a>, <a class="el" href="namespaceHerbrandPass.html#a97bf3b8d86f3cafbd4e6b388e225a7eb" title="Maps expressions to integer indexes. This indexing is arbitrarily fixed in the beginning and used thr...">IndexExp</a>, <a class="el" href="namespaceHerbrandPass.html#a51f46da45893ff797e0de94d130f073e" title="Vector to keep track of equivalence classes at each program point. ">Partitions</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00710">710</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00795">795</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Variable Documentation</h2>
-<a id="ab0b61a0ba19cda60c57bb08b6716cca3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab0b61a0ba19cda60c57bb08b6716cca3">&#9670;&nbsp;</a></span>availVariables</h2>
+<a id="a54dc99c6ff9ae67032426b99ed8830be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54dc99c6ff9ae67032426b99ed8830be">&#9670;&nbsp;</a></span>CFG</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">map&lt;Instruction *, set&lt;Value *&gt; &gt; HerbrandPass::availVariables</td>
+          <td class="memname">std::vector&lt;<a class="el" href="structHerbrandPass_1_1CfgNodeTy.html">CfgNodeTy</a>&gt; HerbrandPass::CFG</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Stores the variables available at each point in the program. </p>
-<p>Calculation of <code>availVariables</code> is a forward dataflow problem, calculated via fixed point computation. A variable is available at a point if all paths from the start of the program to that point contains a definition of the variable. Our universe is <b> U - the set of program variables </b> and for each program point <b> P </b>, we initialise <b> OUT[P] </b> to <b> U </b>. Also, let <b> GEN[P] </b> to be the variable defined at <b> P </b> if any, otherwise empty set. We will perform updates as <br />
- <br />
- <code> IN[P] = intersect(availVariables[P']) </code> <code> OUT[P] = union(IN[P], GEN[P]) </code> <br />
- <br />
- where <code>union</code> is normal set union and <code>intersect</code> is performed over all <b> P' </b> belonging to the predecessor of <b> P </b>. Finally, <code> availVariables[P] = OUT[P] </code>.</p>
-<dl class="section note"><dt>Note</dt><dd>This is different from both available expressions and reaching definition.</dd></dl>
-<dl class="section see"><dt>See also</dt><dd>Reaching definition, available expression </dd></dl>
+<p>Control flow graph corresponding to the program. </p>
+<p>It contains nodes only corresponding to reachable instructions and confluence points along with two special START and END nodes.</p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="structHerbrandPass_1_1CfgNodeTy.html">CfgNodeTy</a>, <a class="el" href="namespaceHerbrandPass.html#ae92f46ccb815f1c42d66475957699d76" title="Creates control flow graph corresponding to the program. ">createCFG</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00329">329</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00253">253</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
 
 </div>
 </div>
-<a id="acec8bc8e1580960eabba44d89a792a12"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acec8bc8e1580960eabba44d89a792a12">&#9670;&nbsp;</a></span>confluencePoints</h2>
+<a id="a8a10b94a731f6ddc38c3e0262223dd23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a10b94a731f6ddc38c3e0262223dd23">&#9670;&nbsp;</a></span>CfgIndex</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">set&lt;Instruction *&gt; HerbrandPass::confluencePoints</td>
+          <td class="memname">std::map&lt;Instruction *, int&gt; HerbrandPass::CfgIndex</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Stores the instructions which represents confluence points - an instruction having more than one predecessors. </p>
+<p>Stores <code>CFG</code> index for each instruction. </p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="namespaceHerbrandPass.html#a54dc99c6ff9ae67032426b99ed8830be" title="Control flow graph corresponding to the program. ">CFG</a>, <a class="el" href="structHerbrandPass_1_1CfgNodeTy.html">CfgNodeTy</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00300">300</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00260">260</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
 
 </div>
 </div>
-<a id="a99ba7bd568779859b8bf683c5686903c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a99ba7bd568779859b8bf683c5686903c">&#9670;&nbsp;</a></span>Constants</h2>
+<a id="a084e5af60f6918c197f3a8b78e9caa44"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a084e5af60f6918c197f3a8b78e9caa44">&#9670;&nbsp;</a></span>Constants</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">set&lt;Value *&gt; HerbrandPass::Constants</td>
+          <td class="memname">std::set&lt;Value *&gt; HerbrandPass::Constants</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Set of constants used in the program. </p>
+<dl class="section note"><dt>Note</dt><dd>Value is LLVM structure used for representing constants and variables.</dd></dl>
+<dl class="section see"><dt>See also</dt><dd>llvm::Value </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00249">249</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00085">85</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
 
 </div>
 </div>
-<a id="a660bb7e40f7fdf7ba807f94a9a8a3ab1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a660bb7e40f7fdf7ba807f94a9a8a3ab1">&#9670;&nbsp;</a></span>constIDStruct</h2>
+<a id="a97bf3b8d86f3cafbd4e6b388e225a7eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97bf3b8d86f3cafbd4e6b388e225a7eb">&#9670;&nbsp;</a></span>IndexExp</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">map&lt;int, <a class="el" href="structHerbrandPass_1_1IDstruct.html">IDstruct</a> *&gt; HerbrandPass::constIDStruct</td>
+          <td class="memname">std::map&lt;<a class="el" href="namespaceHerbrandPass.html#ae9d4811b3bacd40fafe61f7659f277b3">ExpressionTy</a>, int&gt; HerbrandPass::IndexExp</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Stores the pointer to <a class="el" href="structHerbrandPass_1_1IDstruct.html" title="Structure for capturing Herbrand Equivalence classes. ">IDstruct</a> object corresponding to a constant, so that we never create a duplicate <a class="el" href="structHerbrandPass_1_1IDstruct.html" title="Structure for capturing Herbrand Equivalence classes. ">IDstruct</a> object for the same. </p>
-<p>This is required just for logical consistency. A basic block other than the starting block can have no predecessor (in case a block of code is unreachable). In that case, to make the code also useful for GVN along with herbrand equivalence, this information is required. Otherwise at the start of all such unreachable basic blocks we would be creating a new <a class="el" href="structHerbrandPass_1_1IDstruct.html" title="Structure for capturing Herbrand Equivalence classes. ">IDstruct</a> object for the same constant - which means according to our program, they are not equivalent (as they do not point to the same <a class="el" href="structHerbrandPass_1_1IDstruct.html" title="Structure for capturing Herbrand Equivalence classes. ">IDstruct</a> object), which is not correct. However, for herbrand equivalence we can even do without this. </p>
+<p>Maps expressions to integer indexes. This indexing is arbitrarily fixed in the beginning and used throughout wherever indexing is required for the expressions. </p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="namespaceHerbrandPass.html#ae9d4811b3bacd40fafe61f7659f277b3" title="Represents an expression of length at most two. ">ExpressionTy</a>, <a class="el" href="namespaceHerbrandPass.html#a51f46da45893ff797e0de94d130f073e" title="Vector to keep track of equivalence classes at each program point. ">Partitions</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00380">380</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00135">135</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
 
 </div>
 </div>
-<a id="a1b055c340188ac99e89e189cd182ce35"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1b055c340188ac99e89e189cd182ce35">&#9670;&nbsp;</a></span>CuV</h2>
+<a id="aa13c370b7668233c6fc088b371937539"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa13c370b7668233c6fc088b371937539">&#9670;&nbsp;</a></span>Parent</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">set&lt;Value *&gt; HerbrandPass::CuV</td>
+          <td class="memname">std::map&lt;std::tuple&lt;char, int, int&gt;, int&gt; HerbrandPass::Parent</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Set of constants and variables used in the program. </p>
+<p>Map to hold parent set identifiers. </p>
+<p>a1 =~ a2 and b1 =~ b2 at a program point iff (a1 + b1) =~ (a2 + b2). Parent map helps us to resolve this by storing set identifiers of compound expression (a1 + b1) as parent of set identifiers of its smaller sub-expressions (a1 and b1). Now, later when a new expression is formed by combining expressions (a2 and b2) with same set identifiers as those of the two sub-expressions (a1 and b1), we assign it (a2 + b2) the same identifier as the previous compound expression (a1 + b1). This map also helps to resolve other complex cases where some equivalence classes are lost in the middle of the program but appears later.</p>
+<dl class="section note"><dt>Note</dt><dd>The two integers in the key of this map are ordered. Also this map is global used throughout the program.</dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="namespaceHerbrandPass.html#a97bf3b8d86f3cafbd4e6b388e225a7eb" title="Maps expressions to integer indexes. This indexing is arbitrarily fixed in the beginning and used thr...">IndexExp</a>, <a class="el" href="namespaceHerbrandPass.html#a51f46da45893ff797e0de94d130f073e" title="Vector to keep track of equivalence classes at each program point. ">Partitions</a>, <a class="el" href="namespaceHerbrandPass.html#a2dae61e7e4a25da10c587b0b5be91d8e" title="Counter to keep track of set identifiers. New set identifiers are created by incrementing this counte...">SetCnt</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00259">259</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00197">197</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
 
 </div>
 </div>
-<a id="a404919f39cd800c8611622962b1265a2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a404919f39cd800c8611622962b1265a2">&#9670;&nbsp;</a></span>indexCV</h2>
+<a id="a51f46da45893ff797e0de94d130f073e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51f46da45893ff797e0de94d130f073e">&#9670;&nbsp;</a></span>Partitions</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">map&lt;Value *, int&gt; HerbrandPass::indexCV</td>
+          <td class="memname">std::vector&lt;std::vector&lt;int&gt; &gt; HerbrandPass::Partitions</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Maps constants and variables in the program to integers for indexing purpose. </p>
+<p>Vector to keep track of equivalence classes at each program point. </p>
+<p>There is an entry for each program point in this vector which itself is a vector containing an entry for each expression of length atmost two. The entries for the expressions contains integer set identifiers. For a given program point two expressions are equivalent iff they have the same set identifier.</p>
+<dl class="section note"><dt>Note</dt><dd>For a normal program point the entries for expressions in the <code>Partitions</code> vector are non-negative. But, if the partition represents TOP partition, the entries for all the expressions are -1. And the entry for any expression being -1 is sufficient to conclude that the partition vector represents TOP partition.</dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="namespaceHerbrandPass.html#a97bf3b8d86f3cafbd4e6b388e225a7eb" title="Maps expressions to integer indexes. This indexing is arbitrarily fixed in the beginning and used thr...">IndexExp</a>, <a class="el" href="namespaceHerbrandPass.html#a2dae61e7e4a25da10c587b0b5be91d8e" title="Counter to keep track of set identifiers. New set identifiers are created by incrementing this counte...">SetCnt</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00271">271</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00169">169</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
 
 </div>
 </div>
-<a id="a382184e119c6a18f3ca9fb05731cccf9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a382184e119c6a18f3ca9fb05731cccf9">&#9670;&nbsp;</a></span>indexExp</h2>
+<a id="a2dae61e7e4a25da10c587b0b5be91d8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2dae61e7e4a25da10c587b0b5be91d8e">&#9670;&nbsp;</a></span>SetCnt</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">map&lt;<a class="el" href="namespaceHerbrandPass.html#a97bf17f6357ba3c70f792249a915f5bf">expTuple</a>, int&gt; HerbrandPass::indexExp</td>
+          <td class="memname">int HerbrandPass::SetCnt = 0</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Maps all possible two operand expressions that can be formed using constants, variables and operators in the program to integers for indexing purpose. </p>
+<p>Counter to keep track of set identifiers. New set identifiers are created by incrementing this counter. </p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="namespaceHerbrandPass.html#ae9d4811b3bacd40fafe61f7659f277b3" title="Represents an expression of length at most two. ">ExpressionTy</a>, <a class="el" href="namespaceHerbrandPass.html#a51f46da45893ff797e0de94d130f073e" title="Vector to keep track of equivalence classes at each program point. ">Partitions</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00279">279</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00144">144</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
 
 </div>
 </div>
-<a id="a2f4d1a03d0a9a560ead6541fa4173ff6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2f4d1a03d0a9a560ead6541fa4173ff6">&#9670;&nbsp;</a></span>numExps</h2>
+<a id="a74ce7a15961ac17a9d42b3f3b06ec742"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74ce7a15961ac17a9d42b3f3b06ec742">&#9670;&nbsp;</a></span>Variables</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int HerbrandPass::numExps</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Count of number of expressions of length atmost two that can be formed using constants and variables in the program. </p>
-
-<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00286">286</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
-
-</div>
-</div>
-<a id="ab2ab9e3cae9037da678ab884ff6b8ec6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab2ab9e3cae9037da678ab884ff6b8ec6">&#9670;&nbsp;</a></span>Parent</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">map&lt;tuple&lt;char, <a class="el" href="structHerbrandPass_1_1IDstruct.html">IDstruct</a> *, <a class="el" href="structHerbrandPass_1_1IDstruct.html">IDstruct</a> *&gt;, <a class="el" href="structHerbrandPass_1_1IDstruct.html">IDstruct</a> *&gt; HerbrandPass::Parent</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>For a given {op, leftID, rightID} as key, stores pointer to <a class="el" href="structHerbrandPass_1_1IDstruct.html" title="Structure for capturing Herbrand Equivalence classes. ">IDstruct</a> object whose fields are {op, _, leftID, rightID}. </p>
-<p>When we create an <a class="el" href="structHerbrandPass_1_1IDstruct.html" title="Structure for capturing Herbrand Equivalence classes. ">IDstruct</a> object with fields {op, _, leftID, rightID}, we store this information in the map so that when we again need such an object we do not create it again and use the already existing one. </p>
-
-<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00359">359</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
-
-</div>
-</div>
-<a id="a95436e05185013557b7af5320af57aa6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a95436e05185013557b7af5320af57aa6">&#9670;&nbsp;</a></span>partitions</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">map&lt;Instruction *, <a class="el" href="namespaceHerbrandPass.html#ac7e108d9424dd34872c42cabf00f0597">Partition</a>&gt; HerbrandPass::partitions</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Stores Herbrand Equivalence information after each instruction in the program. </p>
-<p>Each index of Partition, corresponds to either a constant or a variable or a two operand expression as determined by indexCV and indexExp. There will be an <a class="el" href="structHerbrandPass_1_1IDstruct.html" title="Structure for capturing Herbrand Equivalence classes. ">IDstruct</a> object for each program point and those variables/constants/expressions that point to the same <a class="el" href="structHerbrandPass_1_1IDstruct.html" title="Structure for capturing Herbrand Equivalence classes. ">IDstruct</a> object (has same pointer value) at a given program point are Herbrand Equivalent at that program point.</p>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="namespaceHerbrandPass.html#a404919f39cd800c8611622962b1265a2" title="Maps constants and variables in the program to integers for indexing purpose. ">indexCV</a>, <a class="el" href="namespaceHerbrandPass.html#a382184e119c6a18f3ca9fb05731cccf9" title="Maps all possible two operand expressions that can be formed using constants, variables and operators...">indexExp</a>, <a class="el" href="namespaceHerbrandPass.html#ac7e108d9424dd34872c42cabf00f0597" title="Vector to hold equivalence information for each constant/variable/two operand expression at a program...">Partition</a> </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00346">346</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
-
-</div>
-</div>
-<a id="aa18fbc255053d9ee23288888334b14a4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa18fbc255053d9ee23288888334b14a4">&#9670;&nbsp;</a></span>Predecessors</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">map&lt;Instruction *, vector&lt;Instruction *&gt; &gt; HerbrandPass::Predecessors</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Stores predecessors for each instruction - an instruction can have zero, one or more than one predecessors. </p>
-
-<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00293">293</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
-
-</div>
-</div>
-<a id="ac59d73a491bb4b2163ece8f690c5793a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac59d73a491bb4b2163ece8f690c5793a">&#9670;&nbsp;</a></span>Variables</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">set&lt;Value *&gt; HerbrandPass::Variables</td>
+          <td class="memname">std::set&lt;Value *&gt; HerbrandPass::Variables</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Set of variables used in the program. </p>
+<dl class="section note"><dt>Note</dt><dd>Value is LLVM structure used for representing constants and variables.</dd></dl>
+<dl class="section see"><dt>See also</dt><dd>llvm::Value </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00254">254</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="HerbrandEquivalence_8cpp_source.html#l00096">96</a> of file <a class="el" href="HerbrandEquivalence_8cpp_source.html">HerbrandEquivalence.cpp</a>.</p>
 
 </div>
 </div>

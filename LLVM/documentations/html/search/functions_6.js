@@ -1,5 +1,8 @@
 var searchData=
 [
-  ['idstruct',['IDstruct',['../structHerbrandPass_1_1IDstruct.html#aad8ec333ed0dcdda2d74cb4eee28d702',1,'HerbrandPass::IDstruct::IDstruct()'],['../structHerbrandPass_1_1IDstruct.html#a87784a016e3426a831afb8c045943b24',1,'HerbrandPass::IDstruct::IDstruct(int constVal)'],['../structHerbrandPass_1_1IDstruct.html#a33acf8f66fe4e747082f12c02f42afcc',1,'HerbrandPass::IDstruct::IDstruct(char op, IDstruct *leftID, IDstruct *rightID)']]],
-  ['increaseparentcnt',['increaseParentCnt',['../namespaceHerbrandPass.html#a015096462c8a5fb384827f87e03f679c',1,'HerbrandPass']]]
+  ['printcfg',['printCFG',['../namespaceHerbrandPass.html#aeea50c7a9e951caf9634819446b4145f',1,'HerbrandPass']]],
+  ['printcode',['printCode',['../namespaceHerbrandPass.html#a68d323ff3861c2a22aa27cd2a8d8ec3e',1,'HerbrandPass']]],
+  ['printexpression',['printExpression',['../namespaceHerbrandPass.html#a36c0729da495737eae62b68e2cc4d37c',1,'HerbrandPass']]],
+  ['printpartition',['printPartition',['../namespaceHerbrandPass.html#abd53e2a72aeb290bea35c54a12c43a86',1,'HerbrandPass']]],
+  ['printvalue',['printValue',['../namespaceHerbrandPass.html#a149647446349bac41b669bc33cd62a18',1,'HerbrandPass']]]
 ];

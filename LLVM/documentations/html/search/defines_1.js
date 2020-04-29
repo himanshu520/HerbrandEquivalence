@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['print',['PRINT',['../HerbrandEquivalence_8cpp.html#ad5e36242f943d37ca6f511078104f1ff',1,'HerbrandEquivalence.cpp']]]
+  ['exp',['EXP',['../HerbrandEquivalence_8cpp.html#a179978530f93b1e13bc48dc40dc1960e',1,'HerbrandEquivalence.cpp']]]
 ];

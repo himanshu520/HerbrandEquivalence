@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['numexps',['numExps',['../namespaceHerbrandPass.html#a2f4d1a03d0a9a560ead6541fa4173ff6',1,'HerbrandPass']]]
+  ['ops',['Ops',['../namespaceHerbrandPass.html#a58ef56c67680d6c6b45a260360c54b4c',1,'HerbrandPass']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['idstruct',['IDstruct',['../structHerbrandPass_1_1IDstruct.html',1,'HerbrandPass']]]
+  ['herbrandpass',['HerbrandPass',['../structHerbrandPass_1_1HerbrandPass.html',1,'HerbrandPass']]]
 ];

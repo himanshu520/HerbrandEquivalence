@@ -179,6 +179,10 @@ public:
          *  Index of the predecessors of this instructions as given
          *  by `Program::Instructions` data member.
          * 
+         * @note 
+         *  Only predecessors which are reachable from the start of
+         *  the program are included.
+         * 
          * @see Program::Instructions
          **/
         std::set<int> predecessors;

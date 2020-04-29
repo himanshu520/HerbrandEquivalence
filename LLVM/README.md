@@ -12,6 +12,25 @@ LLVM implementation of Herbrand Equivalence analysis algorithm mentioned [here](
 
 * Create a new LLVM pass, copy the code given in [src directory](./src "src directory"). Refer to [the documentation](http://llvm.org/docs/WritingAnLLVMPass.html "Writing an LLVM Pass") for any help on writing or running an LLVM pass.
 
+## Interpreting the output
+
+* First the translated LLVM code corresponding to the program is given.
+
+* This is followed by the control flow graph corresponding to the program.
+  * The nodes corresponds to reachable instructions and confluence points, alongwith two additional special nodes - START and END.
+  * Each node in the control flow graph is also assigned a CFG index which is mentioned first.
+  * This is followed by the node type followed by information about it depending on its type.
+    * For transfer points - the basic block corresponding to the instruction, the instruction itself and the predecessor node index.
+    * For confluence points - the list of indexes of predecessor nodes along with their basic block of the instruction corresponding to nodes.
+    * For START node - START is mentioned.
+    * For END node - the list of indexes of predecessor nodes.
+
+* After this the Herbrand Equivalence analysis information is given.
+  * First the initial partition (at the START point) is given, followed by partitions at each program point for each iteration.
+  * The information at a program point for an iteration contains the equivalence classes along with the set identifiers assigned to the sets.
+
+**NOTE** - The variable names in the output will not be same as those in the input C/C++ source files. Refer to LLVM code at the beginning of the output for resolving variable names.
+
 ## Commands Cheatsheet
 
 * **Compiling a C source file using Clang**  

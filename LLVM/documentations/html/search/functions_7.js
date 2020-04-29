@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['ops',['Ops',['../namespaceHerbrandPass.html#ab38c0589dc5ad070c91686e954142b3c',1,'HerbrandPass']]]
+  ['runonfunction',['runOnFunction',['../structHerbrandPass_1_1HerbrandPass.html#a986673a12a4a23a43999bd84473c75c6',1,'HerbrandPass::HerbrandPass']]]
 ];

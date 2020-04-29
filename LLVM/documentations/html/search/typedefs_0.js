@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['exptuple',['expTuple',['../namespaceHerbrandPass.html#a97bf17f6357ba3c70f792249a915f5bf',1,'HerbrandPass']]]
+  ['expressionty',['ExpressionTy',['../namespaceHerbrandPass.html#ae9d4811b3bacd40fafe61f7659f277b3',1,'HerbrandPass']]]
 ];

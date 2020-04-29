@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['confluencefunction',['confluenceFunction',['../namespaceHerbrandPass.html#a54160f0f584050c576045cb53745dc2b',1,'HerbrandPass']]],
-  ['copypartition',['copyPartition',['../namespaceHerbrandPass.html#a8b558d99a8deb96e9281a0ead4b4204d',1,'HerbrandPass']]]
+  ['confluencefunction',['confluenceFunction',['../namespaceHerbrandPass.html#a3b9168235f2e1216cb272cc240d3475d',1,'HerbrandPass']]],
+  ['createcfg',['createCFG',['../namespaceHerbrandPass.html#ae92f46ccb815f1c42d66475957699d76',1,'HerbrandPass']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['herbrandequivalence',['HerbrandEquivalence',['../structHerbrandPass_1_1HerbrandEquivalence.html',1,'HerbrandPass']]]
+  ['cfgnodety',['CfgNodeTy',['../structHerbrandPass_1_1CfgNodeTy.html',1,'HerbrandPass']]]
 ];

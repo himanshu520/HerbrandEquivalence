@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['opsymbol',['opSymbol',['../structHerbrandPass_1_1IDstruct.html#a90a4b2895333843124fb02dc8aaa0414',1,'HerbrandPass::IDstruct']]]
+  ['variables',['Variables',['../namespaceHerbrandPass.html#a74ce7a15961ac17a9d42b3f3b06ec742',1,'HerbrandPass']]]
 ];
