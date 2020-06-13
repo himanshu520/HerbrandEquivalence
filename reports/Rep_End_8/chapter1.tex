@@ -1,0 +1,148 @@
+\chapter{Introduction}
+\label{chap:chapter1}
+\pagenumbering{arabic}\hspace{3mm}
+
+The basic job of a compiler is code translation from a high level 
+language to a target assembly language. But, compilers also perform
+multiple optimizations in the intermediate stages of translation, 
+so that the finally generated code performs better than just a normal 
+translated code. There might be a one time overhead of 
+running optimizations, but the performance gain visible over multiple 
+executions of the code outweighs it.
+
+A typical modern day compiler performs a large number of optimizations 
+like induction variable analysis, loop interchange, loop invariant code
+motion, loop unrolling, global value numbering, dead code 
+optimizations, constant folding and propagation, common subexpression 
+elimination etc. One common feature of most of these optimizations is 
+detecting equivalent program subexpressions. 
+
+Checking semantic equivalence of program subexpressions has been shown 
+to be an undecidable problem, even when all the conditional statements 
+are considered as non deterministic. So in most of the cases, compilers 
+try to find some restricted form of expression equivalence. One such
+form of expression equivalence is \textbf{Herbrand equivalence} (see 
+\autoref{sec:HerbrandEquivalence}).
+Detecting equivalence of program subexpressions can be used for 
+variety of applications. Compilers can use these to perform several 
+of the optimizations mentioned earlier like constant propagation, 
+common subexpression elimination etc. Program verification tools can 
+use these equivalences to discover loop invariants and to verify 
+program assertions. This information is also important for discovering
+equivalent computations in different programs, which can be used by
+plagiarism detection tools and translation validation tools \cite
+{Necula, Pnueli}, which compare a program with an optimized version
+in order to check correctness of the optimizer.
+
+
+\section{Herbrand Equivalence}
+\label{sec:HerbrandEquivalence}
+A formal definition of \textbf{Herbrand equivalence} is given in 
+\cite{Ruthing}.
+Informally, two expressions are \textbf{Herbrand equivalent at a program 
+point}, if and only if they have syntactically the same value at that 
+given point, \textbf{across all the execution paths} from the start 
+of the program which reaches that point. For the purpose of analysis, 
+the operators themselves are treated as uninterprated functions with 
+no semantic significance, only syntactic information is taken into 
+consideration (see example in \autoref{sec:ASimpleExample}).
+
+For \textbf{Herbrand equivalence analysis}, the universe is the set 
+of all possible expressions that can be formed using the constants, 
+variables and operators used in the program. And for each program 
+point, partition it such that two expressions are Herbrand equivalent 
+at that point if and only if they belong to the same partition class 
+of that point.
+
+\section{A Simple Example}
+\label{sec:ASimpleExample}
+
+\begin{figure}[!ht]
+    \centering {
+        \setlength{\fboxsep}{8pt}    
+        \fbox{\includegraphics[scale=0.55]{HerbrandEquivalenceTrans.png}}
+    }
+    \caption{Example of Herbrand Equivalence}
+    \label{fig:HerbrandEquivalenceTrans}
+\end{figure}
+
+\autoref{fig:HerbrandEquivalenceTrans} shows a simple example of Herbrand 
+equivalence analysis. All the expressions that belongs to the same set at 
+a program point are Herbrand equivalent at that point.
+
+\begin{itemize}
+    \item   Initially all the expressions are in separate sets, ie. 
+    they are inequivalent to each other. In particular, note that 
+    $X + 2$ and $2 + X$ are inequivalent because the operators are 
+    being treated uninterprated with no semantic information of them, 
+    which means there is no knowledge of commutativity of $+$.
+    \item   After assignment $X = 2$, any occurrence of $X$ in an
+    expression can equally be replaced with $2$. So, now all expressions 
+    with $2$ in place of $X$ and vice versa are equivalent - that means
+    $2 + 2$, $2 + X$, $X + 2$, $X + X$ are all equivalent - this still 
+    is just syntactic information because $X$ and $2$ are equivalent. 
+    However, if $4$ is also in the universe of expressions, $2 + 2$ and 
+    $4$ are not equivalent as this is semantic information about operator $+$.
+    \item   After assignment $Y = X$, any occurrence of $Y$ in 
+    an expression can be replaced with $X$. Because $X$ and $2$ are already 
+    equivalent, it means now $2$, $X$, and $Y$ are all equivalent to 
+    each other. And two expressions are equivalent if one can be 
+    obtained from the other by replacing one of these three with any of the 
+    other two. For this example, it means that any two expressions of 
+    the same length are equivalent.
+\end{itemize}
+
+\begin{figure}[!ht]
+    \centering {
+        \setlength{\fboxsep}{8pt}    
+        \fbox{\includegraphics[scale=0.54]{HerbrandEquivalenceConv.png}}
+    }
+    \caption{Example of Herbrand Equivalence analysis at a confluence point}
+    \label{fig:HerbrandEquivalenceConv}
+\end{figure}
+
+\autoref{fig:HerbrandEquivalenceConv} shows what happens at a 
+\textbf{confluence point} - a point where multiple execution paths meet. 
+Two expressions are Herbrand equivalent at the confluence point only if 
+they are Herbrand equivalent at all the predecessor points.
+\begin{itemize}
+    \item   In the left branch $2$, $Y$, $Z$ are equivalent and 
+    so are expressions which are interconvertible by replacement 
+    of any of these three, with the other two.
+    \item   The case with the right branch is similar, except $X$ is 
+    equivalent to $2$ and $Z$ instead of $Y$.
+    \item   At the confluence point, only $2$ and $Z$ are equivalent 
+    because they are equivalent at both the predecessors points. $X$ 
+    is equivalent to $2$ and $Z$ at the right predecessor but not 
+    the left one and $Y$ is equivalent to $2$ and $Z$ at the left 
+    predecessor but not the right. As before, expressions obtained by 
+    replacing $2$ with $Z$ and vice versa are equivalent.
+\end{itemize}
+
+\section{Goal of the Project}
+\label{sec:GoalOfTheProject}
+Babu, Krishnan and Paleri \cite{Babu} has given an algorithm for 
+Herbrand equivalence analysis restricted to program expressions. The 
+basic goal of this project is to refine this general algorithm and 
+then implement it for \href{https://llvm.org/}{Clang/LLVM compiler}. 
+The implementation is also to be benchmarked using \href{https://www.spec.org/}
+{SPEC} CPU benchmarks. Finally, a proof of correctness of the 
+algorithm based on the theoretical work of Babu et al. \cite{Babu} 
+has to be presented.
+
+\section{Organization of the Report}
+\label{sec:OrganizationOfTheReport}
+\autoref{chap:chapter2} gives an overview of the previous works 
+related to Herbrand equivalence; then summary of works of Babu et al. 
+\cite{Babu} is specifically presented in \autoref{chap:chapter3} as 
+it is closely related to the project. The updated algorithm for 
+Herbrand equivalence analysis is given in \autoref{chap:chapter4}. 
+\autoref{chap:chapter5} presents some important test cases on which 
+the Herbrand analysis algorithm can be checked for correctness. 
+\autoref{chap:chapter6} discusses about Clang/LLVM compiler and also 
+provides a tutorial for writing LLVM optimzation passes. 
+\autoref{chap:chapter7} and \autoref{chap:chapter8} explains the 
+implementation of the algorithm done for Clang/LLVM compiler and a 
+toy language respectively. Finally, \autoref{chap:chapter9} provides 
+the details of the attempt made for proving the correctness of the 
+algorithm. \autoref{chap:chapter10} concludes the report.

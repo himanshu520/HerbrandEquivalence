@@ -1,0 +1,146 @@
+\documentclass {CSEThesis}
+% Standard packages
+\usepackage{amsmath}        % Extra math definitions
+\usepackage{graphics}       % PostScript figures
+\usepackage{setspace}       % 1.5 spacing
+%\usepackage{psfig,epsfig}
+\usepackage{multicol}
+\usepackage{subfigure}
+\usepackage{epsfig,color}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{algcompatible}
+\usepackage[]{algorithm}
+\usepackage{inconsolata}
+\usepackage[noend]{algpseudocode}
+\usepackage[section]{placeins}
+\usepackage{float}
+
+\usepackage[english]{babel}
+\usepackage{hyperref}
+% for captialised first letter in references
+\newcommand{\algorithmautorefname}{Algorithm}
+\addto\extrasenglish{%
+  \def\chapterautorefname{Chapter}%
+  \def\sectionautorefname{Section}%
+  \def\subsectionautorefname{Subsection}%
+  \def\subsubsectionautorefname{Subsubsection}%
+  \def\paragraphautorefname{Paragraph}%
+  \def\subparagraphautorefname{Subparagraph}%
+  \def\figureautorefname{Figure}%
+  \def\algorithmautorefname{Algorithm}%
+}
+
+\usepackage{xcolor}
+\hypersetup{
+    colorlinks,
+    linkcolor={red!50!black},
+    citecolor={green!50!black},
+    urlcolor={blue!80!black}
+}
+
+\graphicspath{{./images/}}
+
+\makeatletter
+\def\BState{\State\hskip-\ALG@thistlm}
+\makeatother
+
+\definecolor{darkscarlet}{rgb}{0.34, 0.01, 0.1}
+\definecolor{ultramarineblue}{rgb}{0.25, 0.4, 0.96}
+\definecolor{alizarin}{rgb}{0.82, 0.1, 0.26}
+\definecolor{cadmiumgreen}{rgb}{0.0, 0.42, 0.24}
+\definecolor{desertsand}{rgb}{0.93, 0.79, 0.69}
+\lstset {
+    % backgroundcolor=\color{white},   
+    % commentstyle=\color{green},
+    % keywordstyle=\color{blue},
+    % stringstyle=\color{red},
+    language=C++,
+    showstringspaces=false,
+    numbers=left,
+    basicstyle=\footnotesize\ttfamily,
+}
+
+\newcommand{\tabf}{\;\;\;\;}
+\newcommand{\tabs}{\;\;\;\;\;\;\;\;}
+\newcommand{\tabt}{\;\;\;\;\;\;\;\;\;\;\;\;}
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+% Custom packages
+%\usepackage[first]{datestamp}   % Datestamp on first page of each chapter
+
+
+\usepackage{color}
+%===== page layout
+% Define the side margins for a right-side page
+%\insidemargin = 1.3in \outsidemargin = 0.9in
+% Above margin is space above the header
+% Below margin is space below footer
+%\abovemargin = 1.5in \belowmargin = 0.05in
+
+
+\btptitle = {Program Analysis - Herbrand Equivalence} % { and } are needed around your name
+\name = {Himanshu Rai}          % and other feilds. don't remove.
+\rollno = {111601032}
+\email = {111601032@smail.iitpkd.ac.in}
+\guide = {Dr Jasine Babu}
+
+
+\begin{document}
+
+\include{title}
+\include{certificate}
+% \include{acknowledgement}
+
+\tableofcontents 
+
+\addcontentsline{toc}{chapter}{List of Figures} 
+\listoffigures 
+
+% \addcontentsline{toc}{chapter}{List of Tables} 
+% \listoftables
+
+\pagenumbering{arabic}
+\def\headrulehook{\color{black}}      % Color the header rule
+
+%========== Chapters
+\typeout{}
+\include{chapter1}
+\cleardoublepage 
+\typeout{}
+\include{chapter2}
+\cleardoublepage 
+\typeout{}
+\include{chapter3}
+\cleardoublepage 
+\typeout{}
+\include{chapter4}
+\cleardoublepage 
+\typeout{}
+\include{chapter5}
+\cleardoublepage
+\typeout{}
+\include{chapter6}
+\cleardoublepage
+\typeout{}
+\include{chapter7}
+\cleardoublepage
+\typeout{}
+\include{chapter8}
+\cleardoublepage
+\typeout{}
+\include{chapter9}
+\cleardoublepage
+\typeout{}
+\include{chapter10}
+\cleardoublepage
+
+\let\cleardoublepage\clearpage
+\addcontentsline{toc}{chapter}{External References}
+\include{references}
+
+\bibliographystyle{IEEEtran}
+\bibliography{citations}
+\end{document}

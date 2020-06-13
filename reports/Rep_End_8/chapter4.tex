@@ -1,0 +1,263 @@
+\chapter{Algorithm for Herbrand Analysis}
+\label{chap:chapter4}
+
+This chapter presents an algorithm for Herbrand analysis. The pseudocode  
+mentioned here is an updated version of the algorithm mentioned in \cite{Babu} 
+for Herbrand equivalence analysis. The corresponding implementation done for 
+LLVM compiler framework and a toy language can be found on 
+\href{https://www.github.com/himanshu520/HerbrandEquivalence}{GitHub}.
+Also, see \autoref{chap:chapter7} and \autoref{chap:chapter8} for more details.
+
+One important distinction must be clear between the general Herbrand analysis problem
+and the one that the algorithm in this chapter addresses. The universe for the Herbrand 
+equivalence problem is the set of all expressions that can be formed using constants, 
+variables and operators used in the program. But as already mentioned, the algorithm 
+here is concerned with a restricted universe - set of expressions of length atmost two 
+formed using constants, variables and operators in the program. 
+
+\section{Notation}
+\label{sec:NotationPseudocode}
+
+Let $\mathcal C$ and $\mathcal X$ be the set of constants and variables used in the program;
+$\mathcal W$ be our working set, which is the set of all expressions of length at most two 
+that can be formed using ($\mathcal C \cup \mathcal X$). Also, $V$ be the set of all program 
+points, with a special point \texttt{START} denoting the beginning of the program.
+\bigbreak \noindent Three global variables are maintained - 
+\begin{itemize} \tightlist
+    \item \texttt{Partitions} : It is two-dimensional integer array indexed by the 
+                                elements of sets $V$ and $\mathcal W$ respectively. It 
+                                helps to keep track of partitions at some $v \in V$ by
+                                holding same integer at \texttt{Partitions[$v$][$e$]} and
+                                \texttt{Partitions[$v$][$e'$]}, for $e, e' \in \mathcal W$ 
+                                if they belongs to the same equivalence class at $v$.
+                                Basically, the array maintains set identifiers which helps 
+                                to identify whether two expressions belong to the same sets 
+                                (equivalence classes).
+    \item \texttt{SetCnt} : It helps to keep track of the next set identifier (an integer)
+                            to be used. Whenever, a set identifier is needed the current 
+                            value of \texttt{SetCnt} is used and at the same time it is 
+                            incremented so that the same number is never used again.
+    \item \texttt{Parent} : It is \texttt{map} indexed by a tuple of three elements - an   
+                            operator and two set identifiers. Whenever an expression 
+                            ($x + y$) is assigned a set identifier $c$, $c$ is stored in 
+                            \texttt{Parent} with $\{+, a, b\}$ as key, where $a$ and $b$ are 
+                            the set identifiers of $x$ and $y$ respectively. Next time 
+                            when a set identifier for an expression ($x' + y'$) is needed, 
+                            where $x'$ and $y'$ have identifiers $a$ and $b$ respectively, 
+                            $c$ is used instead of using a new set identifier - the \texttt
+                            {Parent} of $\{+, a, b\}$ that was earlier stored in the map.
+\end{itemize}
+
+\bigbreak \noindent There are a few functions whose definitions are not required explicitly - 
+\begin{itemize} \tightlist
+    \item \texttt{OPERATOR($e$)} : Returns operator used in expression $e \in (\mathcal W \setminus (\mathcal C \cup \mathcal X))$
+    \item \texttt{LEFT($e$)} : Returns left operand of expression $e \in (\mathcal W \setminus (\mathcal C \cup \mathcal X))$
+    \item \texttt{RIGHT($e$)} : Returns right operand of expression $e \in (\mathcal W \setminus (\mathcal C \cup \mathcal X))$
+    \item \texttt{PREDECESSORS($v$)} : Returns the set of predecessors of program point $v \in V$
+\end{itemize}
+
+\bigbreak \noindent \textbf{NOTE} - For implementation, the identifiers corresponding to 
+$\top$ partition should be such that they don't occur in normal partitions and are also 
+easily distinguishable from them. An easy choice for consistency is to use non-negative 
+integers as normal set identifiers and an array of -1 to refer $\top$ partition.
+
+\section{Pseudocode}
+\label{sec:Pseudocode}
+
+\begin{algorithm}
+    \caption{Main Herbrand Equivalence Analysis Function}
+    \label{alg:HerbrandEquivalenceAnalysis}
+    \begin{algorithmic}
+        \Procedure{HerbrandAnalysis}{$ $}
+            \State \Comment{\% Initialise \texttt{Partitions} for all program points \%}
+            \For{$v \in V$}
+                \State \texttt{Partitions[$v$]} $\gets \top$
+            \EndFor
+            \State \Comment{\% Update \texttt{Partitions} for \texttt{START} point \%}
+            \State \Call{findInitialPartition}{$ $}
+            \State \Comment{\% Process all program points till convergence \%}
+            \State \textbf{converged} $\gets$ \texttt{false}
+            \While{\texttt{converged} \textit{is False}}
+                \State \texttt{converged $\gets$ true}
+                \For{$v \in (V \setminus \{\texttt{START}\})$}
+                    \State \textbf{oldPartition} $\gets$ \texttt{Partitions[$v$]}
+                    \State \Comment{\% Update \texttt{Partitions} at $v$ \%}
+                    \If{$v$ \textit{is a Transfer Point}}
+                        \State \Call{TransferFunction}{$v$}
+                    \Else
+                        \State \Call{ConfluenceFunction}{$v$}
+                    \EndIf
+                    \State \Comment{\$ Update \texttt{convergence} flag \%}
+                    \If{\textit{not} \Call{SamePartition}{\texttt{oldPartition, Partitions[$v$]}}}
+                        \State \texttt{converged $\gets$ false}
+                    \EndIf
+                \EndFor
+            \EndWhile
+        \EndProcedure
+    \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+    \caption{Transfer Function}
+    \label{alg:TransferFunction}
+    \begin{algorithmic}
+        \Procedure{TransferFunction}{$v : x \gets e$}
+            \State \textbf{u} $\gets$ \Call{Predecessors}{$v$}
+            \State \texttt{Partitions[$v$] $\gets$ Partitions[$u$]}
+            \State \Comment{\% Update set identifier for $x$ \%}
+            \If{$e$ \textit{is Deterministic}}
+                \State \texttt{Partitions[$v$][$x$] $\gets$ Partitions[$v$][$e$]}
+            \Else 
+                \State \texttt{Partitions[$v$][$x$] $\gets$ SetCtr++}
+            \EndIf
+            \State \Comment{\% Update set identifiers for expressions containing $x$ \%}
+            \For{$\{e' \in (\mathcal W \setminus (\mathcal C \cup \mathcal X)) \mid x \in e'\}$}
+                \State \texttt{Partitions[v][$e'$]} $\gets$ \Call{GetSetId}{$v$, $e'$}
+            \EndFor
+        \EndProcedure
+    \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+    \caption{Confluence Function}
+    \label{alg:ConfluenceFunction}
+    \begin{algorithmic}
+        \Procedure{ConfluenceFunction}{$v$}
+            \State \Comment{If all predecessor partitions are $\top$ then current partition will also be $\top$}
+            \State \textbf{continueFlag} $\gets$ false
+            \For{$u \in$ \Call{Predecessors}{$v$}}
+                \If{\texttt{Partitions[$u$] $\neq \top$}}
+                    \State \texttt{continueFlag $\gets$ true}
+                \EndIf
+            \EndFor
+            \State
+            \If{\texttt{continueFlag} \textit{is False}}
+                \State \texttt{Partitions[$v$] $\gets \top$}
+                \State \Return{}
+            \EndIf
+            \State \Comment{\texttt{accessFlag} keeps track of processed expressions}
+            \For{$e \in \mathcal W$}
+                \State \textbf{accessFlag}[$e$] $\gets$ \texttt{false}
+            \EndFor
+            \State \Comment{Process all expressions if they are still unprocessed}
+            \For{$e \in \mathcal W$}
+                \If{\texttt{accessFlag[$e$]} \textit{is False}}
+                    \State \Comment{\texttt{PredIDs} is the set of set identifiers of $e$ at its predecessors}
+                    \State \textbf{PredIDs} $\gets \phi$
+                    \For{$u \in$ \Call{Predecessors}{$v$}}
+                        \If{\texttt{Partitions[u] $\neq \top$}}
+                            \State \texttt{PredIDs $\gets$ (PredIDs $\cup$ Partitions[$u$][$e$])}
+                        \EndIf
+                    \EndFor
+                    \State
+                    \If{\texttt{PredIDs} \textit{is Singleton}}
+                        \State \texttt{Partitions[$v$][$e$] $\gets$ PredIDs}
+                        \State \texttt{accessFlag[$e$] $\gets$ true}
+                    \Else
+                        \State \Comment{\texttt{expClass} holds $e' \in \mathcal W$ that are equivalent to $e$ at all predecessors of $v$}
+                        \State \textbf{expClass} $\gets \mathcal W$
+                        \For{$u \in$ \Call{Predecessors}{$v$}}
+                            \If{\texttt{Partitions[u] $\neq \top$}}
+                                \State \texttt{expClass $\gets$ (expClass} $\cap$ \Call{GetClass}{$u$, $e$})
+                            \EndIf
+                        \EndFor
+                        \State \Comment{Update \texttt{Partitions} map}
+                        \State \textbf{newSetID} $\gets$ \texttt{SetCnt++}
+                        \For{\texttt{$e' \in$ expClass}}
+                            \State \texttt{Partitions[$v$][$e'$] $\gets$ newSetID}
+                            \State \texttt{acessFlag[$e'$] $\gets$ true}
+                        \EndFor
+                    \EndIf
+                \EndIf
+            \EndFor
+            \State
+            \State \Comment{Update \texttt{Parent} map}
+            \For{$e \in (\mathcal W \setminus (\mathcal C \cup \mathcal X))$}
+                \State \textbf{op} $\gets$ \Call{Operator}{$e$}
+                \State \textbf{leftSetID} $\gets$ \texttt{Partitions}[\Call{Left}{$e$}]
+                \State \textbf{rightSetID} $\gets$ \texttt{Partitions}[\Call{Right}{$e$}]
+                \State \texttt{Parent[\{op, leftSetID, rightSetID\}] $\gets$ Partitions[v][$e$]}
+            \EndFor
+        \EndProcedure
+    \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+    \caption{Checks whether two partitions are same or not}
+    \label{alg:SamePartition}
+    \begin{algorithmic}
+        \Procedure{SamePartition}{\texttt{first, second}}
+            \For{$e \in \mathcal W$}
+                \If{\Call{GetClass}{\texttt{first}, $e$} $\neq$ \Call{GetClass}{\texttt{second}, $e$}}
+                    \State \Return{\texttt{false}}
+                \EndIf
+            \EndFor
+            \State \Return{\texttt{true}}
+        \EndProcedure
+    \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+    \caption{Finds equivalence class of an expression in a partition}
+    \label{alg:GetClass}
+    \begin{algorithmic}
+        \Procedure{GetClass}{\texttt{partition}, $e$}
+            \State \textbf{expClass} $\gets \phi$
+            \For{$e' \in \mathcal W$}
+                \If{\texttt{partition[$e'$] == partition[$e$]}}
+                    \State \texttt{expClass $\gets$ (expClass $\cup$ $\{e'\}$)}
+                \EndIf
+            \EndFor
+            \State \Return{\texttt{expClass}}
+        \EndProcedure
+    \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+    \caption{Initialises partition for START point}
+    \label{alg:FindInitialPartition}
+    \begin{algorithmic}
+        \Procedure{FindInitialPartition}{$ $}
+            \For{$x \in (\mathcal C \cup \mathcal X)$}
+                \State \texttt{Partitions[START][$x$] $\gets$ SetCtr++}
+            \EndFor
+            \For{$e \in (\mathcal W \setminus (\mathcal C \cup \mathcal X))$}
+                \State \texttt{Partitions[START][$e$]} $\gets$ \Call{GetSetID}{\texttt{Partitions[START], $e$}}
+            \EndFor
+        \EndProcedure
+    \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+    \caption{Finds and returns set identifier for a two length expression in a partition, by
+             looking at its operands and operator}
+    \label{alg:GetSetID}
+    \begin{algorithmic}
+        \Procedure{GetSetID}{\texttt{partition, $e$}}
+            \State \textbf{op} $\gets$ \Call{Operator}{$e$}
+            \State \textbf{leftSetID} $\gets$ \texttt{partition}[\Call{Left}{$e$}]
+            \State \textbf{rightSetID} $\gets$ \texttt{partition}[\Call{Right}{$e$}]
+            \State
+            \If{\textit{not defined} \texttt{Parent[\{op, leftSetID, rightSetID\}]}}
+                \State \texttt{Parent[\{op, leftSetID, rightSetID\}] $\gets$ SetCtr++}
+            \EndIf 
+            \State
+            \State \Return{\texttt{Parent[\{op, leftSetID, rightSetID\}]}}
+        \EndProcedure
+    \end{algorithmic}
+\end{algorithm}
+
+\section{Updates Over Original Algorithm}
+\label{sec:UpdatesOverOriginalAlgorithm}
+Following major improvements/corrections have been made to the original algorithm 
+mentioned in \cite{Babu}.
+\begin{itemize} \tightlist
+    \item \textbf{Representing Partitions}\\
+    The original algorithm uses \texttt{ID structure} to maintain equivalence information. A two-dimensional array \texttt{Partitions} having an entry for each program point and each expression, stores a pointer to an \texttt{ID object}. At a program point, two expressions are equivalent if they contain pointers to the same object. Though this approach is correct, it adds a lot of overhead in the implementation both in terms of time and space - the \texttt{ID object}s have to be created and destroyed during runtime, their data fields have to be maintained properly etc.\\
+    The updated algorithm solves this problem by using just integer set identifiers instead of pointers to some dynamically created objects and the \texttt{Parent map}. Again same as before, two expressions are equivalent at a program point if \texttt{Partitions} array stores same set identifiers for the expressions at that program point. \texttt{Parent} map captures the relation between the set identifiers. This modification makes the actual implementation to be more simpler, efficient and intuitive.
+    \item \textbf{Confluence Function}\\
+    The \texttt{Confluence} function in the original algorithm processes only the set $\mathcal C \cup \mathcal V$ in its main loop. This is wrong and instead the whole working set $\mathcal W$ should be considered.\\
+    As an example, consider the test case in \autoref{sec:tc15}. At the confluence point, $y$ and $x + 2$ must be equivalent, but the original algorithm assigns them pointers to different \texttt{ID objects} indicating they are not equivalent.
+    \item \textbf{Non-deterministic Assignment}\\
+    Non-deterministic assignment need not be handled separately and a single transfer function is sufficent (see \autoref{alg:TransferFunction}).
+\end{itemize}

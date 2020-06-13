@@ -1,0 +1,116 @@
+\chapter{Formulation by Babu, Krishnan and Paleri}
+\label{chap:chapter3}
+
+One of the problems with other former approaches to Herbrand 
+equivalence is that most of the alogrithms are based on fix point 
+computations. But the classical definition of Herbrand equivalence is 
+not a fix point based definition making it difficult to prove their 
+precision or completeness. Babu, Krishnan and Paleri \cite{Babu} gave 
+a new lattice theoretic formulation of Herbrand equivalences and 
+proved its equivalence to the classical version.
+
+The paper defines a congruence relation on the set of all possible 
+expressions and shows that the set of all congruences form a complete 
+lattice. Then for a given dataflow framework with $n$ program points, 
+a continuous composite transfer function is defined over the $n$-fold 
+product of the above lattice such that the maximum fix point of the 
+function yields the set of Herbrand equivalence classes at various 
+program points. Finally, equivalence of this approach to the 
+classical meet over all path definition of Herbrand equivalence is 
+established.
+
+Below is a brief summary of the developments in the paper, for more 
+detailed approach and proofs and for equivalence to MOP characterization 
+refer to \cite{Babu}.
+
+\section{Program Expressions}
+\label{sec:ProgramExpressions}
+
+Let $\mathcal C$ and $\mathcal X$ be the set of constants and variables 
+occurring in the program respectively. The program expressions (terms) 
+can be described as 
+$$t\ ::=\ c\ \mid\ x\ \mid\ t_1 + t_2$$
+where $c \in \mathcal C$ and $x \in \mathcal X$.
+
+\section{Congruence Relation}
+\label{sec:CongruenceRelation}
+Let $\mathcal T$ be the set of all program terms. A partition $\mathcal P$ of terms 
+in $\mathcal T$ is said to be a congruence (of terms) if 
+\begin{itemize} \tightlist
+    \item For $t$, $t'$, $s$, $s'$ $\in$ $\mathcal T$, $t' \cong t$ and $s' \cong s$ iff $t' + s' \cong t + s$. 
+    \item For $c \in \mathcal C$, $t \in \mathcal T$, if $t \cong c$ then either $t = c$ or $t \in \mathcal X$.
+\end{itemize}
+Let $\mathcal G(\mathcal T)$ be the set of all congruences over $\mathcal T$. 
+An ordering is defined over $\mathcal G(\mathcal T)$ as $\mathcal P_1 \preceq \mathcal P_2$ for $\mathcal P_1, \mathcal P_2 \in \mathcal G(\mathcal T)$, if 
+$\forall \mathcal A_1 \in \mathcal P_1, \ \exists \mathcal A_2 \in \mathcal P_2$ 
+such that $\mathcal A_1 \subseteq \mathcal A_2$. \\
+Also binary \textbf{confluence operation ($\land$)} is defined on $\mathcal G(\mathcal T)$ as
+$$\mathcal P_1 \land \mathcal P_2\ =\ \{\mathcal A_i \cap \mathcal B_j\ \mid\ \mathcal A_i \in \mathcal P_1,\ \mathcal B_j \in \mathcal P_2 \text{ and } \mathcal A_i \cap \mathcal B_j \neq \phi\}$$
+Finally $\mathcal G(\mathcal T)$ is extended to $\overline{\mathcal G(\mathcal T)}$ 
+by introducing an abstract congruence $\top$ satisfying 
+$\mathcal P \land \top = \top, \forall \mathcal P \in \overline{\mathcal G(\mathcal T)}$.
+Also the congruence in which every element is in a separate class, is denoted as 
+$\bot$.\\ 
+With these definitions, $(\overline{\mathcal G(\mathcal T)}, \preceq, \bot, \top)$ 
+forms a complete lattice, with $\land$ as its \textbf{meet operator}.
+
+\section{Transfer Function}
+\label{sec:TransferFunction}
+An assignment $y := \beta$ transforms a congruence $\mathcal P$ to another 
+congruence $\mathcal P'$. This can be described in the form of \textbf{transfer function} 
+$f_{y := \beta}:\mathcal G(\mathcal T) \to \mathcal G(\mathcal T)$, given by
+\begin{itemize} \tightlist
+    \item $\mathcal B_i = \{t \in \mathcal T\ |\ t[y \leftarrow \beta] \in \mathcal A_i\}, \text{ for each } \mathcal A_i \in \mathcal P$
+    \item $f_{y := \beta}(\mathcal P) = \{\mathcal B_i\ | \ \mathcal B_i \neq \phi\}$
+\end{itemize}
+This definition is extended to form \textbf{extended transfer function}, 
+$\overline{f}_{y := \beta} : \overline{\mathcal G(\mathcal T)} \to \overline{\mathcal G(\mathcal T)}$ 
+by defining $\overline{f}_{y := \beta}(\top)\ =\ \top$, otherwise 
+$\overline{f}_{y := \beta}(\mathcal P) = f_{y := \beta}(\mathcal P)$.
+The extended transfer function is \textbf{distributive}, \textbf{monotonic} and 
+\textbf{continuous}.
+
+\section{Non Deterministic Assignment}
+\label{sec:NonDeterministicAssignment}
+An assignment $y := *$ also transforms a congruence $\mathcal P$ to another 
+congruence $\mathcal P'$. This can be described in the form of \textbf{transfer function} 
+$f_{y := *}:\mathcal G(\mathcal T) \to \mathcal G(\mathcal T)$, given by
+$\forall t, t' \in \mathcal T,\ t \cong_{f(\mathcal P)} t'$, (here 
+$f(\mathcal P) = f_{y := *}(\mathcal P)$ for simplicity) iff
+\begin{itemize} \tightlist
+    \item $t \cong_{\mathcal P} t'$
+    \item $\forall \beta \in (\mathcal T \setminus \mathcal T(y)),\ t[y \leftarrow \beta] \cong_{\mathcal P} t'[y \leftarrow \beta]$
+\end{itemize}
+As before this transfer function is extended to 
+$\overline{f}_{y := *} : \overline{\mathcal G(\mathcal T)} \to \overline{\mathcal G(\mathcal T)}$ 
+by defining $\overline{f}_{y := *}(\top)\ =\ \top$, otherwise 
+$\overline{f}_{y := *}(\mathcal P) = f_{y := *}(\mathcal P)$. The function 
+$\overline{f}_{y := *}$ is also \textbf{continuous}.
+
+\section{Dataflow Analysis Framework}
+\label{sec:DataflowAnalysisFramework}
+A dataflow framework over $\mathcal T$ is $\mathcal D = (G, \mathcal F)$ where 
+$G(V, E)$ is the control flow graph associated with the program and $\mathcal F$ 
+is a collection of transfer function associated with program points.
+
+\section{Herbrand Congruence Function}
+\label{sec:HerbrandCongruenceFunction}
+The Herbrand congruence function 
+$\mathcal H_{\mathcal D} : V(G) \to \overline{\mathcal G(\mathcal T)}$ 
+gives the Herbrand congruence associated with each program point and 
+is defined to be \textbf{the maximum fix point} of the \textbf{continuous
+composite transfer function} 
+$f_{\mathcal D} : \overline{\mathcal G(\mathcal T)}^n \to \overline{\mathcal G(\mathcal T)}^n$, 
+where $\overline{\mathcal G(\mathcal T)}^n$ is the product lattice, 
+$f_{\mathcal D}$ is a function satisfying $\pi_k \circ f_{\mathcal D} = f_k$. Here $\pi_k$ is the projection map
+and $f_k : \overline{\mathcal G(\mathcal T)}^n \to \overline{\mathcal G(\mathcal T)}$ 
+is defined as follows 
+\begin{itemize} \tightlist
+    \item   If $k = 1$, the entry point of the program $f_k = \bot$.
+    \item   If $k$ is a function point with \texttt{Pred}($k$) = $\{j\}$, then 
+    $f_k = h_k \circ \pi_j$ where $h_k$ is the extended transfer function 
+    corresponding to function point $k$.
+    \item   If $k$ is a confluence point with \texttt{Pred}($k$) = $\{i, j\}$, 
+    then $f_k = \pi_{i, j}$, where $\pi_{i, j}:\overline{\mathcal G(\mathcal T)}^n \to \overline{\mathcal G(\mathcal T)}$ 
+    is given by $\pi_{i,j}(\mathcal P_1,\ \dots,\ \mathcal P_n) = \mathcal P_i \land \mathcal P_j$.
+\end{itemize}

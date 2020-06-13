@@ -1,0 +1,243 @@
+\chapter{Toy Language Implementation of the Algorithm}
+\label{chap:chapter8}
+
+This chapter provides details of \texttt{C++} implementation of the Herbrand 
+equivalence algorithm for a custom toy language. The actual implementation along 
+with other details like how to run and how to interpret the output etc. can be 
+found on \href{https://github.com/himanshu520/HerbrandEquivalence/tree/master/ToyLanguage}{GitHub} 
+and for extensive documentation refer to \href{https://himanshu520.github.io/HerbrandEquivalenceToyDocs/}{ToyLanguageDocs}.
+
+\section{The Toy Language}
+\label{sec:TheToyLanguage}
+
+There are three different kinds of statements in a toy language program.
+
+\begin{itemize} \tightlist
+    \item \textbf{Normal Instructions}\\
+    These are of one of the following three forms where \texttt{x} should be a variable, \texttt{y} and \texttt{z} can be either an integer or a variable. The last one specifies \textbf{non-deterministic assignment}.
+    \begin{itemize} \tightlist
+        \item \texttt{x = y}
+        \item \texttt{x = y + z}
+        \item \texttt{x = *}
+    \end{itemize}
+    Variables do not require declaration for use.
+
+    \item \textbf{\texttt{LABEL} Statements}
+    \begin{itemize} \tightlist
+        \item Such statements define labels which act as alias for their 
+        immediate next statement of the \textbf{first kind} (ie. the normal 
+        instructions). A \texttt{LABEL} statement occurring at the end refers 
+        to the \textbf{end of the program}.
+        \item It has following format - \texttt{'LABEL identifier1 identifier2 ...'}.
+        \item A normal instruction can either have a single label or multiple labels. 
+        Multiple labels can either be defined in the same \texttt{LABEL}
+        statement or different statements.
+        \item All the \texttt{LABEL} identifiers used in the definitions must 
+        be unique (even those used for the same instruction).
+    \end{itemize}
+
+    \item \textbf{\texttt{GOTO} Statements}
+    \begin{itemize} \tightlist
+        \item \texttt{GOTO} statements are used to specify jumps - the 
+        successors of immediately preceding instruction of the \textbf{first 
+        kind} (ie. the normal instructions). A \texttt{GOTO} statement at the 
+        beginning means two different control flow paths from the \textbf{start 
+        of the program}.
+        \item It has following format - \texttt{'GOTO identifier1 identifier2 ...'}.
+        \item Again like \texttt{LABEL} statements, for specifying multiple 
+        successors of a normal instruction there can either be a single \texttt{GOTO} 
+        statement with multiple label identifiers or multiple \texttt{GOTO} 
+        statements.
+        \item For Herbrand equivalence analysis the condition of the jumps are 
+        irrelavent, so in the toy language all the jumps are unconditional.
+        \item For instructions of the \textbf{first kind} without \texttt{GOTO},
+        by default their successor is the immediate occurring instruction of 
+        the \textbf{first kind}. However, if such instructions has a 
+        corresponding \texttt{GOTO}, all the successors \textbf{must} be 
+        specified there itself - they do not have any default successors.
+        \item The labels used in the \texttt{GOTO} statement must be defined in 
+        some \texttt{LABEL} statement in the program.
+    \end{itemize}
+\end{itemize}
+
+\paragraph{Other important points}
+\begin{itemize} \tightlist
+    \item Each instruction must be specified a single line and should be the
+    only instruction in that line.
+    \item Empty lines in the program text are ignored.
+    \item A normal instruction can contain arithmatic operators other than \texttt{+}.
+    \item A variable name must start with an alphabetic character.
+    \item Specify the program properly with atleast one whitespace between the
+    tokens. Also check whether the program is parsed properly by looking at
+    the output when the program is executed.
+    \item Variables and constants defined in any unreachable instruction are
+    also considered for analysis, but the instruction itself is ignored.
+\end{itemize}
+
+\section{\texttt{MapVector.h}}
+\label{sec:MapVectorH}
+This file defines a \texttt{MapVector} data structure for bi-directional 
+mapping to integers. Internally it uses \texttt{std::map} for forward mapping 
+to integers and \texttt{std::vector} for reverse mapping. The data structure is 
+generalised using \texttt{templates}.
+
+\subsection{Private Data Members}
+\label{subsec:PrivateDataMembersMapVectorH}
+\begin{itemize} \tightlist
+    \item \texttt{Map} - Internal \texttt{std::map} variable for forward mapping.
+    \item \texttt{Vector} - Internal \texttt{std::vector} variable for reverse mapping.
+\end{itemize}
+
+\subsection{Public Member Functions}
+\label{subsec:PublicMemberFunctionsMapVectorH}
+\begin{itemize} \tightlist
+    \item \texttt{MapVector()} - Default constructor.
+    \item \texttt{begin()} - Returns forward iterator to the beginning of \texttt{Vector}.
+    \item \texttt{end()} - Returns forward iterator to the end of \texttt{Vector}.
+    \item \texttt{rbegin()} - Returns reverse iterator to the end of \texttt{Vector}.
+    \item \texttt{rend()} - Returns reverse iterator to the beginning of \texttt{Vector}.
+    \item \texttt{empty()} - Returns boolean to indicate whether the \texttt{MapVector} object is empty.
+    \item \texttt{size()} - Returns the number of unique items inserted into \texttt{MapVector} object.
+    \item \texttt{insert(item)} - Inserts \texttt{item} in the \texttt{MapVector} object if not already present.
+    \item \texttt{getInt(item)} - Returns the integer to which \texttt{item} is forward mapped.
+    \item \texttt{operator[](n)} - Returns \texttt{item} which is forward mapped to integer $n$.
+    \item \texttt{clear()} - Clears the \texttt{MapVector} object by deleting existing items.
+\end{itemize}
+
+\subsection{How it works}
+\label{subsec:HowItWorks}
+When an \texttt{item} is to be inserted in a \texttt{MapVector} object, first 
+a check is made if the \texttt{item} is already present. If not found, 
+it is inserted into the internal \texttt{Map} data member, being forward mapped 
+to next available integer $x$ starting from $0$ (which is same as \texttt{Vector.
+size()} or \texttt{Map.size()} before insertion). Also at the same time, it is 
+inserted into the \texttt{Vector} data member at the same integer index $x$ for 
+reverse mapping.\\
+So, \texttt{MapVector} provides $\mathcal{O}(\log{}n)$ forward mapping and 
+$\mathcal{O}(1)$ reverse mapping, where $n$ is the size of the 
+\texttt{MapVector} object. Insertion operation is also $\mathcal{O}(\log{}n)$.
+
+\section{\texttt{Program.h}}
+\label{ProgramH}
+This file defines a \texttt{Program} data structure for capturing a toy 
+language program. In addition it defines a \texttt{CustomOStream} class whose 
+object acts as a placeholder inside \texttt{Program} for providing 
+\texttt{std::cout} like functionality for \texttt{Program} class.\\
+The details of \texttt{CustomOStream} class are irrelavent and hence not 
+mentioned. The following subsections provide details of \texttt{Program} class.
+
+\subsection{Public Data Structures}
+\label{subsec:PublicDataStructuresProgramH}
+\begin{itemize} \tightlist
+    \item \texttt{ValueTy} - Represents constants and variables in the program. It has following data members -
+        \begin{itemize} \tightlist
+            \item \texttt{isConst} - Boolean to indicate whether the 
+            corresponding object represents a constant or a variable.
+            \item \texttt{index} - Corresponding integer index for the constant 
+            or variable (see \texttt{Constants} and \texttt{Variables} data 
+            members of \texttt{Program} class).
+        \end{itemize}
+    
+    \item \texttt{ExpressionTy} - Represents an expression. It has following data members -
+        \begin{itemize} \tightlist
+            \item \texttt{op} - Character to represent the operand in the expression.
+            \item \texttt{leftOp} - \texttt{ValueTy} object to represent the left operand.
+            \item \texttt{rightOp} - \texttt{ValueTy} object to represent the right operand.
+        \end{itemize}
+
+    \item \texttt{InstructionTy} - Represents a normal instruction in the program. It has following data members - 
+        \begin{itemize} \tightlist
+            \item \texttt{lValue} - \texttt{ValueTy} object for lvalue of the instruction.
+            \item \texttt{rValue} - \texttt{ExpressionTy} object for rvalue of the instruction.
+            \item \texttt{reachable} - Boolean to indicate whether the instruction is reachable.
+            \item \texttt{cfgIndex} - Index of the node in control flow graph for which the instruction defines the transfer function (see \texttt{CFG} data member of \texttt{Program} class).
+            \item \texttt{predecessors} - \texttt{std::set<int>} of indexes of
+            predecessors of the instruction (see \texttt{Instructions} data member of \texttt{Program} class).
+        \end{itemize}
+    
+    \item \texttt{CfgNodeTy} - Represents a control flow graph node corresponding to the program. It has following data members -
+        \begin{itemize} \tightlist
+            \item \texttt{predecessors} - \texttt{std::vector<int>} object of indexes of predecessor control flow graph nodes (see \texttt{CFG} data member of \texttt{Program} class).
+            \item \texttt{instructionIndex} - Index of the instruction that defines the transfer function if the node represents a transfer point (see \texttt{Instructions} data member of \texttt{Program} class).
+        \end{itemize}
+\end{itemize}
+
+\subsection{Public Data Members}
+\label{subsec:PublicDataMembersProgramH}
+\begin{itemize} \tightlist
+    \item \texttt{Variables} - \texttt{MapVector<string>} to store program variables.
+    \item \texttt{Constants} - \texttt{MapVector<int>} to store program constants.
+    \item \texttt{Instructions} - \texttt{std::vector<InstructionTy>} object to store program instructions.
+    \item \texttt{CFG} - \texttt{std::vector<CfgNodeTy>} to store program control flow graph.
+    \item \texttt{cout} - \texttt{CustomOStream} object to provide \texttt{std::cout} like functionality for \texttt{Program} class.
+\end{itemize}
+
+\subsection{Public Member Functions}
+\label{subsec:PublicMemberFunctionsProgramH}
+\begin{itemize}
+    \item \texttt{parse(filename)} - Parses toy language program in 
+    \texttt{filename} and updates \texttt{Variables}, \texttt{Constants} and 
+    \texttt{Instructions} data members.\\
+    It performs two passes over the program. In the first pass, it stores the 
+    instructions, performs basic checks to ensure syntactic correctness, 
+    determines labels and jumps. In the second pass it performs BFS from the 
+    first instruction, mapping jumps to actual instructions and also 
+    determining the reachability of instructions. The function \texttt{throw}s 
+    an error in case any of the checks fails.
+    \item \texttt{print()} - Prints the parsed program in readable format.
+    \item \texttt{createCFG()} - Creates control flow graph corresponding to the
+    parsed program by updating \texttt{CFG} data members. The control flow 
+    graphs contains nodes corresponding to transfer points, confluence points, 
+    \texttt{START} and \texttt{END}. Unreachable instructions are ignored while 
+    creating the control flow graph.\\
+    It also performs two passes over the program. In the first pass it assigns 
+    indexes to the transfer points (reachable instructions) and confluence 
+    points in \texttt{CFG} data member. And then in the second pass, it actually
+    fills the \texttt{CFG} vector.
+    \item \texttt{printCFG()} - Prints the control flow graph in readable format.
+\end{itemize}
+
+\paragraph{NOTES}
+\begin{itemize} \tightlist
+    \item \texttt{Program.h} also overloads \texttt{operator<} for 
+    \texttt{ValueTy} and \texttt{ExpressionTy} so that \texttt{std::set} and 
+    \texttt{std::map} objects can be created using them.
+    \item For \texttt{std::cout} like facilities, \texttt{operator<<} is also 
+    overloaded for \texttt{CustomOStream} to output \texttt{char}, 
+    \texttt{int}, \texttt{string}, \texttt{ValueTy}, \texttt{ExpressionTy}, 
+    \texttt{InstructionTy} objects.
+\end{itemize}
+
+\section{\texttt{HerbrandEquivalence.cpp}}
+\label{sec:HerbrandEquivalenceCpp}
+This file implements the Hebrand equivalence algorithm for the toy language  
+described above.
+
+\subsection{Global Variables}
+\label{subsec:GlobalVariablesHerbrandEquivaleceCpp}
+\begin{itemize} \tightlist
+    \item \texttt{program} - \texttt{Program} object to store parsed toy program.
+    \item \texttt{Ops} - \texttt{std::vector<char>} object to store the operators that can occur in the toy program being analysed.
+    \item \texttt{IndexExp} - \texttt{std::map<Program::ExpressionTy, int>} to map program expressions of length atmost two to integers for indexing purpose.
+    \item \texttt{SetCnt} - Next set identifier to be used.
+    \item \texttt{Partitions} - \texttt{std::vector<std::vector<int>>} to keep track of partition at each program point. \texttt{Partitions[v][n]} stores set identifier for expression \texttt{e} such that \texttt{IndexExp[e]} is \texttt{n}, at program point represented by \texttt{program.CFG[v]}. \texttt{Partitions[v]} is the \textbf{partition vector} representing the partition at program point \texttt{program.CFG[v]}.
+    \item \texttt{Parent} - \texttt{std::map<std::tuple<char, int, int>, int>} to store parent set identifiers.
+\end{itemize}
+\textbf{NOTE} - For more details on \texttt{SetCnt}, \texttt{Partitions} and \texttt{Parent} refer to \autoref{sec:NotationPseudocode}.
+
+\subsection{Functions}
+\label{subsec:FunctionsHerbrandEquivalenceCpp}
+\begin{itemize} \tightlist
+    \item \texttt{assignIndex()} - Updates \texttt{IndexExp} assigning integer indexes to expressions arbitrarily at the beginning of the analysis, for indexing purpose.
+    \item \texttt{samePartition(p1, p2)} - Checks if the two partition vectors (\texttt{std::vector<int>}) \texttt{p1} and \texttt{p2} are same. They are same when values (ie. set identifiers) at two different indexes are equal in the first iff they are so in the second.
+    \item \texttt{findSet(p, e)} - Finds set identifier representing expression \texttt{e} (which is of type \texttt{Program::ExpressionTy}) in partition vector \texttt{p}.
+    \item \texttt{findInitialPartition(p)} - Intialises partition vector \texttt{p} with $\bot$.
+    \item \texttt{getClass(p, n, c)} - Updates \texttt{c} (\texttt{std::set<int>}) to contain indexes of expressions which are equivalent to expression with index \texttt{n}, in the partition vector \texttt{p}.
+    \item \texttt{printPartition(p)} - Prints partition vector \texttt{p} in readable format.
+    \item \texttt{transferFunction(n)} - Applies corresponding transfer function to the partition at program point \texttt{program.CFG[n]}.
+    \item \texttt{confluenceFunction(n)} - Applies the confluence operation to the partition at program point \texttt{program.CFG[n]}.
+    \item \texttt{HerbrandEquivalence()} - Main Herbrand analysis function.
+    \item \texttt{main()} - Parses toy program (\texttt{program.parse(argv[1])}), creates control flow graph (\texttt{program.createCFG()}) and then calls \texttt{HerbrandEquivalence()} function.
+\end{itemize}
+
+\bigskip \noindent \textbf{NOTE} - For more details on the function implementation, refer to \autoref{chap:chapter4} and for extensive documentation refer to \href{https://himanshu520.github.io/HerbrandEquivalenceToyDocs/}{ToyLanguageDocs}.

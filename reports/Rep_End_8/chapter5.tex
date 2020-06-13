@@ -1,0 +1,571 @@
+\chapter{Test Cases}
+\label{chap:chapter5}
+
+This chapter includes some test cases/examples on which the Herbrand analysis
+algorithm can be checked for correctness. They are representative examples 
+chosen to cover different scenarios that arise during program analysis for 
+computing Herbrand equivalences.
+
+\section{Test Case 1}
+\label{sec:tc1}
+This is a very basic example that demonstrates how transfer function modifies the partitions through the program control flow.
+
+\begin{figure}[H]
+\label{fig:tc1}
+    \centering {
+        \setlength{\fboxsep}{8pt}    
+        \fbox{\includegraphics[scale=0.45]{tc1.png}}
+    }\caption{Test Case 1}
+\end{figure}
+
+\begin{itemize}
+
+    \item \textbf{[1] : START}\\
+        $\{1\}$, $\{2\}$, $\{x\}$, $\{y\}$, $\{1 + 1\}$, $\{1 + 2\}$, $\{1 + x\}$, $\{1 + y\}$, $\{2 + 1\}$, $\{2 + 2\}$, $\{2 + x\}$, $\{2 + y\}$, $\{x + 1\}$, $\{x + 2\}$, $\{x + x\}$, $\{x + y\}$, $\{y + 1\}$, $\{y + 2\}$, $\{y + x\}$, $\{y + y\}$
+
+    \item \textbf{[2] : Transfer Point $\Rightarrow$ $x = 1$}\\
+        $\{1, x\}$, $\{2\}$, $\{y\}$, $\{1 + 1, 1 + x, x + 1, x + x\}$, $\{1 + 2, x + 2\}$, $\{1 + y, x + y\}$, $\{2 + 1, 2 + x\}$, $\{2 + 2\}$, $\{2 + y\}$, $\{y + 1, y + x\}$, $\{y + 2\}$, $\{y + y\}$
+
+    \item \textbf{[3] : Transfer Point $\Rightarrow$ $y = x + 1$}\\
+        $\{1, x\}$, $\{2\}$, $\{y, 1 + 1, 1 + x, x + 1, x + x\}$, $\{1 + 2, x + 2\}$, $\{2 + 1, 2 + x\}$, $\{2 + 2\}$, $\{1 + y, x + y\}$, $\{2 + y\}$, $\{y + 1, y + x\}$, $\{y + 2\}$, $\{y + y\}$
+
+    \item \textbf{[4] : Transfer Point $\Rightarrow$ $x = 2$}\\
+        $\{1\}$, $\{2, x\}$, $\{y, 1 + 1\}$, $\{1 + 2, 1 + x\}$, $\{2 + 1, x + 1\}$, $\{2 + 2, 2 + x, x + 2, x + x\}$, $\{1 + y\}$, $\{2 + y, x + y\}$, $\{y + 1\}$, $\{y + 2, y + x\}$, $\{y + y\}$
+
+    \item \textbf{[5] : Transfer Point $\Rightarrow$ $y = x + 1$}\\
+        $\{1\}$, $\{2, x\}$, $\{1 + 1\}$, $\{1 + 2, 1 + x\}$, $\{y, 2 + 1, x + 1\}$, $\{2 + 2, 2 + x, x + 2, x + x\}$, $\{1 + y\}$, $\{2 + y, x + y\}$, $\{y + 1\}$, $\{y + 2, y + x\}$, $\{y + y\}$
+
+    \item \textbf{[6] : END}\\
+        $\{1\}$, $\{2, x\}$, $\{1 + 1\}$, $\{1 + 2, 1 + x\}$, $\{y, 2 + 1, x + 1\}$, $\{2 + 2, 2 + x, x + 2, x + x\}$, $\{1 + y\}$, $\{2 + y, x + y\}$, $\{y + 1\}$, $\{y + 2, y + x\}$, $\{y + y\}$
+
+\end{itemize}
+
+\section{Test Case 2}
+\label{sec:tc2}
+This is another basic example that demonstrates non-deterministic assignment.
+
+\begin{figure}[H]
+\label{fig:tc2}
+    \centering {
+        \setlength{\fboxsep}{8pt}    
+        \fbox{\includegraphics[scale=0.45]{tc2.png}}
+    }\caption{Test Case 2}
+\end{figure}
+
+\begin{itemize}
+
+    \item \textbf{[1] : START}\\
+        $\{1\}$, $\{x\}$, $\{y\}$, $\{1 + 1\}$, $\{1 + x\}$, $\{1 + y\}$, $\{x + 1\}$, $\{x + x\}$, $\{x + y\}$, $\{y + 1\}$, $\{y + x\}$, $\{y + y\}$
+
+    \item \textbf{[2] : Transfer Point $\Rightarrow$ $x = 1$}\\
+        $\{1, x\}$, $\{y\}$, $\{1 + 1, 1 + x, x + 1, x + x\}$, $\{1 + y, x + y\}$, $\{y + 1, y + x\}$, $\{y + y\}$
+
+    \item \textbf{[3] : Transfer Point $\Rightarrow$ $y = 1 + x$}\\
+        $\{1, x\}$, $\{y, 1 + 1, 1 + x, x + 1, x + x\}$, $\{1 + y, x + y\}$, $\{y + 1, y + x\}$, $\{y + y\}$
+
+    \item \textbf{[4] : Transfer Point $\Rightarrow$ $x = 1 + y$}\\
+        $\{1\}$, $\{y, 1 + 1\}$, $\{x, 1 + y\}$, $\{y + 1\}$, $\{y + y\}$, $\{1 + x\}$, $\{x + 1\}$, $\{x + x\}$, $\{x + y\}$, $\{y + x\}$
+
+    \item \textbf{[5] : Transfer Point $\Rightarrow$ $y = *$}\\
+        $\{1\}$, $\{1 + 1\}$, $\{x\}$, $\{1 + x\}$, $\{x + 1\}$, $\{x + x\}$, $\{y\}$, $\{1 + y\}$, $\{x + y\}$, $\{y + 1\}$, $\{y + x\}$, $\{y + y\}$
+
+    \item \textbf{[6] : END}\\
+        $\{1\}$, $\{1 + 1\}$, $\{x\}$, $\{1 + x\}$, $\{x + 1\}$, $\{x + x\}$, $\{y\}$, $\{1 + y\}$, $\{x + y\}$, $\{y + 1\}$, $\{y + x\}$, $\{y + y\}$
+
+\end{itemize}
+
+\section{Test Case 3}
+\label{sec:tc3}
+Here at the \textbf{END} program point, $y$ and $z$ must be equivalent to 
+each other but $u$ and $v$ must not.
+
+\begin{figure}[H]
+\label{fig:tc3}
+    \centering {
+        \setlength{\fboxsep}{8pt}    
+        \fbox{\includegraphics[scale=0.50]{tc3.png}}
+    }\caption{Test Case 3}
+\end{figure}
+
+\begin{itemize}
+
+    \item \textbf{[1] : START}\\
+        $\{1\}$, $\{x\}$, $\{y\}$, $\{z\}$, $\{u\}$, $\{v\}$, $\{1 + 1\}$, $\{1 + x\}$, $\{1 + y\}$, $\{1 + z\}$, $\{1 + u\}$, $\{1 + v\}$, $\{x + 1\}$, $\{x + x\}$, $\{x + y\}$, $\{x + z\}$, $\{x + u\}$, $\{x + v\}$, $\{y + 1\}$, $\{y + x\}$, $\{y + y\}$, $\{y + z\}$, $\{y + u\}$, $\{y + v\}$, $\{z + 1\}$, $\{z + x\}$, $\{z + y\}$, $\{z + z\}$, $\{z + u\}$, $\{z + v\}$, $\{u + 1\}$, $\{u + x\}$, $\{u + y\}$, $\{u + z\}$, $\{u + u\}$, $\{u + v\}$, $\{v + 1\}$, $\{v + x\}$, $\{v + y\}$, $\{v + z\}$, $\{v + u\}$, $\{v + v\}$
+
+    \item \textbf{[2] : Transfer Point $\Rightarrow$ $x = 1$}\\
+        $\{1, x\}$, $\{y\}$, $\{z\}$, $\{u\}$, $\{v\}$, $\{1 + 1, 1 + x, x + 1, x + x\}$, $\{1 + y, x + y\}$, $\{1 + z, x + z\}$, $\{1 + u, x + u\}$, $\{1 + v, x + v\}$, $\{y + 1, y + x\}$, $\{y + y\}$, $\{y + z\}$, $\{y + u\}$, $\{y + v\}$, $\{z + 1, z + x\}$, $\{z + y\}$, $\{z + z\}$, $\{z + u\}$, $\{z + v\}$, $\{u + 1, u + x\}$, $\{u + y\}$, $\{u + z\}$, $\{u + u\}$, $\{u + v\}$, $\{v + 1, v + x\}$, $\{v + y\}$, $\{v + z\}$, $\{v + u\}$, $\{v + v\}$
+
+    \item \textbf{[3] : Transfer Point $\Rightarrow$ $y = 1 + x$}\\
+        $\{1, x\}$, $\{z\}$, $\{u\}$, $\{v\}$, $\{y, 1 + 1, 1 + x, x + 1, x + x\}$, $\{1 + z, x + z\}$, $\{1 + u, x + u\}$, $\{1 + v, x + v\}$, $\{z + 1, z + x\}$, $\{z + z\}$, $\{z + u\}$, $\{z + v\}$, $\{u + 1, u + x\}$, $\{u + z\}$, $\{u + u\}$, $\{u + v\}$, $\{v + 1, v + x\}$, $\{v + z\}$, $\{v + u\}$, $\{v + v\}$, $\{1 + y, x + y\}$, $\{y + 1, y + x\}$, $\{y + y\}$, $\{y + z\}$, $\{y + u\}$, $\{y + v\}$, $\{z + y\}$, $\{u + y\}$, $\{v + y\}$
+
+    \item \textbf{[4] : Transfer Point $\Rightarrow$ $z = x + 1$}\\
+        $\{1, x\}$, $\{u\}$, $\{v\}$, $\{y, z, 1 + 1, 1 + x, x + 1, x + x\}$, $\{1 + u, x + u\}$, $\{1 + v, x + v\}$, $\{u + 1, u + x\}$, $\{u + u\}$, $\{u + v\}$, $\{v + 1, v + x\}$, $\{v + u\}$, $\{v + v\}$, $\{1 + y, 1 + z, x + y, x + z\}$, $\{y + 1, y + x, z + 1, z + x\}$, $\{y + y, y + z, z + y, z + z\}$, $\{y + u, z + u\}$, $\{y + v, z + v\}$, $\{u + y, u + z\}$, $\{v + y, v + z\}$
+
+    \item \textbf{[5] : Transfer Point $\Rightarrow$ $u = 1 + y$}\\
+        $\{1, x\}$, $\{v\}$, $\{y, z, 1 + 1, 1 + x, x + 1, x + x\}$, $\{1 + v, x + v\}$, $\{v + 1, v + x\}$, $\{v + v\}$, $\{u, 1 + y, 1 + z, x + y, x + z\}$, $\{y + 1, y + x, z + 1, z + x\}$, $\{y + y, y + z, z + y, z + z\}$, $\{y + v, z + v\}$, $\{v + y, v + z\}$, $\{1 + u, x + u\}$, $\{y + u, z + u\}$, $\{u + 1, u + x\}$, $\{u + y, u + z\}$, $\{u + u\}$, $\{u + v\}$, $\{v + u\}$
+
+    \item \textbf{[6] : Transfer Point $\Rightarrow$ $v = z + 1$}\\
+        $\{1, x\}$, $\{y, z, 1 + 1, 1 + x, x + 1, x + x\}$, $\{u, 1 + y, 1 + z, x + y, x + z\}$, $\{v, y + 1, y + x, z + 1, z + x\}$, $\{y + y, y + z, z + y, z + z\}$, $\{1 + u, x + u\}$, $\{y + u, z + u\}$, $\{u + 1, u + x\}$, $\{u + y, u + z\}$, $\{u + u\}$, $\{1 + v, x + v\}$, $\{y + v, z + v\}$, $\{u + v\}$, $\{v + 1, v + x\}$, $\{v + y, v + z\}$, $\{v + u\}$, $\{v + v\}$
+
+    \item \textbf{[7] : END}\\
+        $\{1, x\}$, $\{y, z, 1 + 1, 1 + x, x + 1, x + x\}$, $\{u, 1 + y, 1 + z, x + y, x + z\}$, $\{v, y + 1, y + x, z + 1, z + x\}$, $\{y + y, y + z, z + y, z + z\}$, $\{1 + u, x + u\}$, $\{y + u, z + u\}$, $\{u + 1, u + x\}$, $\{u + y, u + z\}$, $\{u + u\}$, $\{1 + v, x + v\}$, $\{y + v, z + v\}$, $\{u + v\}$, $\{v + 1, v + x\}$, $\{v + y, v + z\}$, $\{v + u\}$, $\{v + v\}$
+
+\end{itemize}
+
+\section{Test Case 4}
+\label{sec:tc4}
+Here at the \textbf{END} program point, $t$ and $d$ must be equivalent.
+
+\begin{figure}[H]
+\label{fig:tc4}
+    \centering {
+        \setlength{\fboxsep}{8pt}    
+        \fbox{\includegraphics[scale=0.47]{tc4.png}}
+    }\caption{Test Case 4}
+\end{figure}
+
+\begin{itemize}
+
+    \item \textbf{[1] : START}\\
+        $\{1\}$, $\{2\}$, $\{x\}$, $\{y\}$, $\{z\}$, $\{t\}$, $\{a\}$, $\{b\}$, $\{c\}$, $\{d\}$, $\{1 + 1\}$, $\{1 + 2\}$, $\{1 + x\}$, $\{1 + y\}$, $\{1 + z\}$, $\{1 + t\}$, $\{1 + a\}$, $\{1 + b\}$, $\{1 + c\}$, $\{1 + d\}$, $\{2 + 1\}$, $\{2 + 2\}$, $\{2 + x\}$, $\{2 + y\}$, $\{2 + z\}$, $\{2 + t\}$, $\{2 + a\}$, $\{2 + b\}$, $\{2 + c\}$, $\{2 + d\}$, $\{x + 1\}$, $\{x + 2\}$, $\{x + x\}$, $\{x + y\}$, $\{x + z\}$, $\{x + t\}$, $\{x + a\}$, $\{x + b\}$, $\{x + c\}$, $\{x + d\}$, $\{y + 1\}$, $\{y + 2\}$, $\{y + x\}$, $\{y + y\}$, $\{y + z\}$, $\{y + t\}$, $\{y + a\}$, $\{y + b\}$, $\{y + c\}$, $\{y + d\}$, $\{z + 1\}$, $\{z + 2\}$, $\{z + x\}$, $\{z + y\}$, $\{z + z\}$, $\{z + t\}$, $\{z + a\}$, $\{z + b\}$, $\{z + c\}$, $\{z + d\}$, $\{t + 1\}$, $\{t + 2\}$, $\{t + x\}$, $\{t + y\}$, $\{t + z\}$, $\{t + t\}$, $\{t + a\}$, $\{t + b\}$, $\{t + c\}$, $\{t + d\}$, $\{a + 1\}$, $\{a + 2\}$, $\{a + x\}$, $\{a + y\}$, $\{a + z\}$, $\{a + t\}$, $\{a + a\}$, $\{a + b\}$, $\{a + c\}$, $\{a + d\}$, $\{b + 1\}$, $\{b + 2\}$, $\{b + x\}$, $\{b + y\}$, $\{b + z\}$, $\{b + t\}$, $\{b + a\}$, $\{b + b\}$, $\{b + c\}$, $\{b + d\}$, $\{c + 1\}$, $\{c + 2\}$, $\{c + x\}$, $\{c + y\}$, $\{c + z\}$, $\{c + t\}$, $\{c + a\}$, $\{c + b\}$, $\{c + c\}$, $\{c + d\}$, $\{d + 1\}$, $\{d + 2\}$, $\{d + x\}$, $\{d + y\}$, $\{d + z\}$, $\{d + t\}$, $\{d + a\}$, $\{d + b\}$, $\{d + c\}$, $\{d + d\}$
+
+    \item \textbf{[2] : Transfer Point $\Rightarrow$ $x = 1$}\\
+        $\{1, x\}$, $\{2\}$, $\{y\}$, $\{z\}$, $\{t\}$, $\{a\}$, $\{b\}$, $\{c\}$, $\{d\}$, $\{1 + 1, 1 + x, x + 1, x + x\}$, $\{1 + 2, x + 2\}$, $\{1 + y, x + y\}$, $\{1 + z, x + z\}$, $\{1 + t, x + t\}$, $\{1 + a, x + a\}$, $\{1 + b, x + b\}$, $\{1 + c, x + c\}$, $\{1 + d, x + d\}$, $\{2 + 1, 2 + x\}$, $\{2 + 2\}$, $\{2 + y\}$, $\{2 + z\}$, $\{2 + t\}$, $\{2 + a\}$, $\{2 + b\}$, $\{2 + c\}$, $\{2 + d\}$, $\{y + 1, y + x\}$, $\{y + 2\}$, $\{y + y\}$, $\{y + z\}$, $\{y + t\}$, $\{y + a\}$, $\{y + b\}$, $\{y + c\}$, $\{y + d\}$, $\{z + 1, z + x\}$, $\{z + 2\}$, $\{z + y\}$, $\{z + z\}$, $\{z + t\}$, $\{z + a\}$, $\{z + b\}$, $\{z + c\}$, $\{z + d\}$, $\{t + 1, t + x\}$, $\{t + 2\}$, $\{t + y\}$, $\{t + z\}$, $\{t + t\}$, $\{t + a\}$, $\{t + b\}$, $\{t + c\}$, $\{t + d\}$, $\{a + 1, a + x\}$, $\{a + 2\}$, $\{a + y\}$, $\{a + z\}$, $\{a + t\}$, $\{a + a\}$, $\{a + b\}$, $\{a + c\}$, $\{a + d\}$, $\{b + 1, b + x\}$, $\{b + 2\}$, $\{b + y\}$, $\{b + z\}$, $\{b + t\}$, $\{b + a\}$, $\{b + b\}$, $\{b + c\}$, $\{b + d\}$, $\{c + 1, c + x\}$, $\{c + 2\}$, $\{c + y\}$, $\{c + z\}$, $\{c + t\}$, $\{c + a\}$, $\{c + b\}$, $\{c + c\}$, $\{c + d\}$, $\{d + 1, d + x\}$, $\{d + 2\}$, $\{d + y\}$, $\{d + z\}$, $\{d + t\}$, $\{d + a\}$, $\{d + b\}$, $\{d + c\}$, $\{d + d\}$
+
+    \item \textbf{[3] : Transfer Point $\Rightarrow$ $y = x + 1$}\\
+        $\{1, x\}$, $\{2\}$, $\{z\}$, $\{t\}$, $\{a\}$, $\{b\}$, $\{c\}$, $\{d\}$, $\{y, 1 + 1, 1 + x, x + 1, x + x\}$, $\{1 + 2, x + 2\}$, $\{1 + z, x + z\}$, $\{1 + t, x + t\}$, $\{1 + a, x + a\}$, $\{1 + b, x + b\}$, $\{1 + c, x + c\}$, $\{1 + d, x + d\}$, $\{2 + 1, 2 + x\}$, $\{2 + 2\}$, $\{2 + z\}$, $\{2 + t\}$, $\{2 + a\}$, $\{2 + b\}$, $\{2 + c\}$, $\{2 + d\}$, $\{z + 1, z + x\}$, $\{z + 2\}$, $\{z + z\}$, $\{z + t\}$, $\{z + a\}$, $\{z + b\}$, $\{z + c\}$, $\{z + d\}$, $\{t + 1, t + x\}$, $\{t + 2\}$, $\{t + z\}$, $\{t + t\}$, $\{t + a\}$, $\{t + b\}$, $\{t + c\}$, $\{t + d\}$, $\{a + 1, a + x\}$, $\{a + 2\}$, $\{a + z\}$, $\{a + t\}$, $\{a + a\}$, $\{a + b\}$, $\{a + c\}$, $\{a + d\}$, $\{b + 1, b + x\}$, $\{b + 2\}$, $\{b + z\}$, $\{b + t\}$, $\{b + a\}$, $\{b + b\}$, $\{b + c\}$, $\{b + d\}$, $\{c + 1, c + x\}$, $\{c + 2\}$, $\{c + z\}$, $\{c + t\}$, $\{c + a\}$, $\{c + b\}$, $\{c + c\}$, $\{c + d\}$, $\{d + 1, d + x\}$, $\{d + 2\}$, $\{d + z\}$, $\{d + t\}$, $\{d + a\}$, $\{d + b\}$, $\{d + c\}$, $\{d + d\}$, $\{1 + y, x + y\}$, $\{2 + y\}$, $\{y + 1, y + x\}$, $\{y + 2\}$, $\{y + y\}$, $\{y + z\}$, $\{y + t\}$, $\{y + a\}$, $\{y + b\}$, $\{y + c\}$, $\{y + d\}$, $\{z + y\}$, $\{t + y\}$, $\{a + y\}$, $\{b + y\}$, $\{c + y\}$, $\{d + y\}$
+
+    \item \textbf{[4] : Transfer Point $\Rightarrow$ $z = y + 1$}\\
+        $\{1, x\}$, $\{2\}$, $\{t\}$, $\{a\}$, $\{b\}$, $\{c\}$, $\{d\}$, $\{y, 1 + 1, 1 + x, x + 1, x + x\}$, $\{1 + 2, x + 2\}$, $\{1 + t, x + t\}$, $\{1 + a, x + a\}$, $\{1 + b, x + b\}$, $\{1 + c, x + c\}$, $\{1 + d, x + d\}$, $\{2 + 1, 2 + x\}$, $\{2 + 2\}$, $\{2 + t\}$, $\{2 + a\}$, $\{2 + b\}$, $\{2 + c\}$, $\{2 + d\}$, $\{t + 1, t + x\}$, $\{t + 2\}$, $\{t + t\}$, $\{t + a\}$, $\{t + b\}$, $\{t + c\}$, $\{t + d\}$, $\{a + 1, a + x\}$, $\{a + 2\}$, $\{a + t\}$, $\{a + a\}$, $\{a + b\}$, $\{a + c\}$, $\{a + d\}$, $\{b + 1, b + x\}$, $\{b + 2\}$, $\{b + t\}$, $\{b + a\}$, $\{b + b\}$, $\{b + c\}$, $\{b + d\}$, $\{c + 1, c + x\}$, $\{c + 2\}$, $\{c + t\}$, $\{c + a\}$, $\{c + b\}$, $\{c + c\}$, $\{c + d\}$, $\{d + 1, d + x\}$, $\{d + 2\}$, $\{d + t\}$, $\{d + a\}$, $\{d + b\}$, $\{d + c\}$, $\{d + d\}$, $\{1 + y, x + y\}$, $\{2 + y\}$, $\{z, y + 1, y + x\}$, $\{y + 2\}$, $\{y + y\}$, $\{y + t\}$, $\{y + a\}$, $\{y + b\}$, $\{y + c\}$, $\{y + d\}$, $\{t + y\}$, $\{a + y\}$, $\{b + y\}$, $\{c + y\}$, $\{d + y\}$, $\{1 + z, x + z\}$, $\{2 + z\}$, $\{y + z\}$, $\{z + 1, z + x\}$, $\{z + 2\}$, $\{z + y\}$, $\{z + z\}$, $\{z + t\}$, $\{z + a\}$, $\{z + b\}$, $\{z + c\}$, $\{z + d\}$, $\{t + z\}$, $\{a + z\}$, $\{b + z\}$, $\{c + z\}$, $\{d + z\}$
+
+    \item \textbf{[5] : Transfer Point $\Rightarrow$ $t = z + 1$}\\
+        $\{1, x\}$, $\{2\}$, $\{a\}$, $\{b\}$, $\{c\}$, $\{d\}$, $\{y, 1 + 1, 1 + x, x + 1, x + x\}$, $\{1 + 2, x + 2\}$, $\{1 + a, x + a\}$, $\{1 + b, x + b\}$, $\{1 + c, x + c\}$, $\{1 + d, x + d\}$, $\{2 + 1, 2 + x\}$, $\{2 + 2\}$, $\{2 + a\}$, $\{2 + b\}$, $\{2 + c\}$, $\{2 + d\}$, $\{a + 1, a + x\}$, $\{a + 2\}$, $\{a + a\}$, $\{a + b\}$, $\{a + c\}$, $\{a + d\}$, $\{b + 1, b + x\}$, $\{b + 2\}$, $\{b + a\}$, $\{b + b\}$, $\{b + c\}$, $\{b + d\}$, $\{c + 1, c + x\}$, $\{c + 2\}$, $\{c + a\}$, $\{c + b\}$, $\{c + c\}$, $\{c + d\}$, $\{d + 1, d + x\}$, $\{d + 2\}$, $\{d + a\}$, $\{d + b\}$, $\{d + c\}$, $\{d + d\}$, $\{1 + y, x + y\}$, $\{2 + y\}$, $\{z, y + 1, y + x\}$, $\{y + 2\}$, $\{y + y\}$, $\{y + a\}$, $\{y + b\}$, $\{y + c\}$, $\{y + d\}$, $\{a + y\}$, $\{b + y\}$, $\{c + y\}$, $\{d + y\}$, $\{1 + z, x + z\}$, $\{2 + z\}$, $\{y + z\}$, $\{t, z + 1, z + x\}$, $\{z + 2\}$, $\{z + y\}$, $\{z + z\}$, $\{z + a\}$, $\{z + b\}$, $\{z + c\}$, $\{z + d\}$, $\{a + z\}$, $\{b + z\}$, $\{c + z\}$, $\{d + z\}$, $\{1 + t, x + t\}$, $\{2 + t\}$, $\{y + t\}$, $\{z + t\}$, $\{t + 1, t + x\}$, $\{t + 2\}$, $\{t + y\}$, $\{t + z\}$, $\{t + t\}$, $\{t + a\}$, $\{t + b\}$, $\{t + c\}$, $\{t + d\}$, $\{a + t\}$, $\{b + t\}$, $\{c + t\}$, $\{d + t\}$
+
+    \item \textbf{[6] : Transfer Point $\Rightarrow$ $x = 2$}\\
+        $\{1\}$, $\{2, x\}$, $\{a\}$, $\{b\}$, $\{c\}$, $\{d\}$, $\{y, 1 + 1\}$, $\{1 + 2, 1 + x\}$, $\{1 + a\}$, $\{1 + b\}$, $\{1 + c\}$, $\{1 + d\}$, $\{2 + 1, x + 1\}$, $\{2 + 2, 2 + x, x + 2, x + x\}$, $\{2 + a, x + a\}$, $\{2 + b, x + b\}$, $\{2 + c, x + c\}$, $\{2 + d, x + d\}$, $\{a + 1\}$, $\{a + 2, a + x\}$, $\{a + a\}$, $\{a + b\}$, $\{a + c\}$, $\{a + d\}$, $\{b + 1\}$, $\{b + 2, b + x\}$, $\{b + a\}$, $\{b + b\}$, $\{b + c\}$, $\{b + d\}$, $\{c + 1\}$, $\{c + 2, c + x\}$, $\{c + a\}$, $\{c + b\}$, $\{c + c\}$, $\{c + d\}$, $\{d + 1\}$, $\{d + 2, d + x\}$, $\{d + a\}$, $\{d + b\}$, $\{d + c\}$, $\{d + d\}$, $\{1 + y\}$, $\{2 + y, x + y\}$, $\{z, y + 1\}$, $\{y + 2, y + x\}$, $\{y + y\}$, $\{y + a\}$, $\{y + b\}$, $\{y + c\}$, $\{y + d\}$, $\{a + y\}$, $\{b + y\}$, $\{c + y\}$, $\{d + y\}$, $\{1 + z\}$, $\{2 + z, x + z\}$, $\{y + z\}$, $\{t, z + 1\}$, $\{z + 2, z + x\}$, $\{z + y\}$, $\{z + z\}$, $\{z + a\}$, $\{z + b\}$, $\{z + c\}$, $\{z + d\}$, $\{a + z\}$, $\{b + z\}$, $\{c + z\}$, $\{d + z\}$, $\{1 + t\}$, $\{2 + t, x + t\}$, $\{y + t\}$, $\{z + t\}$, $\{t + 1\}$, $\{t + 2, t + x\}$, $\{t + y\}$, $\{t + z\}$, $\{t + t\}$, $\{t + a\}$, $\{t + b\}$, $\{t + c\}$, $\{t + d\}$, $\{a + t\}$, $\{b + t\}$, $\{c + t\}$, $\{d + t\}$
+
+    \item \textbf{[7] : Transfer Point $\Rightarrow$ $y = 2$}\\
+        $\{1\}$, $\{2, x, y\}$, $\{a\}$, $\{b\}$, $\{c\}$, $\{d\}$, $\{1 + 1\}$, $\{1 + 2, 1 + x, 1 + y\}$, $\{1 + a\}$, $\{1 + b\}$, $\{1 + c\}$, $\{1 + d\}$, $\{2 + 1, x + 1, y + 1\}$, $\{2 + 2, 2 + x, 2 + y, x + 2, x + x, x + y, y + 2, y + x, y + y\}$, $\{2 + a, x + a, y + a\}$, $\{2 + b, x + b, y + b\}$, $\{2 + c, x + c, y + c\}$, $\{2 + d, x + d, y + d\}$, $\{a + 1\}$, $\{a + 2, a + x, a + y\}$, $\{a + a\}$, $\{a + b\}$, $\{a + c\}$, $\{a + d\}$, $\{b + 1\}$, $\{b + 2, b + x, b + y\}$, $\{b + a\}$, $\{b + b\}$, $\{b + c\}$, $\{b + d\}$, $\{c + 1\}$, $\{c + 2, c + x, c + y\}$, $\{c + a\}$, $\{c + b\}$, $\{c + c\}$, $\{c + d\}$, $\{d + 1\}$, $\{d + 2, d + x, d + y\}$, $\{d + a\}$, $\{d + b\}$, $\{d + c\}$, $\{d + d\}$, $\{z\}$, $\{1 + z\}$, $\{2 + z, x + z, y + z\}$, $\{t, z + 1\}$, $\{z + 2, z + x, z + y\}$, $\{z + z\}$, $\{z + a\}$, $\{z + b\}$, $\{z + c\}$, $\{z + d\}$, $\{a + z\}$, $\{b + z\}$, $\{c + z\}$, $\{d + z\}$, $\{1 + t\}$, $\{2 + t, x + t, y + t\}$, $\{z + t\}$, $\{t + 1\}$, $\{t + 2, t + x, t + y\}$, $\{t + z\}$, $\{t + t\}$, $\{t + a\}$, $\{t + b\}$, $\{t + c\}$, $\{t + d\}$, $\{a + t\}$, $\{b + t\}$, $\{c + t\}$, $\{d + t\}$
+
+    \item \textbf{[8] : Transfer Point $\Rightarrow$ $z = 2$}\\
+        $\{1\}$, $\{2, x, y, z\}$, $\{a\}$, $\{b\}$, $\{c\}$, $\{d\}$, $\{1 + 1\}$, $\{1 + 2, 1 + x, 1 + y, 1 + z\}$, $\{1 + a\}$, $\{1 + b\}$, $\{1 + c\}$, $\{1 + d\}$, $\{2 + 1, x + 1, y + 1, z + 1\}$, $\{2 + 2, 2 + x, 2 + y, 2 + z, x + 2, x + x, x + y, x + z, y + 2, y + x, y + y, y + z, z + 2, z + x, z + y, z + z\}$, $\{2 + a, x + a, y + a, z + a\}$, $\{2 + b, x + b, y + b, z + b\}$, $\{2 + c, x + c, y + c, z + c\}$, $\{2 + d, x + d, y + d, z + d\}$, $\{a + 1\}$, $\{a + 2, a + x, a + y, a + z\}$, $\{a + a\}$, $\{a + b\}$, $\{a + c\}$, $\{a + d\}$, $\{b + 1\}$, $\{b + 2, b + x, b + y, b + z\}$, $\{b + a\}$, $\{b + b\}$, $\{b + c\}$, $\{b + d\}$, $\{c + 1\}$, $\{c + 2, c + x, c + y, c + z\}$, $\{c + a\}$, $\{c + b\}$, $\{c + c\}$, $\{c + d\}$, $\{d + 1\}$, $\{d + 2, d + x, d + y, d + z\}$, $\{d + a\}$, $\{d + b\}$, $\{d + c\}$, $\{d + d\}$, $\{t\}$, $\{1 + t\}$, $\{2 + t, x + t, y + t, z + t\}$, $\{t + 1\}$, $\{t + 2, t + x, t + y, t + z\}$, $\{t + t\}$, $\{t + a\}$, $\{t + b\}$, $\{t + c\}$, $\{t + d\}$, $\{a + t\}$, $\{b + t\}$, $\{c + t\}$, $\{d + t\}$
+
+    \item \textbf{[9] : Transfer Point $\Rightarrow$ $a = 1$}\\
+        $\{1, a\}$, $\{2, x, y, z\}$, $\{b\}$, $\{c\}$, $\{d\}$, $\{1 + 1, 1 + a, a + 1, a + a\}$, $\{1 + 2, 1 + x, 1 + y, 1 + z, a + 2, a + x, a + y, a + z\}$, $\{1 + b, a + b\}$, $\{1 + c, a + c\}$, $\{1 + d, a + d\}$, $\{2 + 1, 2 + a, x + 1, x + a, y + 1, y + a, z + 1, z + a\}$, $\{2 + 2, 2 + x, 2 + y, 2 + z, x + 2, x + x, x + y, x + z, y + 2, y + x, y + y, y + z, z + 2, z + x, z + y, z + z\}$, $\{2 + b, x + b, y + b, z + b\}$, $\{2 + c, x + c, y + c, z + c\}$, $\{2 + d, x + d, y + d, z + d\}$, $\{b + 1, b + a\}$, $\{b + 2, b + x, b + y, b + z\}$, $\{b + b\}$, $\{b + c\}$, $\{b + d\}$, $\{c + 1, c + a\}$, $\{c + 2, c + x, c + y, c + z\}$, $\{c + b\}$, $\{c + c\}$, $\{c + d\}$, $\{d + 1, d + a\}$, $\{d + 2, d + x, d + y, d + z\}$, $\{d + b\}$, $\{d + c\}$, $\{d + d\}$, $\{t\}$, $\{1 + t, a + t\}$, $\{2 + t, x + t, y + t, z + t\}$, $\{t + 1, t + a\}$, $\{t + 2, t + x, t + y, t + z\}$, $\{t + t\}$, $\{t + b\}$, $\{t + c\}$, $\{t + d\}$, $\{b + t\}$, $\{c + t\}$, $\{d + t\}$
+
+    \item \textbf{[10] : Transfer Point $\Rightarrow$ $b = a + 1$}\\
+        $\{1, a\}$, $\{2, x, y, z\}$, $\{c\}$, $\{d\}$, $\{b, 1 + 1, 1 + a, a + 1, a + a\}$, $\{1 + 2, 1 + x, 1 + y, 1 + z, a + 2, a + x, a + y, a + z\}$, $\{1 + c, a + c\}$, $\{1 + d, a + d\}$, $\{2 + 1, 2 + a, x + 1, x + a, y + 1, y + a, z + 1, z + a\}$, $\{2 + 2, 2 + x, 2 + y, 2 + z, x + 2, x + x, x + y, x + z, y + 2, y + x, y + y, y + z, z + 2, z + x, z + y, z + z\}$, $\{2 + c, x + c, y + c, z + c\}$, $\{2 + d, x + d, y + d, z + d\}$, $\{c + 1, c + a\}$, $\{c + 2, c + x, c + y, c + z\}$, $\{c + c\}$, $\{c + d\}$, $\{d + 1, d + a\}$, $\{d + 2, d + x, d + y, d + z\}$, $\{d + c\}$, $\{d + d\}$, $\{1 + b, a + b\}$, $\{2 + b, x + b, y + b, z + b\}$, $\{b + 1, b + a\}$, $\{b + 2, b + x, b + y, b + z\}$, $\{b + b\}$, $\{b + c\}$, $\{b + d\}$, $\{c + b\}$, $\{d + b\}$, $\{t\}$, $\{1 + t, a + t\}$, $\{2 + t, x + t, y + t, z + t\}$, $\{b + t\}$, $\{t + 1, t + a\}$, $\{t + 2, t + x, t + y, t + z\}$, $\{t + b\}$, $\{t + t\}$, $\{t + c\}$, $\{t + d\}$, $\{c + t\}$, $\{d + t\}$
+
+    \item \textbf{[11] : Transfer Point $\Rightarrow$ $c = b + 1$}\\
+        $\{1, a\}$, $\{2, x, y, z\}$, $\{d\}$, $\{b, 1 + 1, 1 + a, a + 1, a + a\}$, $\{1 + 2, 1 + x, 1 + y, 1 + z, a + 2, a + x, a + y, a + z\}$, $\{1 + d, a + d\}$, $\{2 + 1, 2 + a, x + 1, x + a, y + 1, y + a, z + 1, z + a\}$, $\{2 + 2, 2 + x, 2 + y, 2 + z, x + 2, x + x, x + y, x + z, y + 2, y + x, y + y, y + z, z + 2, z + x, z + y, z + z\}$, $\{2 + d, x + d, y + d, z + d\}$, $\{d + 1, d + a\}$, $\{d + 2, d + x, d + y, d + z\}$, $\{d + d\}$, $\{1 + b, a + b\}$, $\{2 + b, x + b, y + b, z + b\}$, $\{c, b + 1, b + a\}$, $\{b + 2, b + x, b + y, b + z\}$, $\{b + b\}$, $\{b + d\}$, $\{d + b\}$, $\{1 + c, a + c\}$, $\{2 + c, x + c, y + c, z + c\}$, $\{b + c\}$, $\{t, c + 1, c + a\}$, $\{c + 2, c + x, c + y, c + z\}$, $\{c + b\}$, $\{c + c\}$, $\{c + d\}$, $\{d + c\}$, $\{1 + t, a + t\}$, $\{2 + t, x + t, y + t, z + t\}$, $\{b + t\}$, $\{c + t\}$, $\{t + 1, t + a\}$, $\{t + 2, t + x, t + y, t + z\}$, $\{t + b\}$, $\{t + c\}$, $\{t + t\}$, $\{t + d\}$, $\{d + t\}$
+
+    \item \textbf{[12] : Transfer Point $\Rightarrow$ $d = c + 1$}\\
+        $\{1, a\}$, $\{2, x, y, z\}$, $\{b, 1 + 1, 1 + a, a + 1, a + a\}$, $\{1 + 2, 1 + x, 1 + y, 1 + z, a + 2, a + x, a + y, a + z\}$, $\{2 + 1, 2 + a, x + 1, x + a, y + 1, y + a, z + 1, z + a\}$, $\{2 + 2, 2 + x, 2 + y, 2 + z, x + 2, x + x, x + y, x + z, y + 2, y + x, y + y, y + z, z + 2, z + x, z + y, z + z\}$, $\{1 + b, a + b\}$, $\{2 + b, x + b, y + b, z + b\}$, $\{c, b + 1, b + a\}$, $\{b + 2, b + x, b + y, b + z\}$, $\{b + b\}$, $\{1 + c, a + c\}$, $\{2 + c, x + c, y + c, z + c\}$, $\{b + c\}$, $\{t, d, c + 1, c + a\}$, $\{c + 2, c + x, c + y, c + z\}$, $\{c + b\}$, $\{c + c\}$, $\{1 + t, 1 + d, a + t, a + d\}$, $\{2 + t, 2 + d, x + t, x + d, y + t, y + d, z + t, z + d\}$, $\{b + t, b + d\}$, $\{c + t, c + d\}$, $\{t + 1, t + a, d + 1, d + a\}$, $\{t + 2, t + x, t + y, t + z, d + 2, d + x, d + y, d + z\}$, $\{t + b, d + b\}$, $\{t + c, d + c\}$, $\{t + t, t + d, d + t, d + d\}$, 
+
+    \item \textbf{[13] : END}\\
+        $\{1, a\}$, $\{2, x, y, z\}$, $\{b, 1 + 1, 1 + a, a + 1, a + a\}$, $\{1 + 2, 1 + x, 1 + y, 1 + z, a + 2, a + x, a + y, a + z\}$, $\{2 + 1, 2 + a, x + 1, x + a, y + 1, y + a, z + 1, z + a\}$, $\{2 + 2, 2 + x, 2 + y, 2 + z, x + 2, x + x, x + y, x + z, y + 2, y + x, y + y, y + z, z + 2, z + x, z + y, z + z\}$, $\{1 + b, a + b\}$, $\{2 + b, x + b, y + b, z + b\}$, $\{c, b + 1, b + a\}$, $\{b + 2, b + x, b + y, b + z\}$, $\{b + b\}$, $\{1 + c, a + c\}$, $\{2 + c, x + c, y + c, z + c\}$, $\{b + c\}$, $\{t, d, c + 1, c + a\}$, $\{c + 2, c + x, c + y, c + z\}$, $\{c + b\}$, $\{c + c\}$, $\{1 + t, 1 + d, a + t, a + d\}$, $\{2 + t, 2 + d, x + t, x + d, y + t, y + d, z + t, z + d\}$, $\{b + t, b + d\}$, $\{c + t, c + d\}$, $\{t + 1, t + a, d + 1, d + a\}$, $\{t + 2, t + x, t + y, t + z, d + 2, d + x, d + y, d + z\}$, $\{t + b, d + b\}$, $\{t + c, d + c\}$, $\{t + t, t + d, d + t, d + d\}$
+
+\end{itemize}
+
+\section{Test Case 5}
+\label{sec:tc5}
+Here at the \textbf{END} program point, $y$ and $1$ must be equivalent but
+$x$ must not be equivalent to either of $1$ and $2$.
+
+\begin{figure}[H]
+\label{fig:tc5}
+    \centering {
+        \setlength{\fboxsep}{8pt}    
+        \fbox{\includegraphics[scale=0.47]{tc5.png}}
+    }\caption{Test Case 5}
+\end{figure}
+
+\begin{itemize}
+
+    \item \textbf{[1] : START}\\
+        $\{1\}$, $\{2\}$, $\{x\}$, $\{y\}$, $\{1 + 1\}$, $\{1 + 2\}$, $\{1 + x\}$, $\{1 + y\}$, $\{2 + 1\}$, $\{2 + 2\}$, $\{2 + x\}$, $\{2 + y\}$, $\{x + 1\}$, $\{x + 2\}$, $\{x + x\}$, $\{x + y\}$, $\{y + 1\}$, $\{y + 2\}$, $\{y + x\}$, $\{y + y\}$
+
+    \item \textbf{[2] : Transfer Point $\Rightarrow$ $x = 1$}\\
+        $\{1, x\}$, $\{2\}$, $\{y\}$, $\{1 + 1, 1 + x, x + 1, x + x\}$, $\{1 + 2, x + 2\}$, $\{1 + y, x + y\}$, $\{2 + 1, 2 + x\}$, $\{2 + 2\}$, $\{2 + y\}$, $\{y + 1, y + x\}$, $\{y + 2\}$, $\{y + y\}$
+
+    \item \textbf{[3] : Transfer Point $\Rightarrow$ $x = 2$}\\
+        $\{1\}$, $\{2, x\}$, $\{y\}$, $\{1 + 1\}$, $\{1 + 2, 1 + x\}$, $\{1 + y\}$, $\{2 + 1, x + 1\}$, $\{2 + 2, 2 + x, x + 2, x + x\}$, $\{2 + y, x + y\}$, $\{y + 1\}$, $\{y + 2, y + x\}$, $\{y + y\}$
+
+    \item \textbf{[4] : Transfer Point $\Rightarrow$ $y = 1$}\\
+        $\{1, y\}$, $\{2, x\}$, $\{1 + 1, 1 + y, y + 1, y + y\}$, $\{1 + 2, 1 + x, y + 2, y + x\}$, $\{2 + 1, 2 + y, x + 1, x + y\}$, $\{2 + 2, 2 + x, x + 2, x + x\}$
+
+    \item \textbf{[5] : Transfer Point $\Rightarrow$ $y = 1$}\\
+        $\{1, x, y\}$, $\{2\}$, $\{1 + 1, 1 + x, 1 + y, x + 1, x + x, x + y, y + 1, y + x, y + y\}$, $\{1 + 2, x + 2, y + 2\}$, $\{2 + 1, 2 + x, 2 + y\}$, $\{2 + 2\}$
+
+    \item \textbf{[6] : Confluence of $\{4, 5\}$}\\
+        $\{1, y\}$, $\{2\}$, $\{1 + 1, 1 + y, y + 1, y + y\}$, $\{1 + 2, y + 2\}$, $\{2 + 1, 2 + y\}$, $\{2 + 2\}$, $\{x\}$, $\{1 + x, y + x\}$, $\{2 + x\}$, $\{x + 1, x + y\}$, $\{x + 2\}$, $\{x + x\}$
+
+    \item \textbf{[7] : END}\\
+        $\{1, y\}$, $\{2\}$, $\{1 + 1, 1 + y, y + 1, y + y\}$, $\{1 + 2, y + 2\}$, $\{2 + 1, 2 + y\}$, $\{2 + 2\}$, $\{x\}$, $\{1 + x, y + x\}$, $\{2 + x\}$, $\{x + 1, x + y\}$, $\{x + 2\}$, $\{x + x\}$
+
+\end{itemize}
+
+\section{Test Case 6}
+\label{sec:tc3}
+Here at the \textbf{END} program point, $a$, $b$, $c$ and $d$ must be mutually
+non-equivalent and $d$ must be equivalent to $1$.
+
+\begin{figure}[H]
+\label{fig:tc6}
+    \centering {
+        \setlength{\fboxsep}{8pt}    
+        \fbox{\includegraphics[scale=0.50]{tc6.png}}
+    }\caption{Test Case 6}
+\end{figure}
+
+\begin{itemize}
+
+    \item \textbf{[1] : START}\\
+        $\{2\}$, $\{1\}$, $\{a\}$, $\{b\}$, $\{c\}$, $\{d\}$, $\{2 + 2\}$, $\{2 + 1\}$, $\{2 + a\}$, $\{2 + b\}$, $\{2 + c\}$, $\{2 + d\}$, $\{1 + 2\}$, $\{1 + 1\}$, $\{1 + a\}$, $\{1 + b\}$, $\{1 + c\}$, $\{1 + d\}$, $\{a + 2\}$, $\{a + 1\}$, $\{a + a\}$, $\{a + b\}$, $\{a + c\}$, $\{a + d\}$, $\{b + 2\}$, $\{b + 1\}$, $\{b + a\}$, $\{b + b\}$, $\{b + c\}$, $\{b + d\}$, $\{c + 2\}$, $\{c + 1\}$, $\{c + a\}$, $\{c + b\}$, $\{c + c\}$, $\{c + d\}$, $\{d + 2\}$, $\{d + 1\}$, $\{d + a\}$, $\{d + b\}$, $\{d + c\}$, $\{d + d\}$
+
+    \item \textbf{[2] : Transfer Point $\Rightarrow$ $a = 2$}\\
+        $\{2, a\}$, $\{1\}$, $\{b\}$, $\{c\}$, $\{d\}$, $\{2 + 2, 2 + a, a + 2, a + a\}$, $\{2 + 1, a + 1\}$, $\{2 + b, a + b\}$, $\{2 + c, a + c\}$, $\{2 + d, a + d\}$, $\{1 + 2, 1 + a\}$, $\{1 + 1\}$, $\{1 + b\}$, $\{1 + c\}$, $\{1 + d\}$, $\{b + 2, b + a\}$, $\{b + 1\}$, $\{b + b\}$, $\{b + c\}$, $\{b + d\}$, $\{c + 2, c + a\}$, $\{c + 1\}$, $\{c + b\}$, $\{c + c\}$, $\{c + d\}$, $\{d + 2, d + a\}$, $\{d + 1\}$, $\{d + b\}$, $\{d + c\}$, $\{d + d\}$
+
+    \item \textbf{[3] : Transfer Point $\Rightarrow$ $b = 1$}\\
+        $\{2, a\}$, $\{1, b\}$, $\{c\}$, $\{d\}$, $\{2 + 2, 2 + a, a + 2, a + a\}$, $\{2 + 1, 2 + b, a + 1, a + b\}$, $\{2 + c, a + c\}$, $\{2 + d, a + d\}$, $\{1 + 2, 1 + a, b + 2, b + a\}$, $\{1 + 1, 1 + b, b + 1, b + b\}$, $\{1 + c, b + c\}$, $\{1 + d, b + d\}$, $\{c + 2, c + a\}$, $\{c + 1, c + b\}$, $\{c + c\}$, $\{c + d\}$, $\{d + 2, d + a\}$, $\{d + 1, d + b\}$, $\{d + c\}$, $\{d + d\}$
+
+    \item \textbf{[4] : Transfer Point $\Rightarrow$ $c = 1$}\\
+        $\{2, a\}$, $\{1, b, c\}$, $\{d\}$, $\{2 + 2, 2 + a, a + 2, a + a\}$, $\{2 + 1, 2 + b, 2 + c, a + 1, a + b, a + c\}$, $\{2 + d, a + d\}$, $\{1 + 2, 1 + a, b + 2, b + a, c + 2, c + a\}$, $\{1 + 1, 1 + b, 1 + c, b + 1, b + b, b + c, c + 1, c + b, c + c\}$, $\{1 + d, b + d, c + d\}$, $\{d + 2, d + a\}$, $\{d + 1, d + b, d + c\}$, $\{d + d\}$
+
+    \item \textbf{[5] : Transfer Point $\Rightarrow$ $d = 1$}\\
+        $\{2, a\}$, $\{1, b, c, d\}$, $\{2 + 2, 2 + a, a + 2, a + a\}$, $\{2 + 1, 2 + b, 2 + c, 2 + d, a + 1, a + b, a + c, a + d\}$, $\{1 + 2, 1 + a, b + 2, b + a, c + 2, c + a, d + 2, d + a\}$, $\{1 + 1, 1 + b, 1 + c, 1 + d, b + 1, b + b, b + c, b + d, c + 1, c + b, c + c, c + d, d + 1, d + b, d + c, d + d\}$
+
+    \item \textbf{[6] : Transfer Point $\Rightarrow$ $a = 1$}\\
+        $\{2\}$, $\{1, a\}$, $\{b\}$, $\{c\}$, $\{d\}$, $\{2 + 2\}$, $\{2 + 1, 2 + a\}$, $\{2 + b\}$, $\{2 + c\}$, $\{2 + d\}$, $\{1 + 2, a + 2\}$, $\{1 + 1, 1 + a, a + 1, a + a\}$, $\{1 + b, a + b\}$, $\{1 + c, a + c\}$, $\{1 + d, a + d\}$, $\{b + 2\}$, $\{b + 1, b + a\}$, $\{b + b\}$, $\{b + c\}$, $\{b + d\}$, $\{c + 2\}$, $\{c + 1, c + a\}$, $\{c + b\}$, $\{c + c\}$, $\{c + d\}$, $\{d + 2\}$, $\{d + 1, d + a\}$, $\{d + b\}$, $\{d + c\}$, $\{d + d\}$
+
+    \item \textbf{[7] : Transfer Point $\Rightarrow$ $b = 2$}\\
+        $\{2, b\}$, $\{1, a\}$, $\{c\}$, $\{d\}$, $\{2 + 2, 2 + b, b + 2, b + b\}$, $\{2 + 1, 2 + a, b + 1, b + a\}$, $\{2 + c, b + c\}$, $\{2 + d, b + d\}$, $\{1 + 2, 1 + b, a + 2, a + b\}$, $\{1 + 1, 1 + a, a + 1, a + a\}$, $\{1 + c, a + c\}$, $\{1 + d, a + d\}$, $\{c + 2, c + b\}$, $\{c + 1, c + a\}$, $\{c + c\}$, $\{c + d\}$, $\{d + 2, d + b\}$, $\{d + 1, d + a\}$, $\{d + c\}$, $\{d + d\}$
+
+    \item \textbf{[8] : Transfer Point $\Rightarrow$ $c = 1$}\\
+        $\{2, b\}$, $\{1, a, c\}$, $\{d\}$, $\{2 + 2, 2 + b, b + 2, b + b\}$, $\{2 + 1, 2 + a, 2 + c, b + 1, b + a, b + c\}$, $\{2 + d, b + d\}$, $\{1 + 2, 1 + b, a + 2, a + b, c + 2, c + b\}$, $\{1 + 1, 1 + a, 1 + c, a + 1, a + a, a + c, c + 1, c + a, c + c\}$, $\{1 + d, a + d, c + d\}$, $\{d + 2, d + b\}$, $\{d + 1, d + a, d + c\}$, $\{d + d\}$
+
+    \item \textbf{[9] : Transfer Point $\Rightarrow$ $d = 1$}\\
+        $\{2, b\}$, $\{1, a, c, d\}$, $\{2 + 2, 2 + b, b + 2, b + b\}$, $\{2 + 1, 2 + a, 2 + c, 2 + d, b + 1, b + a, b + c, b + d\}$, $\{1 + 2, 1 + b, a + 2, a + b, c + 2, c + b, d + 2, d + b\}$, $\{1 + 1, 1 + a, 1 + c, 1 + d, a + 1, a + a, a + c, a + d, c + 1, c + a, c + c, c + d, d + 1, d + a, d + c, d + d\}$
+
+    \item \textbf{[10] : Transfer Point $\Rightarrow$ $a = 1$}\\
+        $\{2\}$, $\{1, a\}$, $\{b\}$, $\{c\}$, $\{d\}$, $\{2 + 2\}$, $\{2 + 1, 2 + a\}$, $\{2 + b\}$, $\{2 + c\}$, $\{2 + d\}$, $\{1 + 2, a + 2\}$, $\{1 + 1, 1 + a, a + 1, a + a\}$, $\{1 + b, a + b\}$, $\{1 + c, a + c\}$, $\{1 + d, a + d\}$, $\{b + 2\}$, $\{b + 1, b + a\}$, $\{b + b\}$, $\{b + c\}$, $\{b + d\}$, $\{c + 2\}$, $\{c + 1, c + a\}$, $\{c + b\}$, $\{c + c\}$, $\{c + d\}$, $\{d + 2\}$, $\{d + 1, d + a\}$, $\{d + b\}$, $\{d + c\}$, $\{d + d\}$
+
+    \item \textbf{[11] : Transfer Point $\Rightarrow$ $b = 1$}\\
+        $\{2\}$, $\{1, a, b\}$, $\{c\}$, $\{d\}$, $\{2 + 2\}$, $\{2 + 1, 2 + a, 2 + b\}$, $\{2 + c\}$, $\{2 + d\}$, $\{1 + 2, a + 2, b + 2\}$, $\{1 + 1, 1 + a, 1 + b, a + 1, a + a, a + b, b + 1, b + a, b + b\}$, $\{1 + c, a + c, b + c\}$, $\{1 + d, a + d, b + d\}$, $\{c + 2\}$, $\{c + 1, c + a, c + b\}$, $\{c + c\}$, $\{c + d\}$, $\{d + 2\}$, $\{d + 1, d + a, d + b\}$, $\{d + c\}$, $\{d + d\}$
+
+    \item \textbf{[12] : Transfer Point $\Rightarrow$ $c = 2$}\\
+        $\{2, c\}$, $\{1, a, b\}$, $\{d\}$, $\{2 + 2, 2 + c, c + 2, c + c\}$, $\{2 + 1, 2 + a, 2 + b, c + 1, c + a, c + b\}$, $\{2 + d, c + d\}$, $\{1 + 2, 1 + c, a + 2, a + c, b + 2, b + c\}$, $\{1 + 1, 1 + a, 1 + b, a + 1, a + a, a + b, b + 1, b + a, b + b\}$, $\{1 + d, a + d, b + d\}$, $\{d + 2, d + c\}$, $\{d + 1, d + a, d + b\}$, $\{d + d\}$
+
+    \item \textbf{[13] : Transfer Point $\Rightarrow$ $d = 1$}\\
+        $\{2, c\}$, $\{1, a, b, d\}$, $\{2 + 2, 2 + c, c + 2, c + c\}$, $\{2 + 1, 2 + a, 2 + b, 2 + d, c + 1, c + a, c + b, c + d\}$, $\{1 + 2, 1 + c, a + 2, a + c, b + 2, b + c, d + 2, d + c\}$, $\{1 + 1, 1 + a, 1 + b, 1 + d, a + 1, a + a, a + b, a + d, b + 1, b + a, b + b, b + d, d + 1, d + a, d + b, d + d\}$
+
+    \item \textbf{[14] : Confluence of $\{5, 9, 13\}$}\\
+        $\{2\}$, $\{1, d\}$, $\{2 + 2\}$, $\{2 + 1, 2 + d\}$, $\{1 + 2, d + 2\}$, $\{1 + 1, 1 + d, d + 1, d + d\}$, $\{a\}$, $\{b\}$, $\{c\}$, $\{2 + a\}$, $\{2 + b\}$, $\{2 + c\}$, $\{1 + a, d + a\}$, $\{1 + b, d + b\}$, $\{1 + c, d + c\}$, $\{a + 2\}$, $\{a + 1, a + d\}$, $\{a + a\}$, $\{a + b\}$, $\{a + c\}$, $\{b + 2\}$, $\{b + 1, b + d\}$, $\{b + a\}$, $\{b + b\}$, $\{b + c\}$, $\{c + 2\}$, $\{c + 1, c + d\}$, $\{c + a\}$, $\{c + b\}$, $\{c + c\}$
+
+    \item \textbf{[15] : END}\\
+        $\{2\}$, $\{1, d\}$, $\{2 + 2\}$, $\{2 + 1, 2 + d\}$, $\{1 + 2, d + 2\}$, $\{1 + 1, 1 + d, d + 1, d + d\}$, $\{a\}$, $\{b\}$, $\{c\}$, $\{2 + a\}$, $\{2 + b\}$, $\{2 + c\}$, $\{1 + a, d + a\}$, $\{1 + b, d + b\}$, $\{1 + c, d + c\}$, $\{a + 2\}$, $\{a + 1, a + d\}$, $\{a + a\}$, $\{a + b\}$, $\{a + c\}$, $\{b + 2\}$, $\{b + 1, b + d\}$, $\{b + a\}$, $\{b + b\}$, $\{b + c\}$, $\{c + 2\}$, $\{c + 1, c + d\}$, $\{c + a\}$, $\{c + b\}$, $\{c + c\}$
+
+\end{itemize}
+
+\section{Test Case 7}
+\label{sec:tc3}
+Here $x$ and $0$ must be equivalent at every program point after the assignment
+$x = 0$. Similarly, $y$ and $0$ must be equivalent after the assignment $y = 0$.
+
+\begin{figure}[H]
+\label{fig:tc7}
+    \centering {
+        \setlength{\fboxsep}{8pt}    
+        \fbox{\includegraphics[scale=0.50]{tc7.png}}
+    }\caption{Test Case 7}
+\end{figure}
+
+\begin{itemize}
+
+    \item \textbf{[1] : START}\\
+        $\{0\}$, $\{1\}$, $\{x\}$, $\{y\}$, $\{0 + 0\}$, $\{0 + 1\}$, $\{0 + x\}$, $\{0 + y\}$, $\{1 + 0\}$, $\{1 + 1\}$, $\{1 + x\}$, $\{1 + y\}$, $\{x + 0\}$, $\{x + 1\}$, $\{x + x\}$, $\{x + y\}$, $\{y + 0\}$, $\{y + 1\}$, $\{y + x\}$, $\{y + y\}$
+
+    \item \textbf{[2] : Transfer Point $\Rightarrow$ $x = 0$}\\
+        $\{0, x\}$, $\{1\}$, $\{y\}$, $\{0 + 0, 0 + x, x + 0, x + x\}$, $\{0 + 1, x + 1\}$, $\{0 + y, x + y\}$, $\{1 + 0, 1 + x\}$, $\{1 + 1\}$, $\{1 + y\}$, $\{y + 0, y + x\}$, $\{y + 1\}$, $\{y + y\}$
+
+    \item \textbf{[3] : Transfer Point $\Rightarrow$ $y = 0$}\\
+        $\{0, x, y\}$, $\{1\}$, $\{0 + 0, 0 + x, 0 + y, x + 0, x + x, x + y, y + 0, y + x, y + y\}$, $\{0 + 1, x + 1, y + 1\}$, $\{1 + 0, 1 + x, 1 + y\}$, $\{1 + 1\}$
+
+    \item \textbf{[4] : Confluence of $\{3, 5\}$}\\
+        $\{0, y\}$, $\{1\}$, $\{0 + 0, 0 + y, y + 0, y + y\}$, $\{0 + 1, y + 1\}$, $\{1 + 0, 1 + y\}$, $\{1 + 1\}$, $\{x\}$, $\{0 + x, y + x\}$, $\{1 + x\}$, $\{x + 0, x + y\}$, $\{x + 1\}$, $\{x + x\}$
+
+    \item \textbf{[5] : Transfer Point $\Rightarrow$ $x = 1$}\\
+        $\{0, y\}$, $\{1, x\}$, $\{0 + 0, 0 + y, y + 0, y + y\}$, $\{0 + 1, 0 + x, y + 1, y + x\}$, $\{1 + 0, 1 + y, x + 0, x + y\}$, $\{1 + 1, 1 + x, x + 1, x + x\}$
+
+\end{itemize}
+
+\section{Test Case 8}
+\label{sec:tc8}
+Here at the confluence point $x$, $0$ and $1$ must be mutually non-equivalent.
+
+\begin{figure}[H]
+\label{fig:tc8}
+    \centering {
+        \setlength{\fboxsep}{8pt}    
+        \fbox{\includegraphics[scale=0.50]{tc8.png}}
+    }\caption{Test Case 8}
+\end{figure}
+
+\begin{itemize}
+
+    \item \textbf{[1] : START}\\
+        $\{0\}$, $\{1\}$, $\{x\}$, $\{y\}$, $\{0 + 0\}$, $\{0 + 1\}$, $\{0 + x\}$, $\{0 + y\}$, $\{1 + 0\}$, $\{1 + 1\}$, $\{1 + x\}$, $\{1 + y\}$, $\{x + 0\}$, $\{x + 1\}$, $\{x + x\}$, $\{x + y\}$, $\{y + 0\}$, $\{y + 1\}$, $\{y + x\}$, $\{y + y\}$
+
+    \item \textbf{[2] : Transfer Point $\Rightarrow$ $x = 0$}\\
+        $\{0, x\}$, $\{1\}$, $\{y\}$, $\{0 + 0, 0 + x, x + 0, x + x\}$, $\{0 + 1, x + 1\}$, $\{0 + y, x + y\}$, $\{1 + 0, 1 + x\}$, $\{1 + 1\}$, $\{1 + y\}$, $\{y + 0, y + x\}$, $\{y + 1\}$, $\{y + y\}$
+
+    \item \textbf{[3] : Transfer Point $\Rightarrow$ $y = 0$}\\
+        $\{0, x, y\}$, $\{1\}$, $\{0 + 0, 0 + x, 0 + y, x + 0, x + x, x + y, y + 0, y + x, y + y\}$, $\{0 + 1, x + 1, y + 1\}$, $\{1 + 0, 1 + x, 1 + y\}$, $\{1 + 1\}$
+
+    \item \textbf{[4] : Confluence of $\{3, 5\}$}\\
+        $\{0, y\}$, $\{1\}$, $\{0 + 0, 0 + y, y + 0, y + y\}$, $\{0 + 1, y + 1\}$, $\{1 + 0, 1 + y\}$, $\{1 + 1\}$, $\{x\}$, $\{0 + x, y + x\}$, $\{1 + x\}$, $\{x + 0, x + y\}$, $\{x + 1\}$, $\{x + x\}$
+
+    \item \textbf{[5] : Transfer Point $\Rightarrow$ $x = 1$}\\
+        $\{0, y\}$, $\{1, x\}$, $\{0 + 0, 0 + y, y + 0, y + y\}$, $\{0 + 1, 0 + x, y + 1, y + x\}$, $\{1 + 0, 1 + y, x + 0, x + y\}$, $\{1 + 1, 1 + x, x + 1, x + x\}$
+
+\end{itemize}
+
+\section{Test Case 9}
+\label{sec:tc3}
+Here at the program point after assignment $z = x + 1$, $y$ and $z$ must be 
+equivalent.
+
+\begin{figure}[H]
+\label{fig:tc9}
+    \centering {
+        \setlength{\fboxsep}{8pt}    
+        \fbox{\includegraphics[scale=0.50]{tc9.png}}
+    }\caption{Test Case 9}
+\end{figure}
+
+\begin{itemize}
+
+    \item \textbf{[1] : START}\\
+        $\{1\}$, $\{x\}$, $\{y\}$, $\{z\}$, $\{1 + 1\}$, $\{1 + x\}$, $\{1 + y\}$, $\{1 + z\}$, $\{x + 1\}$, $\{x + x\}$, $\{x + y\}$, $\{x + z\}$, $\{y + 1\}$, $\{y + x\}$, $\{y + y\}$, $\{y + z\}$, $\{z + 1\}$, $\{z + x\}$, $\{z + y\}$, $\{z + z\}$
+
+    \item \textbf{[2] : Transfer Point $\Rightarrow$ $x = 1$}\\
+        $\{1, x\}$, $\{y\}$, $\{z\}$, $\{1 + 1, 1 + x, x + 1, x + x\}$, $\{1 + y, x + y\}$, $\{1 + z, x + z\}$, $\{y + 1, y + x\}$, $\{y + y\}$, $\{y + z\}$, $\{z + 1, z + x\}$, $\{z + y\}$, $\{z + z\}$
+
+    \item \textbf{[3] : Confluence of $\{2, 5\}$}\\
+        $\{1, x\}$, $\{1 + 1, 1 + x, x + 1, x + x\}$, $\{y\}$, $\{z\}$, $\{1 + y, x + y\}$, $\{1 + z, x + z\}$, $\{y + 1, y + x\}$, $\{y + y\}$, $\{y + z\}$, $\{z + 1, z + x\}$, $\{z + y\}$, $\{z + z\}$
+
+    \item \textbf{[4] : Transfer Point $\Rightarrow$ $y = 1 + x$}\\
+        $\{1, x\}$, $\{y, 1 + 1, 1 + x, x + 1, x + x\}$, $\{1 + y, x + y\}$, $\{y + 1, y + x\}$, $\{y + y\}$, $\{z\}$, $\{1 + z, x + z\}$, $\{z + 1, z + x\}$, $\{z + z\}$, $\{y + z\}$, $\{z + y\}$
+
+    \item \textbf{[5] : Transfer Point $\Rightarrow$ $z = x + 1$}\\
+        $\{1, x\}$, $\{y, z, 1 + 1, 1 + x, x + 1, x + x\}$, $\{1 + y, 1 + z, x + y, x + z\}$, $\{y + 1, y + x, z + 1, z + x\}$, $\{y + y, y + z, z + y, z + z\}$
+
+\end{itemize}
+
+\section{Test Case 10}
+\label{sec:tc10}
+A case that involves two intersecting loops. Such a control flow graph can result from conditional jumps to two different labels. Example - \texttt{if(x < y) goto L1 else goto L2}.
+
+\begin{figure}[H]
+\label{fig:tc10}
+    \centering {
+        \setlength{\fboxsep}{8pt}    
+        \fbox{\includegraphics[scale=0.48]{tc10.png}}
+    }\caption{Test Case 10}
+\end{figure}
+
+\begin{itemize}
+
+    \item \textbf{[1] : START}\\
+        $\{0\}$, $\{1\}$, $\{2\}$, $\{x\}$, $\{y\}$, $\{z\}$, $\{0 + 0\}$, $\{0 + 1\}$, $\{0 + 2\}$, $\{0 + x\}$, $\{0 + y\}$, $\{0 + z\}$, $\{1 + 0\}$, $\{1 + 1\}$, $\{1 + 2\}$, $\{1 + x\}$, $\{1 + y\}$, $\{1 + z\}$, $\{2 + 0\}$, $\{2 + 1\}$, $\{2 + 2\}$, $\{2 + x\}$, $\{2 + y\}$, $\{2 + z\}$, $\{x + 0\}$, $\{x + 1\}$, $\{x + 2\}$, $\{x + x\}$, $\{x + y\}$, $\{x + z\}$, $\{y + 0\}$, $\{y + 1\}$, $\{y + 2\}$, $\{y + x\}$, $\{y + y\}$, $\{y + z\}$, $\{z + 0\}$, $\{z + 1\}$, $\{z + 2\}$, $\{z + x\}$, $\{z + y\}$, $\{z + z\}$
+
+    \item \textbf{[2] : Transfer Point $\Rightarrow$ $x = 0$}\\
+        $\{0, x\}$, $\{1\}$, $\{2\}$, $\{y\}$, $\{z\}$, $\{0 + 0, 0 + x, x + 0, x + x\}$, $\{0 + 1, x + 1\}$, $\{0 + 2, x + 2\}$, $\{0 + y, x + y\}$, $\{0 + z, x + z\}$, $\{1 + 0, 1 + x\}$, $\{1 + 1\}$, $\{1 + 2\}$, $\{1 + y\}$, $\{1 + z\}$, $\{2 + 0, 2 + x\}$, $\{2 + 1\}$, $\{2 + 2\}$, $\{2 + y\}$, $\{2 + z\}$, $\{y + 0, y + x\}$, $\{y + 1\}$, $\{y + 2\}$, $\{y + y\}$, $\{y + z\}$, $\{z + 0, z + x\}$, $\{z + 1\}$, $\{z + 2\}$, $\{z + y\}$, $\{z + z\}$
+
+    \item \textbf{[3] : Confluence of $\{2, 8\}$}\\
+        $\{0\}$, $\{1\}$, $\{2\}$, $\{0 + 0\}$, $\{0 + 1\}$, $\{0 + 2\}$, $\{1 + 0\}$, $\{1 + 1\}$, $\{1 + 2\}$, $\{2 + 0\}$, $\{2 + 1\}$, $\{2 + 2\}$, $\{x\}$, $\{y\}$, $\{z\}$, $\{0 + x\}$, $\{0 + y\}$, $\{0 + z\}$, $\{1 + x\}$, $\{1 + y\}$, $\{1 + z\}$, $\{2 + x\}$, $\{2 + y\}$, $\{2 + z\}$, $\{x + 0\}$, $\{x + 1\}$, $\{x + 2\}$, $\{x + x\}$, $\{x + y\}$, $\{x + z\}$, $\{y + 0\}$, $\{y + 1\}$, $\{y + 2\}$, $\{y + x\}$, $\{y + y\}$, $\{y + z\}$, $\{z + 0\}$, $\{z + 1\}$, $\{z + 2\}$, $\{z + x\}$, $\{z + y\}$, $\{z + z\}$
+
+    \item \textbf{[4] : Transfer Point $\Rightarrow$ $x = 1$}\\
+        $\{0\}$, $\{1, x\}$, $\{2\}$, $\{0 + 0\}$, $\{0 + 1, 0 + x\}$, $\{0 + 2\}$, $\{1 + 0, x + 0\}$, $\{1 + 1, 1 + x, x + 1, x + x\}$, $\{1 + 2, x + 2\}$, $\{2 + 0\}$, $\{2 + 1, 2 + x\}$, $\{2 + 2\}$, $\{y\}$, $\{z\}$, $\{0 + y\}$, $\{0 + z\}$, $\{1 + y, x + y\}$, $\{1 + z, x + z\}$, $\{2 + y\}$, $\{2 + z\}$, $\{y + 0\}$, $\{y + 1, y + x\}$, $\{y + 2\}$, $\{y + y\}$, $\{y + z\}$, $\{z + 0\}$, $\{z + 1, z + x\}$, $\{z + 2\}$, $\{z + y\}$, $\{z + z\}$
+
+    \item \textbf{[5] : Transfer Point $\Rightarrow$ $y = 1$}\\
+        $\{0\}$, $\{1, x, y\}$, $\{2\}$, $\{0 + 0\}$, $\{0 + 1, 0 + x, 0 + y\}$, $\{0 + 2\}$, $\{1 + 0, x + 0, y + 0\}$, $\{1 + 1, 1 + x, 1 + y, x + 1, x + x, x + y, y + 1, y + x, y + y\}$, $\{1 + 2, x + 2, y + 2\}$, $\{2 + 0\}$, $\{2 + 1, 2 + x, 2 + y\}$, $\{2 + 2\}$, $\{z\}$, $\{0 + z\}$, $\{1 + z, x + z, y + z\}$, $\{2 + z\}$, $\{z + 0\}$, $\{z + 1, z + x, z + y\}$, $\{z + 2\}$, $\{z + z\}$
+
+    \item \textbf{[6] : Confluence of $\{5, 8\}$}\\
+        $\{0\}$, $\{1, x\}$, $\{2\}$, $\{0 + 0\}$, $\{0 + 1, 0 + x\}$, $\{0 + 2\}$, $\{1 + 0, x + 0\}$, $\{1 + 1, 1 + x, x + 1, x + x\}$, $\{1 + 2, x + 2\}$, $\{2 + 0\}$, $\{2 + 1, 2 + x\}$, $\{2 + 2\}$, $\{y\}$, $\{z\}$, $\{0 + y\}$, $\{0 + z\}$, $\{1 + y, x + y\}$, $\{1 + z, x + z\}$, $\{2 + y\}$, $\{2 + z\}$, $\{y + 0\}$, $\{y + 1, y + x\}$, $\{y + 2\}$, $\{y + y\}$, $\{y + z\}$, $\{z + 0\}$, $\{z + 1, z + x\}$, $\{z + 2\}$, $\{z + y\}$, $\{z + z\}$
+
+    \item \textbf{[7] : Transfer Point $\Rightarrow$ $z = 2$}\\
+        $\{0\}$, $\{1, x\}$, $\{2, z\}$, $\{0 + 0\}$, $\{0 + 1, 0 + x\}$, $\{0 + 2, 0 + z\}$, $\{1 + 0, x + 0\}$, $\{1 + 1, 1 + x, x + 1, x + x\}$, $\{1 + 2, 1 + z, x + 2, x + z\}$, $\{2 + 0, z + 0\}$, $\{2 + 1, 2 + x, z + 1, z + x\}$, $\{2 + 2, 2 + z, z + 2, z + z\}$, $\{y\}$, $\{0 + y\}$, $\{1 + y, x + y\}$, $\{2 + y, z + y\}$, $\{y + 0\}$, $\{y + 1, y + x\}$, $\{y + 2, y + z\}$, $\{y + y\}$
+
+    \item \textbf{[8] : Transfer Point $\Rightarrow$ $y = 2$}\\
+        $\{0\}$, $\{1, x\}$, $\{2, y, z\}$, $\{0 + 0\}$, $\{0 + 1, 0 + x\}$, $\{0 + 2, 0 + y, 0 + z\}$, $\{1 + 0, x + 0\}$, $\{1 + 1, 1 + x, x + 1, x + x\}$, $\{1 + 2, 1 + y, 1 + z, x + 2, x + y, x + z\}$, $\{2 + 0, y + 0, z + 0\}$, $\{2 + 1, 2 + x, y + 1, y + x, z + 1, z + x\}$, $\{2 + 2, 2 + y, 2 + z, y + 2, y + y, y + z, z + 2, z + y, z + z\}$
+
+\end{itemize}
+
+\section{Test Case 11}
+\label{sec:tc11}
+Here at the \textbf{END} program point, $x$ and $y$ must be equivalent but they 
+must not be equivalent to either of $1$ and $2$.
+
+\begin{figure}[H]
+\label{fig:tc11}
+    \centering {
+        \setlength{\fboxsep}{8pt}    
+        \fbox{\includegraphics[scale=0.48]{tc11.png}}
+    }\caption{Test Case 11}
+\end{figure}
+
+\begin{itemize}
+
+    \item \textbf{[1] : START}\\
+        $\{1\}$, $\{2\}$, $\{x\}$, $\{y\}$, $\{1 + 1\}$, $\{1 + 2\}$, $\{1 + x\}$, $\{1 + y\}$, $\{2 + 1\}$, $\{2 + 2\}$, $\{2 + x\}$, $\{2 + y\}$, $\{x + 1\}$, $\{x + 2\}$, $\{x + x\}$, $\{x + y\}$, $\{y + 1\}$, $\{y + 2\}$, $\{y + x\}$, $\{y + y\}$
+
+    \item \textbf{[2] : Transfer Point $\Rightarrow$ $x = 1$}\\
+        $\{1, x\}$, $\{2\}$, $\{y\}$, $\{1 + 1, 1 + x, x + 1, x + x\}$, $\{1 + 2, x + 2\}$, $\{1 + y, x + y\}$, $\{2 + 1, 2 + x\}$, $\{2 + 2\}$, $\{2 + y\}$, $\{y + 1, y + x\}$, $\{y + 2\}$, $\{y + y\}$
+
+    \item \textbf{[3] : Transfer Point $\Rightarrow$ $y = 2$}\\
+        $\{1, x\}$, $\{2, y\}$, $\{1 + 1, 1 + x, x + 1, x + x\}$, $\{1 + 2, 1 + y, x + 2, x + y\}$, $\{2 + 1, 2 + x, y + 1, y + x\}$, $\{2 + 2, 2 + y, y + 2, y + y\}$
+
+    \item \textbf{[4] : Transfer Point $\Rightarrow$ $y = 1$}\\
+        $\{1, x, y\}$, $\{2\}$, $\{1 + 1, 1 + x, 1 + y, x + 1, x + x, x + y, y + 1, y + x, y + y\}$, $\{1 + 2, x + 2, y + 2\}$, $\{2 + 1, 2 + x, 2 + y\}$, $\{2 + 2\}$
+
+    \item \textbf{[5] : Transfer Point $\Rightarrow$ $x = 2$}\\
+        $\{1\}$, $\{2, x, y\}$, $\{1 + 1\}$, $\{1 + 2, 1 + x, 1 + y\}$, $\{2 + 1, x + 1, y + 1\}$, $\{2 + 2, 2 + x, 2 + y, x + 2, x + x, x + y, y + 2, y + x, y + y\}$
+
+    \item \textbf{[6] : Confluence of $\{4, 5\}$}\\
+        $\{1\}$, $\{2\}$, $\{1 + 1\}$, $\{1 + 2\}$, $\{2 + 1\}$, $\{2 + 2\}$, $\{x, y\}$, $\{1 + x, 1 + y\}$, $\{2 + x, 2 + y\}$, $\{x + 1, y + 1\}$, $\{x + 2, y + 2\}$, $\{x + x, x + y, y + x, y + y\}$
+
+    \item \textbf{[7] : END}\\
+        $\{1\}$, $\{2\}$, $\{1 + 1\}$, $\{1 + 2\}$, $\{2 + 1\}$, $\{2 + 2\}$, $\{x, y\}$, $\{1 + x, 1 + y\}$, $\{2 + x, 2 + y\}$, $\{x + 1, y + 1\}$, $\{x + 2, y + 2\}$, $\{x + x, x + y, y + x, y + y\}$
+
+\end{itemize}
+
+\section{Test Case 12}
+\label{sec:tc12}
+Here even though the expressions $x$ and $y$ changes in every iteration, the 
+algorithm must terminate in finite steps.
+
+\begin{figure}[H]
+\label{fig:tc12}
+    \centering {
+        \setlength{\fboxsep}{8pt}    
+        \fbox{\includegraphics[scale=0.50]{tc12.png}}
+    }\caption{Test Case 12}
+\end{figure}
+
+\begin{itemize}
+
+    \item \textbf{[1] : START}\\
+        $\{1\}$, $\{x\}$, $\{y\}$, $\{1 + 1\}$, $\{1 + x\}$, $\{1 + y\}$, $\{x + 1\}$, $\{x + x\}$, $\{x + y\}$, $\{y + 1\}$, $\{y + x\}$, $\{y + y\}$
+
+    \item \textbf{[2] : Transfer Point $\Rightarrow$ $x = 1$}\\
+        $\{1, x\}$, $\{y\}$, $\{1 + 1, 1 + x, x + 1, x + x\}$, $\{1 + y, x + y\}$, $\{y + 1, y + x\}$, $\{y + y\}$
+
+    \item \textbf{[3] : Transfer Point $\Rightarrow$ $y = 1$}\\
+        $\{1, x, y\}$, $\{1 + 1, 1 + x, 1 + y, x + 1, x + x, x + y, y + 1, y + x, y + y\}$
+
+    \item \textbf{[4] : Confluence of $\{3, 6\}$}\\
+        $\{1\}$, $\{1 + 1\}$, $\{x, y\}$, $\{1 + x, 1 + y\}$, $\{x + 1, y + 1\}$, $\{x + x, x + y, y + x, y + y\}$
+
+    \item \textbf{[5] : Transfer Point $\Rightarrow$ $y = x + 1$}\\
+        $\{1\}$, $\{1 + 1\}$, $\{x\}$, $\{1 + x\}$, $\{y, x + 1\}$, $\{x + x\}$, $\{1 + y\}$, $\{x + y\}$, $\{y + 1\}$, $\{y + x\}$, $\{y + y\}$
+
+    \item \textbf{[6] : Transfer Point $\Rightarrow$ $x = y$}\\
+        $\{1\}$, $\{1 + 1\}$, $\{x, y\}$, $\{1 + x, 1 + y\}$, $\{x + 1, y + 1\}$, $\{x + x, x + y, y + x, y + y\}$
+
+\end{itemize}
+
+\section{Test Case 13}
+\label{sec:tc13}
+Here the value assigned to $x$ on both the branches are same, and the algorithm
+must acknowledge this fact if it takes the assigned values into account.
+
+\begin{figure}[H]
+\label{fig:tc13}
+    \centering {
+        \setlength{\fboxsep}{8pt}    
+        \fbox{\includegraphics[scale=0.50]{tc13.png}}
+    } \caption{Test Case 13}
+\end{figure}
+
+\begin{itemize}
+
+    \item \textbf{[1] : START}\\
+        $\{a\}$, $\{y\}$, $\{z\}$, $\{x\}$, $\{n\}$, $\{b\}$, $\{a + a\}$, $\{a + y\}$, $\{a + z\}$, $\{a + x\}$, $\{a + n\}$, $\{a + b\}$, $\{y + a\}$, $\{y + y\}$, $\{y + z\}$, $\{y + x\}$, $\{y + n\}$, $\{y + b\}$, $\{z + a\}$, $\{z + y\}$, $\{z + z\}$, $\{z + x\}$, $\{z + n\}$, $\{z + b\}$, $\{x + a\}$, $\{x + y\}$, $\{x + z\}$, $\{x + x\}$, $\{x + n\}$, $\{x + b\}$, $\{n + a\}$, $\{n + y\}$, $\{n + z\}$, $\{n + x\}$, $\{n + n\}$, $\{n + b\}$, $\{b + a\}$, $\{b + y\}$, $\{b + z\}$, $\{b + x\}$, $\{b + n\}$, $\{b + b\}$
+
+    \item \textbf{[2] : Transfer Point $\Rightarrow$ $a = y + z$}\\
+        $\{y\}$, $\{z\}$, $\{x\}$, $\{n\}$, $\{b\}$, $\{y + y\}$, $\{a, y + z\}$, $\{y + x\}$, $\{y + n\}$, $\{y + b\}$, $\{z + y\}$, $\{z + z\}$, $\{z + x\}$, $\{z + n\}$, $\{z + b\}$, $\{x + y\}$, $\{x + z\}$, $\{x + x\}$, $\{x + n\}$, $\{x + b\}$, $\{n + y\}$, $\{n + z\}$, $\{n + x\}$, $\{n + n\}$, $\{n + b\}$, $\{b + y\}$, $\{b + z\}$, $\{b + x\}$, $\{b + n\}$, $\{b + b\}$, $\{a + a\}$, $\{a + y\}$, $\{a + z\}$, $\{a + x\}$, $\{a + n\}$, $\{a + b\}$, $\{y + a\}$, $\{z + a\}$, $\{x + a\}$, $\{n + a\}$, $\{b + a\}$
+
+    \item \textbf{[3] : Transfer Point $\Rightarrow$ $x = a + n$}\\
+        $\{y\}$, $\{z\}$, $\{n\}$, $\{b\}$, $\{y + y\}$, $\{a, y + z\}$, $\{y + n\}$, $\{y + b\}$, $\{z + y\}$, $\{z + z\}$, $\{z + n\}$, $\{z + b\}$, $\{n + y\}$, $\{n + z\}$, $\{n + n\}$, $\{n + b\}$, $\{b + y\}$, $\{b + z\}$, $\{b + n\}$, $\{b + b\}$, $\{a + a\}$, $\{a + y\}$, $\{a + z\}$, $\{x, a + n\}$, $\{a + b\}$, $\{y + a\}$, $\{z + a\}$, $\{n + a\}$, $\{b + a\}$, $\{a + x\}$, $\{y + x\}$, $\{z + x\}$, $\{x + a\}$, $\{x + y\}$, $\{x + z\}$, $\{x + x\}$, $\{x + n\}$, $\{x + b\}$, $\{n + x\}$, $\{b + x\}$
+
+    \item \textbf{[4] : Transfer Point $\Rightarrow$ $b = y + z$}\\
+        $\{a\}$, $\{y\}$, $\{z\}$, $\{x\}$, $\{n\}$, $\{a + a\}$, $\{a + y\}$, $\{a + z\}$, $\{a + x\}$, $\{a + n\}$, $\{y + a\}$, $\{y + y\}$, $\{b, y + z\}$, $\{y + x\}$, $\{y + n\}$, $\{z + a\}$, $\{z + y\}$, $\{z + z\}$, $\{z + x\}$, $\{z + n\}$, $\{x + a\}$, $\{x + y\}$, $\{x + z\}$, $\{x + x\}$, $\{x + n\}$, $\{n + a\}$, $\{n + y\}$, $\{n + z\}$, $\{n + x\}$, $\{n + n\}$, $\{b + b\}$, $\{b + y\}$, $\{b + z\}$, $\{b + x\}$, $\{b + n\}$, $\{y + b\}$, $\{z + b\}$, $\{x + b\}$, $\{n + b\}$, $\{a + b\}$, $\{b + a\}$
+
+    \item \textbf{[5] : Transfer Point $\Rightarrow$ $x = b + n$}\\
+        $\{a\}$, $\{y\}$, $\{z\}$, $\{n\}$, $\{a + a\}$, $\{a + y\}$, $\{a + z\}$, $\{a + n\}$, $\{y + a\}$, $\{y + y\}$, $\{b, y + z\}$, $\{y + n\}$, $\{z + a\}$, $\{z + y\}$, $\{z + z\}$, $\{z + n\}$, $\{n + a\}$, $\{n + y\}$, $\{n + z\}$, $\{n + n\}$, $\{b + b\}$, $\{b + y\}$, $\{b + z\}$, $\{x, b + n\}$, $\{y + b\}$, $\{z + b\}$, $\{n + b\}$, $\{b + x\}$, $\{y + x\}$, $\{z + x\}$, $\{x + b\}$, $\{x + y\}$, $\{x + z\}$, $\{x + x\}$, $\{x + n\}$, $\{n + x\}$, $\{a + b\}$, $\{b + a\}$, $\{a + x\}$, $\{x + a\}$
+
+    \item \textbf{[6] : Confluence of $\{3, 5\}$}\\
+        $\{y\}$, $\{z\}$, $\{n\}$, $\{y + y\}$, $\{y + z\}$, $\{y + n\}$, $\{z + y\}$, $\{z + z\}$, $\{z + n\}$, $\{n + y\}$, $\{n + z\}$, $\{n + n\}$, $\{x\}$, $\{y + x\}$, $\{z + x\}$, $\{x + y\}$, $\{x + z\}$, $\{x + x\}$, $\{x + n\}$, $\{n + x\}$, $\{a\}$, $\{b\}$, $\{a + a\}$, $\{a + y\}$, $\{a + z\}$, $\{a + x\}$, $\{a + n\}$, $\{a + b\}$, $\{y + a\}$, $\{y + b\}$, $\{z + a\}$, $\{z + b\}$, $\{x + a\}$, $\{x + b\}$, $\{n + a\}$, $\{n + b\}$, $\{b + a\}$, $\{b + y\}$, $\{b + z\}$, $\{b + x\}$, $\{b + n\}$, $\{b + b\}$
+
+    \item \textbf{[7] : END}\\
+        $\{y\}$, $\{z\}$, $\{n\}$, $\{y + y\}$, $\{y + z\}$, $\{y + n\}$, $\{z + y\}$, $\{z + z\}$, $\{z + n\}$, $\{n + y\}$, $\{n + z\}$, $\{n + n\}$, $\{x\}$, $\{y + x\}$, $\{z + x\}$, $\{x + y\}$, $\{x + z\}$, $\{x + x\}$, $\{x + n\}$, $\{n + x\}$, $\{a\}$, $\{b\}$, $\{a + a\}$, $\{a + y\}$, $\{a + z\}$, $\{a + x\}$, $\{a + n\}$, $\{a + b\}$, $\{y + a\}$, $\{y + b\}$, $\{z + a\}$, $\{z + b\}$, $\{x + a\}$, $\{x + b\}$, $\{n + a\}$, $\{n + b\}$, $\{b + a\}$, $\{b + y\}$, $\{b + z\}$, $\{b + x\}$, $\{b + n\}$, $\{b + b\}$
+
+\end{itemize}
+
+\section{Test Case 14}
+\label{sec:tc14}
+Here at the \textbf{END} program point $x$ and $x_3$ must be equivalent.
+
+\begin{figure}[H]
+\label{fig:tc14}
+    \centering {
+        \setlength{\fboxsep}{8pt}    
+        \fbox{\includegraphics[scale=0.45]{tc14.png}}
+    }\caption{Test Case 14}
+\end{figure}
+
+The complete equivalence information for this test case is very long and hence only the partition at \texttt{END} point is given. Refer to \href{https://github.com/himanshu520/HerbrandEquivalence/blob/master/ToyLanguage/testcases/outputs/tc14}{GitHub} for complete results.
+\begin{itemize}
+
+    \item \textbf{[18] : END}\\
+        $\{a\}$, $\{b\}$, $\{c\}$, $\{d\}$, $\{e\}$, $\{f\}$, $\{a + a\}$, $\{t_3, a + b\}$, $\{a + c\}$, $\{a + d\}$, $\{a + e\}$, $\{a + f\}$, $\{b + a\}$, $\{b + b\}$, $\{b + c\}$, $\{b + d\}$, $\{b + e\}$, $\{b + f\}$, $\{c + a\}$, $\{c + b\}$, $\{c + c\}$, $\{u_3, c + d\}$, $\{c + e\}$, $\{c + f\}$, $\{d + a\}$, $\{d + b\}$, $\{d + c\}$, $\{d + d\}$, $\{d + e\}$, $\{d + f\}$, $\{e + a\}$, $\{e + b\}$, $\{e + c\}$, $\{e + d\}$, $\{e + e\}$, $\{e + f\}$, $\{f + a\}$, $\{f + b\}$, $\{f + c\}$, $\{f + d\}$, $\{f + e\}$, $\{f + f\}$, $\{t_3 + t_3\}$, $\{t_3 + a\}$, $\{t_3 + b\}$, $\{t_3 + c\}$, $\{t_3 + d\}$, $\{v_3, t_3 + e\}$, $\{t_3 + f\}$, $\{a + t_3\}$, $\{b + t_3\}$, $\{c + t_3\}$, $\{d + t_3\}$, $\{e + t_3\}$, $\{f + t_3\}$, $\{t_3 + u_3\}$, $\{a + u_3\}$, $\{b + u_3\}$, $\{u_3 + t_3\}$, $\{u_3 + a\}$, $\{u_3 + b\}$, $\{u_3 + u_3\}$, $\{u_3 + c\}$, $\{u_3 + d\}$, $\{u_3 + e\}$, $\{w_3, u_3 + f\}$, $\{c + u_3\}$, $\{d + u_3\}$, $\{e + u_3\}$, $\{f + u_3\}$, $\{t_3 + v_3\}$, $\{a + v_3\}$, $\{b + v_3\}$, $\{u_3 + v_3\}$, $\{c + v_3\}$, $\{d + v_3\}$, $\{v_3 + t_3\}$, $\{v_3 + a\}$, $\{v_3 + b\}$, $\{v_3 + u_3\}$, $\{v_3 + c\}$, $\{v_3 + d\}$, $\{v_3 + v_3\}$, $\{v_3 + e\}$, $\{v_3 + f\}$, $\{e + v_3\}$, $\{f + v_3\}$, $\{t_3 + w_3\}$, $\{a + w_3\}$, $\{b + w_3\}$, $\{u_3 + w_3\}$, $\{c + w_3\}$, $\{d + w_3\}$, $\{x, x_3, v_3 + w_3\}$, $\{e + w_3\}$, $\{w_3 + t_3\}$, $\{w_3 + a\}$, $\{w_3 + b\}$, $\{w_3 + u_3\}$, $\{w_3 + c\}$, $\{w_3 + d\}$, $\{w_3 + v_3\}$, $\{w_3 + e\}$, $\{w_3 + w_3\}$, $\{w_3 + f\}$, $\{f + w_3\}$, $\{t_3 + x, t_3 + x_3\}$, $\{a + x, a + x_3\}$, $\{b + x, b + x_3\}$, $\{u_3 + x, u_3 + x_3\}$, $\{c + x, c + x_3\}$, $\{d + x, d + x_3\}$, $\{v_3 + x, v_3 + x_3\}$, $\{e + x, e + x_3\}$, $\{w_3 + x, w_3 + x_3\}$, $\{f + x, f + x_3\}$, $\{x + t_3, x_3 + t_3\}$, $\{x + a, x_3 + a\}$, $\{x + b, x_3 + b\}$, $\{x + u_3, x_3 + u_3\}$, $\{x + c, x_3 + c\}$, $\{x + d, x_3 + d\}$, $\{x + v_3, x_3 + v_3\}$, $\{x + e, x_3 + e\}$, $\{x + w_3, x_3 + w_3\}$, $\{x + f, x_3 + f\}$, $\{x + x, x + x_3, x_3 + x, x_3 + x_3\}$, $\{t_1\}$, $\{u_1\}$, $\{v_1\}$, $\{w_1\}$, $\{t_2\}$, $\{u_2\}$, $\{v_2\}$, $\{w_2\}$, $\{t_1 + t_1\}$, $\{t_1 + a\}$, $\{t_1 + b\}$, $\{t_1 + u_1\}$, $\{t_1 + c\}$, $\{t_1 + d\}$, $\{t_1 + v_1\}$, $\{t_1 + e\}$, $\{t_1 + w_1\}$, $\{t_1 + f\}$, $\{t_1 + x, t_1 + x_3\}$, $\{t_1 + t_2\}$, $\{t_1 + u_2\}$, $\{t_1 + v_2\}$, $\{t_1 + w_2\}$, $\{a + t_1\}$, $\{a + u_1\}$, $\{a + v_1\}$, $\{a + w_1\}$, $\{a + t_2\}$, $\{a + u_2\}$, $\{a + v_2\}$, $\{a + w_2\}$, $\{b + t_1\}$, $\{b + u_1\}$, $\{b + v_1\}$, $\{b + w_1\}$, $\{b + t_2\}$, $\{b + u_2\}$, $\{b + v_2\}$, $\{b + w_2\}$, $\{u_1 + t_1\}$, $\{u_1 + a\}$, $\{u_1 + b\}$, $\{u_1 + u_1\}$, $\{u_1 + c\}$, $\{u_1 + d\}$, $\{u_1 + v_1\}$, $\{u_1 + e\}$, $\{u_1 + w_1\}$, $\{u_1 + f\}$, $\{u_1 + x, u_1 + x_3\}$, $\{u_1 + t_2\}$, $\{u_1 + u_2\}$, $\{u_1 + v_2\}$, $\{u_1 + w_2\}$, $\{c + t_1\}$, $\{c + u_1\}$, $\{c + v_1\}$, $\{c + w_1\}$, $\{c + t_2\}$, $\{c + u_2\}$, $\{c + v_2\}$, $\{c + w_2\}$, $\{d + t_1\}$, $\{d + u_1\}$, $\{d + v_1\}$, $\{d + w_1\}$, $\{d + t_2\}$, $\{d + u_2\}$, $\{d + v_2\}$, $\{d + w_2\}$, $\{v_1 + t_1\}$, $\{v_1 + a\}$, $\{v_1 + b\}$, $\{v_1 + u_1\}$, $\{v_1 + c\}$, $\{v_1 + d\}$, $\{v_1 + v_1\}$, $\{v_1 + e\}$, $\{v_1 + w_1\}$, $\{v_1 + f\}$, $\{v_1 + x, v_1 + x_3\}$, $\{v_1 + t_2\}$, $\{v_1 + u_2\}$, $\{v_1 + v_2\}$, $\{v_1 + w_2\}$, $\{e + t_1\}$, $\{e + u_1\}$, $\{e + v_1\}$, $\{e + w_1\}$, $\{e + t_2\}$, $\{e + u_2\}$, $\{e + v_2\}$, $\{e + w_2\}$, $\{w_1 + t_1\}$, $\{w_1 + a\}$, $\{w_1 + b\}$, $\{w_1 + u_1\}$, $\{w_1 + c\}$, $\{w_1 + d\}$, $\{w_1 + v_1\}$, $\{w_1 + e\}$, $\{w_1 + w_1\}$, $\{w_1 + f\}$, $\{w_1 + x, w_1 + x_3\}$, $\{w_1 + t_2\}$, $\{w_1 + u_2\}$, $\{w_1 + v_2\}$, $\{w_1 + w_2\}$, $\{f + t_1\}$, $\{f + u_1\}$, $\{f + v_1\}$, $\{f + w_1\}$, $\{f + t_2\}$, $\{f + u_2\}$, $\{f + v_2\}$, $\{f + w_2\}$, $\{x + t_1, x_3 + t_1\}$, $\{x + u_1, x_3 + u_1\}$, $\{x + v_1, x_3 + v_1\}$, $\{x + w_1, x_3 + w_1\}$, $\{x + t_2, x_3 + t_2\}$, $\{x + u_2, x_3 + u_2\}$, $\{x + v_2, x_3 + v_2\}$, $\{x + w_2, x_3 + w_2\}$, $\{t_2 + t_1\}$, $\{t_2 + a\}$, $\{t_2 + b\}$, $\{t_2 + u_1\}$, $\{t_2 + c\}$, $\{t_2 + d\}$, $\{t_2 + v_1\}$, $\{t_2 + e\}$, $\{t_2 + w_1\}$, $\{t_2 + f\}$, $\{t_2 + x, t_2 + x_3\}$, $\{t_2 + t_2\}$, $\{t_2 + u_2\}$, $\{t_2 + v_2\}$, $\{t_2 + w_2\}$, $\{u_2 + t_1\}$, $\{u_2 + a\}$, $\{u_2 + b\}$, $\{u_2 + u_1\}$, $\{u_2 + c\}$, $\{u_2 + d\}$, $\{u_2 + v_1\}$, $\{u_2 + e\}$, $\{u_2 + w_1\}$, $\{u_2 + f\}$, $\{u_2 + x, u_2 + x_3\}$, $\{u_2 + t_2\}$, $\{u_2 + u_2\}$, $\{u_2 + v_2\}$, $\{u_2 + w_2\}$, $\{v_2 + t_1\}$, $\{v_2 + a\}$, $\{v_2 + b\}$, $\{v_2 + u_1\}$, $\{v_2 + c\}$, $\{v_2 + d\}$, $\{v_2 + v_1\}$, $\{v_2 + e\}$, $\{v_2 + w_1\}$, $\{v_2 + f\}$, $\{v_2 + x, v_2 + x_3\}$, $\{v_2 + t_2\}$, $\{v_2 + u_2\}$, $\{v_2 + v_2\}$, $\{v_2 + w_2\}$, $\{w_2 + t_1\}$, $\{w_2 + a\}$, $\{w_2 + b\}$, $\{w_2 + u_1\}$, $\{w_2 + c\}$, $\{w_2 + d\}$, $\{w_2 + v_1\}$, $\{w_2 + e\}$, $\{w_2 + w_1\}$, $\{w_2 + f\}$, $\{w_2 + x, w_2 + x_3\}$, $\{w_2 + t_2\}$, $\{w_2 + u_2\}$, $\{w_2 + v_2\}$, $\{w_2 + w_2\}$, $\{t_1 + t_3\}$, $\{u_1 + t_3\}$, $\{v_1 + t_3\}$, $\{w_1 + t_3\}$, $\{t_2 + t_3\}$, $\{u_2 + t_3\}$, $\{v_2 + t_3\}$, $\{w_2 + t_3\}$, $\{t_3 + t_1\}$, $\{t_3 + u_1\}$, $\{t_3 + v_1\}$, $\{t_3 + w_1\}$, $\{t_3 + t_2\}$, $\{t_3 + u_2\}$, $\{t_3 + v_2\}$, $\{t_3 + w_2\}$, $\{t_1 + u_3\}$, $\{u_1 + u_3\}$, $\{v_1 + u_3\}$, $\{w_1 + u_3\}$, $\{t_2 + u_3\}$, $\{u_2 + u_3\}$, $\{v_2 + u_3\}$, $\{w_2 + u_3\}$, $\{u_3 + t_1\}$, $\{u_3 + u_1\}$, $\{u_3 + v_1\}$, $\{u_3 + w_1\}$, $\{u_3 + t_2\}$, $\{u_3 + u_2\}$, $\{u_3 + v_2\}$, $\{u_3 + w_2\}$, $\{t_1 + v_3\}$, $\{u_1 + v_3\}$, $\{v_1 + v_3\}$, $\{w_1 + v_3\}$, $\{t_2 + v_3\}$, $\{u_2 + v_3\}$, $\{v_2 + v_3\}$, $\{w_2 + v_3\}$, $\{v_3 + t_1\}$, $\{v_3 + u_1\}$, $\{v_3 + v_1\}$, $\{v_3 + w_1\}$, $\{v_3 + t_2\}$, $\{v_3 + u_2\}$, $\{v_3 + v_2\}$, $\{v_3 + w_2\}$, $\{t_1 + w_3\}$, $\{u_1 + w_3\}$, $\{v_1 + w_3\}$, $\{w_1 + w_3\}$, $\{t_2 + w_3\}$, $\{u_2 + w_3\}$, $\{v_2 + w_3\}$, $\{w_2 + w_3\}$, $\{w_3 + t_1\}$, $\{w_3 + u_1\}$, $\{w_3 + v_1\}$, $\{w_3 + w_1\}$, $\{w_3 + t_2\}$, $\{w_3 + u_2\}$, $\{w_3 + v_2\}$, $\{w_3 + w_2\}$
+
+\end{itemize}
+
+\section{Test Case 15}
+\label{sec:tc15}
+Here at the \textbf{END} program point $y$ and $x + 2$ must be equivalent.
+
+\begin{figure}[H]
+\label{fig:tc15}
+    \centering {
+        \setlength{\fboxsep}{8pt}    
+        \fbox{\includegraphics[scale=0.45]{tc15.png}}
+    }\caption{Test Case 15}
+\end{figure}
+
+\begin{itemize}
+
+    \item \textbf{[1] : START}\\
+        $\{1\}$, $\{2\}$, $\{x\}$, $\{y\}$, $\{z\}$, $\{1 + 1\}$, $\{1 + 2\}$, $\{1 + x\}$, $\{1 + y\}$, $\{1 + z\}$, $\{2 + 1\}$, $\{2 + 2\}$, $\{2 + x\}$, $\{2 + y\}$, $\{2 + z\}$, $\{x + 1\}$, $\{x + 2\}$, $\{x + x\}$, $\{x + y\}$, $\{x + z\}$, $\{y + 1\}$, $\{y + 2\}$, $\{y + x\}$, $\{y + y\}$, $\{y + z\}$, $\{z + 1\}$, $\{z + 2\}$, $\{z + x\}$, $\{z + y\}$, $\{z + z\}$
+
+    \item \textbf{[2] : Transfer Point $\Rightarrow$ $x = 1$}\\
+        $\{1, x\}$, $\{2\}$, $\{y\}$, $\{z\}$, $\{1 + 1, 1 + x, x + 1, x + x\}$, $\{1 + 2, x + 2\}$, $\{1 + y, x + y\}$, $\{1 + z, x + z\}$, $\{2 + 1, 2 + x\}$, $\{2 + 2\}$, $\{2 + y\}$, $\{2 + z\}$, $\{y + 1, y + x\}$, $\{y + 2\}$, $\{y + y\}$, $\{y + z\}$, $\{z + 1, z + x\}$, $\{z + 2\}$, $\{z + y\}$, $\{z + z\}$
+
+    \item \textbf{[3] : Transfer Point $\Rightarrow$ $y = x + 2$}\\
+        $\{1, x\}$, $\{2\}$, $\{z\}$, $\{1 + 1, 1 + x, x + 1, x + x\}$, $\{y, 1 + 2, x + 2\}$, $\{1 + z, x + z\}$, $\{2 + 1, 2 + x\}$, $\{2 + 2\}$, $\{2 + z\}$, $\{z + 1, z + x\}$, $\{z + 2\}$, $\{z + z\}$, $\{1 + y, x + y\}$, $\{2 + y\}$, $\{y + 1, y + x\}$, $\{y + 2\}$, $\{y + y\}$, $\{y + z\}$, $\{z + y\}$
+
+    \item \textbf{[4] : Transfer Point $\Rightarrow$ $z = 1$}\\
+        $\{1, x, z\}$, $\{2\}$, $\{1 + 1, 1 + x, 1 + z, x + 1, x + x, x + z, z + 1, z + x, z + z\}$, $\{y, 1 + 2, x + 2, z + 2\}$, $\{2 + 1, 2 + x, 2 + z\}$, $\{2 + 2\}$, $\{1 + y, x + y, z + y\}$, $\{2 + y\}$, $\{y + 1, y + x, y + z\}$, $\{y + 2\}$, $\{y + y\}$
+
+    \item \textbf{[5] : Transfer Point $\Rightarrow$ $z = 2$}\\
+        $\{1, x\}$, $\{2, z\}$, $\{1 + 1, 1 + x, x + 1, x + x\}$, $\{y, 1 + 2, 1 + z, x + 2, x + z\}$, $\{2 + 1, 2 + x, z + 1, z + x\}$, $\{2 + 2, 2 + z, z + 2, z + z\}$, $\{1 + y, x + y\}$, $\{2 + y, z + y\}$, $\{y + 1, y + x\}$, $\{y + 2, y + z\}$, $\{y + y\}$
+
+    \item \textbf{[6] : Confluence of $\{4, 5\}$}\\
+        $\{1, x\}$, $\{2\}$, $\{1 + 1, 1 + x, x + 1, x + x\}$, $\{y, 1 + 2, x + 2\}$, $\{2 + 1, 2 + x\}$, $\{2 + 2\}$, $\{1 + y, x + y\}$, $\{2 + y\}$, $\{y + 1, y + x\}$, $\{y + 2\}$, $\{y + y\}$, $\{z\}$, $\{1 + z, x + z\}$, $\{2 + z\}$, $\{y + z\}$, $\{z + 1, z + x\}$, $\{z + 2\}$, $\{z + y\}$, $\{z + z\}$\\
+    \\
+    \item \textbf{[7] : END}\\
+        $\{1, x\}$, $\{2\}$, $\{1 + 1, 1 + x, x + 1, x + x\}$, $\{y, 1 + 2, x + 2\}$, $\{2 + 1, 2 + x\}$, $\{2 + 2\}$, $\{1 + y, x + y\}$, $\{2 + y\}$, $\{y + 1, y + x\}$, $\{y + 2\}$, $\{y + y\}$, $\{z\}$, $\{1 + z, x + z\}$, $\{2 + z\}$, $\{y + z\}$, $\{z + 1, z + x\}$, $\{z + 2\}$, $\{z + y\}$, $\{z + z\}$
+
+\end{itemize}

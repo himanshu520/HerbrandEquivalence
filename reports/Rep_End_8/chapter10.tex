@@ -1,0 +1,25 @@
+\chapter{Conclusion}
+\label{chap:chapter10}
+Detection of equivalent expressions in a program can be used in multiply ways - compilers can use it for program optimisations involving redundant expression elimination, dead code elimination etc.; in program verification and plagiarism detection tools etc. So Herbrand equivalence being a form of equivalent expression analysis has a huge importance both from theoretical as well as practical point of view.
+
+\section{Summary of Work Done}
+\label{sec:SummaryOfWorkDone}
+\begin{itemize}
+    \item Pointed out few errors in the original alogrithm proposed by Babu et al. 
+    \cite{Babu} and refined it making it more efficient than the original
+    version (see \autoref{sec:UpdatesOverOriginalAlgorithm}). The new updated
+    algorithm is given in \autoref{chap:chapter4}.
+    \item Completed LLVM implementation (see \autoref{chap:chapter7}) and the code for the same can be found on \href{https://github.com/himanshu520/HerbrandEquivalence/tree/master/LLVM}{GitHub}.
+    Benchmarking was skipped as it is not feasible (see \autoref{sec:Benchmarking}).
+    \item In addition to LLVM implementation an additional implementation for
+    a toy language is done (see \autoref{chap:chapter8}) and its code can also 
+    be found on \href{https://github.com/himanshu520/HerbrandEquivalence/tree/master/ToyLanguage}{GitHub}.
+    \item An attempt for proving the algorithm (see \autoref{chap:chapter9}) 
+    was made but it failed because counterexample to a hypothesis was found that was supposed to be used later in the final proof
+    (see \autoref{subsec:Hypothesis}). However an informal proof of why the 
+    algorithm should work is given in \autoref{sec:WhyTheAlgorithmWorks}, 
+    for special case when the input program has no loops.
+\end{itemize}
+
+\section{Future Scope}
+Though the algorithm gives correct results for the test cases on which it was tried, work for complete formal proof of its correctness is still ongoing. The algorithm is already efficient being polynomial in time with respect to the program size; so once the correctness is proven it can easily be employed for different applications mentioned earlier.

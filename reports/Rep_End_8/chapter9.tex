@@ -1,0 +1,71 @@
+\chapter{Proof Attempt}
+\label{chap:chapter9}
+
+\autoref{sec:AugmentedProgramApproach} contains details of the attempt made to prove the correctness of the algorithm - reason for the mentioned approach, claims made and reasons for its failure. \autoref{sec:WhyTheAlgorithmWorks} informally shows why the algorithm should work for the special case when the input program has no loops.
+
+\section{Augmented Program Approach}
+\label{sec:AugmentedProgramApproach}
+Let $\mathcal{X}$ and $\mathcal{I}$ be the set of variables and instructions in the program respectively. Also, let $\mathcal{T}$ and $V$ be the set of terms and program points; and $\mathcal{D}(V, \mathcal{F})$ be the corresponding data flow framework. Let $\mathcal{W} \subseteq \mathcal{T}$ be the corresponding set of terms of length atmost two (in terms of number of operands).
+
+The basic motive behind this approach was to prevent the disappearance of some equivalence classes in between the program due to reassignment to variables (see \autoref{sec:tc4} for an example). The classes disappear because there exists no expression in our working set $\mathcal{W}$ that belongs to that class however that class still contains expressions outside $\mathcal{W}$.
+
+\subsection{Augmented Program}
+\label{subsec:AugmentedProgram}
+
+Every instruction in the original program is extended to a \textbf{bundle} of instructions - for each instruction $i \in \mathcal{I}$, add immediately after it dummy instructions of the form $x_i \gets x, \forall x \in \mathcal{X}$. This new program with dummy instructions is called the \textbf{augmented program} and the new variables introduced are called \textbf{shadow variables}.
+\\
+Let $\overline{\mathcal{X}}$, $\overline{\mathcal{I}}$, $\overline{\mathcal{T}}$ and $\overline{V}$ be the corresponding sets of variables, instructions, terms and program points respectively; and $\overline{\mathcal{D}}(\overline{V}, \overline{\mathcal{F}})$ be the corresponding data flow framework. Also $\overline{\mathcal{W}} \subseteq \overline{\mathcal{T}}$ be the corresponding set of terms restricted to length atmost two.
+
+\subsection{Idea}
+\label{subsec:Idea}
+Let $\mathcal{L}$ and $\overline{\mathcal{L}}$ be the infinite lattices associated with the original and augmented programs respectively. These are same as $\overline{\mathcal{G}(\mathcal{T})}$ described in \autoref{sec:CongruenceRelation}, for the original and augmented programs.
+\\
+Given a partition $\mathcal{P}$, define 
+$$\Phi_W(\mathcal{P}) = \{A_i \cap W \mid A_i \in \mathcal{P} \ \mathrm{and} \ (A_i \cap W) \neq \phi\}$$
+Let $\Phi_W$ be generalised so that when applied to set of partitions $\mathcal{S}$,
+$$\Phi_W(\mathcal{S}) = \{\Phi_W(\mathcal{P}) \mid \mathcal{P} \in \mathcal{S}\}$$
+It is clear that $\mathcal{L} = \Phi_{\mathcal{T}}(\overline{\mathcal{L}})$. Let $\mathcal{L}_{\mathcal{W}} = \Phi_{\mathcal{W}}(\mathcal{L})$ and $\overline{\mathcal{L}}_{\overline{\mathcal{W}}} = \Phi_{\overline{\mathcal{W}}}(\overline{\mathcal{L}})$ be the finite lattices associated with the original and augmented lattices respectively.
+\\
+Let $f_{\mathcal{D}}$ and $\overline{f}_{\overline{\mathcal{D}}}$ be be the composite transfer function associated $\mathcal{L}$ and $\overline{\mathcal{L}}$ respectively, as defined in \autoref{chap:chapter3}. The Hebrand congruence functions are given by 
+$$\mathcal{H}_{\mathcal{D}} = \bigwedge \{\top, f_{\mathcal{D}}(\top), f_{\mathcal{D}}^2(\top), ...\}\ \mathrm{and}\ \overline{\mathcal{H}}_{\overline{\mathcal{D}}} = \bigwedge \{\overline{\top}, \overline{f}_{\overline{\mathcal{D}}}(\overline{\top}), \overline{f}_{\overline{\mathcal{D}}}^2(\overline{\top}), ...\}$$
+for the original and augmented lattice. Here, $\top$ and $\overline{\top}$ stands for top element in the product lattices corresponding to $\mathcal{L}$ and $\overline{\mathcal{L}}$ respectively.
+
+\subsubsection{Observations}
+\label{subsubsec:Observations}
+\begin{itemize}
+    \item $\Phi_{\mathcal{W}}(\mathcal{H}_{\mathcal{D}}) = \Phi_{\mathcal{W}}(\overline{\mathcal{H}}_{\overline{\mathcal{D}}})$
+    \item $\Phi_{\mathcal{W}}(\Phi_{\overline{\mathcal{W}}}(\overline{\mathcal{H}}_{\overline{\mathcal{D}}})) = \Phi_{\mathcal{W}}(\mathcal{H}_{\mathcal{D}})$
+\end{itemize}
+
+\subsubsection{Claim}
+\label{subsubsec:Claim}
+$$\Phi_{\overline{W}}(\overline{\mathcal{H}}_{\overline{\mathcal{D}}}) =\text{ Maximum fix point of transfer function } \overline{f}_{\overline{\mathcal{W}}} \text{ on } \overline{\mathcal{L}}_{\overline{\mathcal{W}}}$$
+The right hand side can computed efficiently using the algorithms in \autoref{chap:chapter4}, on the augmented program.
+
+\subsection{Hypothesis}
+\label{subsec:Hypothesis}
+Following hypothesis was proposed which was supposed to be used later to prove the claim - suppose at program point $v \in V$ in the original program, variable $x \cong t$ (where $\mid t \mid\ \geq 2$) in our original infinite lattice $\mathcal{L}$, then at the output of the bundle corresponding to program point $v$ in the augmented program, there exists $t'$ in augmented finite lattice $\overline{\mathcal{L}}_{\overline{\mathcal{W}}}$ with $\mid t' \mid\ = 2$ which is equivalent to $x$ and consists only of constants and shadow variables.
+\\
+However, a counter example to the hypothesis was discovered while attempting the proof for the hypothesis. Consider test case in \autoref{sec:tc13} - at the confluence point (program point 6), in the original infinite lattice $x$ and $((y + z) + n)$ are equivalent; but in the augmented finite lattice no two length expression consisting of only shadow variables and constants that is equivalent to $x$.
+
+\section{Why the Algorithm Works}
+\label{sec:WhyTheAlgorithmWorks}
+Instead of a general case, consider the ones in which the program has no loops. In such cases the control flow graph (CFG) is a directed acyclic graph (DAG). And if the algorithm processes CFG nodes in the topological order, it converges in the first iteration itself.
+
+The \texttt{Parent} map captures the syntactic information present in the expressions in the form of an ordered tree. Each node in the tree is assigned a unique set identifier and represents some syntactically equivalent expressions. Suppose a node has set identifier $x$ and \texttt{Partitions[v][e]} is $x$ - it means that at program point $v$, expression $e$ has same syntactic value (across all program paths from the start) as represented by the node. A node captures this syntactic information in the form of its two ordered childrens and an operator - which is precisely the information stored the \texttt{Parent} map. Leaf nodes represents atomic values - a constant, non-deterministic or variable (variable in terms of different values along different execution paths) value. These properties implies that two expressions that are assigned the same set identifier at a program point are Herbrand equivalent at that point, which shows the correctness of the algorithm.
+
+Now induction can be used to show that the algorithm actually maintains the properties mentioned in the last paragraph when it processes the nodes in the topological order.
+\\
+At the \texttt{START} point all the expressions in $\mathcal{W}$ are inequivalent to each other. And the algorithm also assigns different set identifiers to elements of $\mathcal{W}$. Also, for all $x_1 + x_2 \in (\mathcal{W} \setminus (\mathcal{C} \cup \mathcal{X}))$, \texttt{Parent[\{+, Partitions[START][$x_1$], Partitions[START][$x_2$]\}]} is assigned \texttt{Partitions[START][$x_1 + x_2$]}. So the properties hold at \texttt{START} point.
+
+Now the properties will be shown to hold for program point $v$, assuming that they hold at all points which occur before $v$ in the topological order - in particular they hold for all $u \in \texttt{Predecessors[v]}$.
+\begin{itemize}
+    \item \textbf{$v$ is a transfer point}\\
+    Suppose $v$ represents the assignment $x = e$ and $u$ is its predecessor. With respect to $u$, the only expressions changing values are the ones which contain $x$. So \texttt{Partitions[u]} is copied to \texttt{Partitions[v]} and $x$ is assigned the set identifier of $e$ because they now have equal values.\\
+    Now consider all expressions of the form $a + b$ which contains $x$. If \texttt{Parent[\{+, Partitions[v][a], Partitions[v][b]\}]} is defined it means that there already exists a node that represents expressions syntactically equivalent to the value of $a + b$ at the current point. So \texttt{Partitions[v][a + b]} should be assigned the same set identifier. However, if no such node exists a new one needs to be created and is to be assigned to \texttt{Parent[\{+, Partitions[v][a], Partitions[v][b]\}]} as well as to \texttt{Partitions[v][a + b]} to maintain the properties. This is consistent with what the algorithm actually does.
+
+    \item \textbf{$v$ is a confluence point}\\
+    If $e \in \mathcal{W}$ has same set identifiers for all $u \in \texttt{Predecessors[v]}$, it means that it has same syntactic value at all its predecssors and hence even at the confluence point - so it must be assigned the same set identifier (as that of the predecessors) even at $v$ to maintain the properties.\\
+    However, if $e \in \mathcal{W}$ has different identifiers at the predecessors then not all the values at the predecessor points are syntactically equivalent - for this case we require a new leaf node (because of variable values at predecessors). So we must find expressions which are equivalent to $e$ at all the predecessors - and assign a new set identifier (new leaf node) for them to maintain the properties.\\
+    These both cases are consistent with the algorithm.
+\end{itemize}

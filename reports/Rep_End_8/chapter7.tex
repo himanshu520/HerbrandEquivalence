@@ -1,0 +1,111 @@
+\chapter{LLVM Implementation of the Algorithm}
+\label{chap:chapter7}
+
+This chapter provides details of implementation of the Herbrand equivalence 
+algorithm for Clang/LLVM compiler framework. The actual implementation along 
+with other details like how to run and how to interpret the output etc. can be 
+found on \href{https://github.com/himanshu520/HerbrandEquivalence/tree/master/LLVM}{GitHub} 
+and for extensive documentation refer to \href{https://himanshu520.github.io/HerbrandEquivalenceLLVMDocs/}{LLVMDocs}.
+
+\section{LLVM Intermediate Representation (IR)}
+\label{sec:LLVMIntermediateRepresentation}
+
+Performing analysis and optimizations on a high level language code is very 
+difficult. So compilers first convert the high level code to some intermediate 
+representation. An IR is designed to be closer to assembly language yet 
+independent of the target machine. It is designed such that the analysis and 
+optimizations can be performed more conviniently compared to doing the same on 
+the high level language. IRs are usually abstract internal representations 
+rather than actual language.
+
+LLVM IR is the intermediate form used by LLVM. Rather than just being an abstract
+internal representation, LLVM is a complete language on its own. It even provides 
+human-readable assembly format for the IR. To get readable IR corresponding to 
+file \textit{hello.c}, run \texttt{'clang-8 -emit-llvm -S hello.c -o hello.ll'}. 
+The IR file can also be directly executed as \texttt{'lli hello.ll'}.
+
+Apart from already existing optimizations in LLVM, one can write their own 
+optimizations/analysis programs called \textbf{LLVM passes}. This chapter 
+discusses the details of the pass written to perform Herbrand equivalence 
+analysis. A brief tutorial on writing a basic pass is already covered in 
+\autoref{sec:WorkingWithClangLlvm}.
+
+\subsection{Basics of LLVM IR}
+\label{subsec:BasicsOfLlvmIr}
+\begin{itemize} \tightlist
+    \item The temporaries and labels in LLVM IR has no name; however in \textit{*.ll} files they are named as \texttt{\%0, \%1, \%2, ...}. But for reference names can be assigned to them.
+    \item All the local variables in a function are allocated space on the stack using \texttt{alloca} instruction in the beginning of the function itself. Pointers to these locations are assigned to temporaries in order to allow access to them.
+    \item Each time a value is assigned to be a local variable, it is updated immediately on the stack using its corresponding temporary with \texttt{store} instruction. Similarly each time a variable's value is to be accessed, it is loaded into a new temporary using \texttt{load} instruction.
+    \item The result of every computation is stored in a new temporary and these temporaries can be assigned values only once. The values assigned to actual program variables (stored on stack) can be changed indirectly through their pointers; but the temporaries actually holding the pointers are also not reassignable.
+    \item Example - Consider the instruction \texttt{x = y + z} and suppose that \texttt{\%0, \%1, \%2} holds the stack locations allocated to \texttt{x, y, z} respectively. This single instruction would correspond to four instructions in the IR. First load the values of \texttt{y} and \texttt{z} in new temporaries \texttt{\%3} and \texttt{\%4}; \texttt{\%5} is assigned \texttt{\%3 + \%4} and finally the value in \texttt{\%5} is stored in location pointed by \texttt{\%0}.
+    \item Constants and temporaries are of type \texttt{Value} in LLVM and they can be accessed through pointers (of type \texttt{Value*}). Instructions are of type \texttt{Instruction} which itself is derived from class \texttt{Value}. Functions have type \texttt{Function}.
+\end{itemize}
+
+\paragraph{NOTES} 
+\begin{itemize}
+    \item In the implementation, for stack variables - the temporaries storing their addresses have been taken to represent the actual variables themselves. This way from the implementation point of view, such temporaries can change their values.
+    \item The temporaries in the output are named as \texttt{T1, T2, ...}
+\end{itemize}
+
+\section{\texttt{Herbrand Equivalence Pass}}
+\label{sec:HerbrandEquivalencePass}
+
+\subsection{Data Structures}
+\label{subsec:DataStructuresLLVM}
+\begin{itemize} \tightlist
+    \item \texttt{ExpressionTy} - \texttt{std::tuple<char, Value*, Value*>} to represent an expression.
+    \item \texttt{CfgNodeTy} - Represents a control flow graph node and has following data members -
+        \begin{itemize}
+            \item \texttt{NodeTy} - \texttt{Enum} to denote the kind of node - \texttt{START}, \texttt{END}, \texttt{TRANSFER}, \texttt{CONFLUENCE}.
+            \item \texttt{instPtr} - \texttt{Instruction*} pointing to the instruction that defines the transfer function if the node corresponds to a transfer point.
+            \item \texttt{predecessors} - \texttt{std::vector<int>} containing indexes of predecessor control flow graph nodes (see \texttt{CFG}).
+        \end{itemize}
+\end{itemize}
+
+\subsection{Global Variables}
+\label{subsec:GlobalVariablesLLVM}
+\begin{itemize} \tightlist
+    \item \texttt{Constants} - \texttt{std::set<Value*>} storing the constants used in the program.
+    \item \texttt{Variables} - \texttt{std::set<Value*>} storing the variables used in the program.
+    \item \texttt{Ops} - \texttt{std::set<char>} storing the operands appearing in the programs on which the pass is run.
+    \item \texttt{IndexExp} - \texttt{std::map<ExpressionTy, int>} to map program expressions of length atmost two to integers for indexing purpose.
+    \item \texttt{SetCnt} - Next set identifier to be used.
+    \item \texttt{Partitions} - \texttt{std::vector<std::vector<int>>} to keep track of partition at each program point. \texttt{Partitions[v][n]} stores the set identifier each expression \texttt{e} such that \texttt{IndexExp[e]} is \texttt{n}, at program point represented by \texttt{CFG[v]}. Also, \texttt{Partitions[v]} is the \textbf{partition vector} representing the partition at program point \texttt{CFG[v]} (see \texttt{CFG}).
+    \item \texttt{Parent} - \texttt{std::map<std::tuple<char, int, int>, int>} to store parent set identfiers.
+    \item \texttt{CFG} - \texttt{std::vector<CfgNodeTy>} to store program control flow graph.
+    \item \texttt{CfgIndex} - \texttt{std::map<Instruction*, int>} to store the index of control flow graph node corresponding to instructions in the program, for which they define the transfer function (see \texttt{CFG}).
+\end{itemize}
+\textbf{NOTE} - For more details on \texttt{SetCnt}, \texttt{Partitions} and \texttt{Parent} refer to \autoref{sec:NotationPseudocode}.
+
+\subsection{Functions}
+\label{subsec:FunctionsLLVM}
+\begin{itemize} \tightlist
+    \item \texttt{assignNames(F)} - Assign names to basic blocks and  temporaries in function \texttt{F} for easy reference.
+    \item \texttt{assignIndex(F)} - First iterates over instructions in function \texttt{F} to update \texttt{Constants} and \texttt{Variables}. Then updates \texttt{IndexExp} assigning integer indexes to expressions (of length atmost two) arbitrarily at the beginning of the analysis, for indexing purpose.
+    \item \texttt{createCFG(F)} - Creates control flow graph corresponding to function \texttt{F} by updating \texttt{CFG}.
+    \item \texttt{printValue(v)} - Function to print a constant or a variable (of type \texttt{Value*}) in a readable format.
+    \item \texttt{printExpression(e)} - Function to print expression \texttt{e} (of type \texttt{ExpressionTy}) in a readable format.
+    \item \texttt{printCode(F)} - Prints function \texttt{F} in a readable format.
+    \item \texttt{printCFG()} - Prints control flow graph in readable format (see \texttt{CFG}).
+    \item \texttt{printPartition(p)} - Prints partition vector \texttt{p} (of type \texttt{std::vector<int>}) in a readable format.
+    \item \texttt{samePartition(p1, p2)} - Checks if the two partition vectors (\texttt{std::vector<int>}) \texttt{p1} and \texttt{p2} are same. They are same when values (ie. set identifiers) at two different indexes are equal in the first iff they are so in the second.
+    \item \texttt{findSet(p, e)} - Finds set identifier representing expression \texttt{e} (which is of type \texttt{ExpressionTy}) in partition vector \texttt{p}.
+    \item \texttt{findInitialPartition(p)} - Intialises partition vector \texttt{p} with $\bot$.
+    \item \texttt{getClass(p, n, c)} - Updates \texttt{c} (\texttt{std::set<int>}) to contain indexes of expressions which are equivalent to expression with index \texttt{n}, in the partition vector \texttt{p}.
+    \item \texttt{transferFunction(n)} - Applies corresponding transfer function to the partition at program point \texttt{CFG[n]}.
+    \item \texttt{confluenceFunction(n)} - Applies the confluence operation to the partition at program point \texttt{CFG[n]}.
+    \item \texttt{HerbrandAnanlysis(F)} - Performs Herbrand analysis over function \texttt{F}.
+\end{itemize}
+
+\bigskip \noindent \textbf{NOTE} - For more details on the function implementation, refer to \autoref{chap:chapter4} and for extensive documentation refer to \href{https://himanshu520.github.io/HerbrandEquivalenceLLVMDocs/}{LLVMDocs}.
+
+\section{Benchmarking}
+\label{sec:Benchmarking}
+
+The idea was to use the analysis information to perform program optimizations - like constant propagation, constant folding, common subexpression elimination etc. These optimizations were to be benchmarked using \href{https://www.spec.org/}{SPEC benchmarking suites}. The SPEC establishes, maintains and endorses standardized benchmarks and tools to evaluate performance and energy efficiency for the newest generation of computing systems. In particular \textbf{SPEC CPU benchmarks} are used for measuring and comparing compute intensive performance, stressing a system's processor, memory subsystem and \textit{compilers}. Here, the CPU benchmarks were to be used for comparing the performance of our optimizations with respect to ones already existing like common subexpression elimination, global value numbering both in terms of processing time (time taken to optimize a program) and execution time (of the optimized program).
+
+The SPEC test cases are actual real world programs with slight modifications focussing on the kind of benchmarks to be done; some of these includes GCC, Perl interpreter, video compression program etc. These are large programs and for an optimization pass to be successfully benchmarked, it must be able to correctly handle all the constructs in LLVM IR. One must know how the high level language constructs like different basic types, pointers, classes, unions, enumerations etc. are translated in the IR; how to operate with them in the IR; and what are the feasible modifications that can be peformed without breaking the consistency and correctness of the programs. In short, one must have very deep and extensive knowledge of LLVM. This is very difficult given the size of the LLVM project itself and limited tutorials available and even the ones available are very basic. Though the documentation is extensive, it is useful only as a reference and is of not much use to a know-nothing.
+
+The current implementation has many limitations. It considers only integer variables and doesn't expect other basic types like floats, boolean, characters etc. Also it can't handle derived and complex types like structures, classes, unions, enumerations, pointers etc. It considers only five arithematic operators - \texttt{+, -, *, /, \%}.
+
+Though some of these can be easily handled, there are still others and the ones not mentioned like handling global variables, recursion, dynamic memory allocation etc. Given these complications it was decided to leave the implementation as such and skip the benchmarkings.

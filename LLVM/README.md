@@ -1,7 +1,7 @@
 
 # Herbrand Equivalence Analysis
 
-LLVM implementation of Herbrand Equivalence analysis algorithm mentioned [here](https://arxiv.org/abs/1708.04976 "A fix-point characterization of Herbrand equivalence of expressions in data flow frameworks").
+LLVM implementation of Herbrand Equivalence analysis algorithm mentioned [here](https://arxiv.org/abs/1708.04976 "A fix-point characterization of Herbrand equivalence of expressions in data flow frameworks"). Doxygen generated documentation can be found [here](https://himanshu520.github.io/HerbrandEquivalenceLLVMDocs/ "HerbrandEquivalenceLLVMDocs").
 
 ## How to run
 
